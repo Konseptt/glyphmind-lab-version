@@ -1,0 +1,12 @@
+.DS_Store
+Thumbs.db
+*.swp
+*.tmp
+.env
+.env.*
+.venv/
+.vscode/
+*.xlsx
+*.xls
+*.csv
+Downloads/
