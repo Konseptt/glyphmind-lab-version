@@ -1,6 +1,6 @@
 # GLYPHMIND
 
-**GLYPHMIND** is a browser-based **first-person corridor** N-back task. Participants walk an Egyptian-themed hallway; each of **70 paintings** reveals one hieroglyph in visit order. The first **N** paintings are **observe only**; the rest require **MATCH** or **NO MATCH** against the glyph from **N paintings back**.
+**GLYPHMIND** is a browser-based **first-person corridor** N-back task. Participants walk an Egyptian-themed hallway; each painting reveals one hieroglyph in visit order. The first **N** paintings are **observe only**; the rest require **MATCH** or **NO MATCH** against the glyph from **N paintings back**.
 
 Offline runtime: open **`index.html`** with **`lib/`** (Three.js, SheetJS) and **`fonts/`** beside it. No build step or network at run time.
 
@@ -29,11 +29,11 @@ Offline runtime: open **`index.html`** with **`lib/`** (Three.js, SheetJS) and *
 |--------|------|
 | **Presentation** | WebGL corridor (Three.js). First-person walk; glyphs reveal at proximity. |
 | **Memory** | N-back on **painting order**: current glyph vs glyph **N steps back** in the sequence. |
-| **Structure** | **70 paintings** per block; first **N** observe only; **70 − N** scored responses. |
+| **Structure** | **70 paintings** per scored block; first **N** observe only; **70 − N** scored responses. |
 
-Constants: **`TOTAL_TRIALS = 70`**, **`MATCH_COUNT = 30`**, **`NON_MATCH_PAINTING_COUNT = 40`**.
+Constants: **`TOTAL_TRIALS = 70`**, **`PRACTICE_TRIALS = 20`**, **`MATCH_COUNT = 30`**, **`NON_MATCH_PAINTING_COUNT = 40`**.
 
-Each block is exactly **70 paintings** in the corridor and in the export. The first **N** are **observe only** and are **included in those 70**. There is no separate hidden seed or 71st painting.
+Each **scored** block is exactly **70 paintings** in the corridor and in the export. The first **N** are **observe only** and are **included in those 70**. Before each scored block, participants run a **20-painting practice block** at the same N-back level (logged as `practice` / `practice_warmup`).
 
 | Block part | Count | Paintings | Notes |
 |------------|------:|-----------|--------|
@@ -42,29 +42,15 @@ Each block is exactly **70 paintings** in the corridor and in the export. The fi
 | True N-back matches (scored) | **30** | among scored rows | Ground truth: `Stimulus === Target` |
 | Scored non-matches | **70 − N − 30** | among scored rows | Forced non-match at sequence generation |
 
-**Export accounting (`isMatchPainting`)**: every complete block has **30** rows with `isMatchPainting = 1` and **40** with `isMatchPainting = 0`:
+**Export accounting (`isMatchPainting`)** on scored/warmup rows: every complete scored block has **30** rows with `isMatchPainting = 1` and **40** with `isMatchPainting = 0` (see section 1 in prior builds — observe rows always log `0`).
 
-| `isMatchPainting` | Source | Count |
-|------------------:|--------|------:|
-| **0** | N observe-only rows | N |
-| **0** | Scored non-match rows | 70 − N − 30 |
-| **0** | **Total non-match rows** | **40** |
-| **1** | Scored match rows | **30** |
-
-Examples:
-
-| N | Observe | Scored | Scored matches | Scored non-matches | Export rows (`isMatchPainting`) |
-|--:|--------:|-------:|---------------:|-------------------:|--------------------------------|
-| 1 | 1 | 69 | 30 | 39 | 30 match + 40 non-match (= 1 + 39) |
-| 3 | 3 | 67 | 30 | 37 | 30 match + 40 non-match (= 3 + 37) |
-
-Observe-only rows always log **`isMatchPainting = 0`** (they are not N-back trials). For match/non-match analysis, filter **`trialType === "scored"`** or use **`CRESP`**.
+For match/non-match analysis, filter **`trialType === "scored"`** or use **`CRESP`**.
 
 ---
 
 ## 2. Game mechanics
 
-### 2.1 Trial flow
+### 2.1 Trial flow (scored block)
 
 Paintings are indexed **0 … 69** internally (**1 … 70** in export).
 
@@ -100,27 +86,27 @@ Touch: joystick, drag to look, **MATCH** / **NO MATCH** buttons (not canvas tap)
 
 ## 3. Sequence generation
 
-Each block calls **`genSeqBlock(N, sequenceSeed)`**:
+Each block calls **`genSeqBlock(N, sequenceSeed)`** (or the practice-length variant for 20-trial practice):
 
-- Returns **`seq`** of length **70** (one glyph index per painting).
+- Returns **`seq`** of length **70** (or **20** for practice).
 - Uses a per-block **`sequenceSeed`** so the randomized sequence can be replayed.
-- Paintings **1 … N** (internal `seq[0] … seq[N−1]`): random glyphs, observe only.
-- Paintings **N+1 … 70** (internal `seq[N] … seq[69]`): filled so exactly **30** are true N-back matches; the rest are forced non-matches.
+- Paintings **1 … N**: random glyphs, observe only.
+- Remaining paintings: filled so match counts scale with block length (30 matches in a full 70-painting scored block).
 
-The corridor always builds **70** panels (`buildLevel`); there is no separate hidden seed or 71st painting.
+The corridor builds one panel per painting in the active sequence. The **guided tutorial hall** (Session 1 only, 7 paintings) uses a fixed teaching sequence and is **not logged**.
 
 ---
 
 ## 4. Trial timing and export
 
-- **RT:** milliseconds from glyph reveal to response (scored trials only). Pause time during an unanswered painting is excluded from RT.
+- **RT:** milliseconds from glyph reveal to response (scored and practice trials). Pause time during an unanswered painting is excluded from RT.
 - **RSI:** milliseconds from the timing anchor to this painting's reveal.
   - Painting 1 (observe): anchor **`none`**, RSI is typically `0`.
-  - Observe paintings 2…N: anchor **`prior_stimulus_onset`** (previous painting reveal).
-  - First scored painting (N+1): anchor **`prior_stimulus_onset`** (last observe painting reveal).
-  - Later scored paintings: anchor **`prior_response`** (previous scored response).
-- **Scored row logging:** each scored painting creates one export row at reveal (empty `Resp` until answered), then the same row is updated when the participant responds.
-- **Block completion:** the participant must answer every scored painting before the block ends; the corridor does not advance to the next painting while a response is pending.
+  - Observe paintings 2…N: anchor **`prior_stimulus_onset`**.
+  - First scored painting (N+1): anchor **`prior_stimulus_onset`**.
+  - Later scored paintings: anchor **`prior_response`**.
+- **Row logging:** each answerable painting creates one export row at reveal (empty `Resp` until answered), then updates on response.
+- **Block completion:** the participant must answer every scored painting before the block ends.
 
 ---
 
@@ -130,75 +116,73 @@ The corridor always builds **70** panels (`buildLevel`); there is no separate hi
 stateDiagram-v2
   [*] --> setup: Researcher setup
   setup --> start: Ready for participant
-  start --> cutscene: BEGIN
-  cutscene --> tutorial: Cutscene
-  tutorial --> block1instr: Tutorial
-  block1instr --> corridor1: Block 1 instruction overlay
-  corridor1 --> paused: Pause
-  paused --> corridor1: Resume
-  corridor1 --> break: Block 1 complete
-  break --> corridor2: Continue (break instructions only)
-  corridor2 --> done: Block 2 complete
-  done --> setup: Save and next participant
+  start --> s1path: Session 1
+  start --> s23path: Session 2 or 3
+  s1path --> cutscene: BEGIN
+  cutscene --> slides: Cutscene
+  slides --> guided: Tutorial slides
+  guided --> prac1: Guided hall (7 paintings, not saved)
+  s23path --> prac1: BEGIN (no tutorial)
+  prac1 --> block1: 20-trial practice
+  block1 --> scored1: Block 1 scored (70)
+  scored1 --> break: Block 1 complete
+  break --> prac2: 20-trial practice (block 2 N)
+  prac2 --> scored2: Block 2 scored (70)
+  scored2 --> done: Session complete
+  done --> setup: Download data, then title
 ```
 
 ### 5.1 Researcher setup (title screen)
 
-- **Participant ID** (required): deidentified ID only; alphanumeric plus hyphen, max 32 characters.
-- **Session ID:** e.g. `S1`, `S2`, `S3`.
+- **Participant ID** (required): two-digit numeric ID, zero-padded (e.g. `01`, `02`). Typing `1` becomes `01` on blur or when continuing.
+- **Session:** **`1`**, **`2`**, or **`3`** (buttons, not free text). Stored in export as `Session` = `1`, `2`, or `3`.
 - **Stimulation:** `anodal`, `cathodal`, or `sham`.
-- **Block order:** `1-BACK -> 3-BACK` or `3-BACK -> 1-BACK` (fixed for the whole session).
-- **Ready for participant:** opens the participant start screen showing **Participant ID** and **Session ID** only.
+- **Block order:** `1-BACK → 3-BACK` or `3-BACK → 1-BACK` (fixed for the whole run).
+- **Ready for participant:** opens the participant start screen (PID + session badge).
 
-### 5.2 Participant start through block 1
+### 5.2 Session paths
 
-1. **BEGIN** on the participant start screen.
-2. **Cutscene** (optional skip with Esc): narrative boot sequence; no background music; brief glitch sound only.
-3. **Tutorial** (four slides, skippable): Khenu explains walking, N-back rules, controls, and block briefs. **Space** or **Enter** advances; **NEXT** does the same. Last slide from a new session shows **BEGIN (Space)** and starts block 1.
-4. **Block 1 instruction overlay:** short N-back rule for the first block plus desktop/touch controls. Dismiss with the enter button, **Space**, or **Enter**.
-5. **Corridor:** first-person walk; paintings reveal in strict order 1…70.
+| Session | On BEGIN | Tutorial | Practice + scored blocks |
+|--------:|----------|----------|---------------------------|
+| **1** | Cutscene → Khenu slides → guided hall (7 paintings) | Required; no skip | 20-trial practice → 70 scored, ×2 blocks |
+| **2** | Straight to first practice block | Skipped entirely | Same practice + scored structure |
+| **3** | Straight to first practice block | Skipped entirely | Same practice + scored structure |
 
-### 5.3 Block 2 transition
+The **guided hall** and **tutorial slides** are never written to the export file.
 
-After block 1, the **break / results screen** shows block 1 stats and the **next block rule** (e.g. 3-back text). **Continue to block 2** enters the corridor directly; there is **no second full-screen instruction overlay** because the break screen already showed the rule.
+### 5.3 Block transitions
 
-Block 1 **Restart block** (pause menu) or a fresh **Block 1** start still uses the instruction overlay.
+After block 1 scored, the break screen shows block 1 stats and a short line about the next **20-trial practice** and block 2. **Continue** starts block 2 practice (no full instruction overlay on the break screen).
 
-### 5.4 In-corridor HUD (top right)
+### 5.4 In-corridor HUD
 
-- **`PAINTING n/70`:** current painting number (1-based). Shows the revealed painting while observe or awaiting response, not the next unrevealed slot.
-- **`· OBSERVE`:** appended while the current painting is one of the first **N** watch-only paintings.
-- **`ACC`:** running accuracy on answered scored trials in the current block (`--%` until the first scored response).
-
-Bottom prompt text also shows watch-only reminders (e.g. `Painting 1/70 · watch only`).
+- **N-BACK** level and painting progress.
+- **`· OBSERVE`** while on watch-only paintings.
+- Running accuracy on answered trials in the current block.
 
 ### 5.5 Pause menu (Esc)
-
-Available during the corridor (and from some result screens):
 
 | Action | Effect |
 |--------|--------|
 | **Resume** | Continue; RT/RSI timers exclude pause duration |
-| **Controls** | Re-open tutorial slides without ending the block |
+| **Controls** | Re-open tutorial slides (reference only) |
 | **Accessibility** | High contrast, HUD glyph labels, larger crosshair, low mouse sensitivity, mute, longer painting glow |
-| **Export data** | Download `.xlsx` without clearing the session |
-| **Save & next participant** | Export then reset (partial session allowed from pause with confirm) |
-| **Restart block** | Drop current block rows and replay that block with a new sequence seed |
-| **Back to title** | Discards in-memory data after confirm |
+| **Restart block** | Drop current block scored rows and replay (practice rows for that block are kept when applicable) |
+| **Back to title** | Warns if session data has not been downloaded from the end screen |
 
-Reload/close while trial rows are in memory triggers a browser warning.
+There is **no download button** in the pause menu. Trial rows are mirrored to **`sessionStorage`** during play so a reload can restore an in-progress session when a full snapshot exists.
 
 ---
 
 ## 6. Research session workflow
 
-1. Enter PID and settings → **Ready for participant** → participant **BEGIN**.
-2. Block 1 (e.g. 1-back) → break screen → **Continue to block 2** (e.g. 3-back).
-3. Protocol complete → **Export data** (backup) or **Save & next participant** (exports both blocks, clears PID, returns to setup).
+1. Enter **PID** (`01`, …), **session** (`1` / `2` / `3`), stimulation, and block order → **Ready for participant**.
+2. Participant **BEGIN** → session-specific path (section 5.2).
+3. Per block: **20-trial practice** (saved) → **70-trial scored block** (saved).
+4. After block 2 scored → **Session complete** screen → **DOWNLOAD DATA** (only download point in the app).
+5. Use **Title screen** to start the next participant after download (or confirm discard if download was skipped).
 
-Block order is fixed at setup (**1→3** or **3→1**). Export filename includes both N levels when applicable (e.g. `n1+3`).
-
-- Lab operator checklist: **[GLYPHMIND_Game_Run_Protocol.md](./GLYPHMIND_Game_Run_Protocol.md)**
+Lab operator checklist: **[GLYPHMIND_Game_Run_Protocol.md](./GLYPHMIND_Game_Run_Protocol.md)** (update that doc if it still references older export buttons).
 
 ---
 
@@ -226,7 +210,7 @@ Block order is fixed at setup (**1→3** or **3→1**). Export filename includes
 | Show glyph labels on HUD | Gardiner-style IDs on HUD where applicable |
 | Larger crosshair | Bigger on-screen aim ring |
 | Mouse sensitivity (low) | Reduced look sensitivity |
-| Mute sounds | Disables procedural SFX (panel reveal, match/no-match feedback) |
+| Mute sounds | Disables procedural SFX |
 | Longer glow (5s) | Painting highlight stays visible longer (default 2s) |
 
 Settings apply to the current browser session only (not saved to export).
@@ -257,65 +241,60 @@ Settings apply to the current browser session only (not saved to export).
 | 10 | 𓇳 | N005 | Sun (N5) | U+131F3 |
 | 11 | 𓊽 | R011 | Djed pillar (R11) | U+132BD |
 
-Sequence indices **0-11** map to these rows (see in-app **`GLYPHS`**).
+Sequence indices **0–11** map to these rows (see in-app **`GLYPHS`**).
 
 ---
 
 ## 9. Data export
 
-Each export is one `.xlsx` workbook with **Trials** and **Meta** sheets.
+Each export is one `.xlsx` workbook with **Trials** and **Meta** sheets. Download is available **only on the session-complete screen** after both scored blocks finish.
 
 ### 9.1 Trials sheet
 
-One row per painting reveal per block (**70 rows/block**, **140 rows** for a full two-block session).
+A full two-block session produces **180 rows** (90 per block: **20 practice** + **70 scored/warmup**).
 
 | `trialType` | Meaning |
 |-------------|---------|
-| `warmup` | Observe only (`painting` 1…N); `Resp`, `ACC`, `RT`, `Target` blank |
-| `scored` | N-back trial; `Resp`/`ACC`/`RT` filled after response |
+| `practice_warmup` | Observe-only rows in a 20-trial practice block |
+| `practice` | Answered practice trials (same columns as scored) |
+| `warmup` | Observe-only rows in a 70-trial scored block |
+| `scored` | N-back trial in a scored block |
 
 | Column | Meaning |
 |--------|---------|
-| `PID`, `Session`, `Condition` | From title-screen setup (`anodal`, `cathodal`, or `sham`) |
+| `PID`, `Session`, `Condition` | From setup (`01`, session `1`–`3`, `anodal` / `cathodal` / `sham`) |
 | `sessionStartISO`, `exportedAt` | Session and export timestamps |
 | `block`, `N` | Block index (1 or 2) and N-back level for that block |
-| `sequenceSeed` | Per-block seed; replay sequence with `genSeqBlock(N, seed)` |
-| `painting`, `trial` | Painting number 1…70 (equal in current build) |
-| `warmupIndex` | Observe rows: same as `painting`; scored rows: blank |
-| `isMatchPainting` | Scored match = `1`; all other rows = `0` (see section 1 accounting) |
-| `tc`, `CRESP` | Correct response code: `1` = MATCH, `2` = NO MATCH |
-| `Resp` | Participant response: `1` = MATCH, `2` = NO MATCH |
-| `ACC` | `1` if `Resp === CRESP`, else `0` (blank until answered) |
-| `RT`, `RSI`, `rsiAnchor` | Timing fields (section 4) |
-| `TriggerCondition` | 1-based glyph index (1…12) for current stimulus |
-| `TriggerResponse` | `11` = MATCH response, `12` = NO MATCH response |
-| `Stimulus`, `Target` | Gardiner IDs; `Target` is N-back reference on scored rows |
-| `StimulusName`, `StimulusUnicode`, etc. | Human-readable stimulus metadata |
+| `sequenceSeed` | Per-block seed |
+| `painting`, `trial` | Painting number within that block's sequence |
+| `isMatchPainting`, `tc`, `CRESP`, `Resp`, `ACC`, `RT`, `RSI`, `rsiAnchor` | Timing and response fields |
+| `Stimulus`, `Target`, … | Gardiner IDs and metadata |
+
+Tutorial / guided-hall trials are **not** exported.
 
 ### 9.2 Meta sheet
 
-Design constants and QC counts, including:
-
-- `paintingsPerBlock` (= 70), `matchPaintingsPerBlock` (= 30), `nonMatchPaintingsPerBlock` (= 40)
-- `blockOrder_N`, per-block `sequenceSeed`, logged match/non-match counts
-- `rows_warmup`, `rows_scored`, `rows_scored_answered`, `rows_scored_pending`, `rows_total`
-- Notes on `trialType` and `rsiAnchor` values
+Design constants and QC counts, including `practicePaintingsPerBlock` (= 20), `paintingsPerBlock` (= 70), per-block seeds, row counts, and `trialType` notes.
 
 ### 9.3 Analysis notes
 
-- Filter **`trialType === "scored"`** for accuracy, RT, and signal-detection metrics.
-- Do not treat observe **`warmup`** rows as N-back non-match trials; use **`CRESP`** or **`isMatchPainting`** on scored rows only.
-- **`hits` / `misses` / `falseAlarms` / `correctRejections`** in the results screen use the same coding as export (`tc` vs `Resp`).
-- Mid-session **Export data** may include **`rows_scored_pending`** if a block was exported before every scored painting was answered.
+- Filter **`trialType === "scored"`** for primary accuracy and RT metrics.
+- Practice rows (`practice` / `practice_warmup`) can be analysed separately or excluded.
+- **`hits` / `misses` / `falseAlarms` / `correctRejections`** on the results screen match export coding (`tc` vs `Resp`).
 
-### 9.4 Save actions
+### 9.4 Download
 
-| Button | When | Effect |
-|--------|------|--------|
-| **Export data** | Pause or results | Saves `.xlsx`; session stays in memory |
-| **Save & next participant** | After both blocks (or with confirm if partial) | Saves `.xlsx`, clears PID, returns to title setup |
+| When | Where | Effect |
+|------|--------|--------|
+| Session complete | **DOWNLOAD DATA** on final results screen | Saves `.xlsx`; sets exported flag; session stays in memory until you return to title |
 
-Example filename: `glyphmind_P001_anodal_n1+3_2026-05-29.xlsx`
+Example filename:
+
+`glyphmind_01_s2_anodal_1to3_2026-06-08_152447.xlsx`
+
+Pattern: `glyphmind_{PID}_s{session}_{condition}_{order}_{date}_{time}.xlsx`
+
+Closing the tab before download triggers a browser warning if trial data exists and has not been exported. In-session **`sessionStorage`** snapshots help recover after an accidental reload.
 
 ---
 
@@ -344,13 +323,14 @@ python3 -m http.server 8080
 
 ### 11.2 Logic check (no browser)
 
-Mirrors in-app sequence generation, trial logging, and export accounting:
+Mirrors in-app sequence generation and export accounting:
 
 ```bash
 node scripts/verify-logic.mjs
+node scripts/verify-session-data.mjs
 ```
 
-Expect: `All checks passed.`
+Expect: `All checks passed.` / `All session data checks passed.` (180 rows for a full simulated session).
 
 ### 11.3 Export audit (participant `.xlsx`)
 
@@ -361,18 +341,11 @@ node scripts/audit-export.mjs path/to/export.xlsx
 node scripts/audit-export.mjs path/to/export.xlsx --strict
 ```
 
-Checks include:
+Checks include row counts, N-back ground truth, `rsiAnchor`, Meta vs Trials consistency, and **`sequenceSeed` replay**.
 
-- 70 rows per block; painting numbers 1…70 unique
-- N warmup + (70−N) scored rows; 30/40 `isMatchPainting` accounting
-- N-back ground truth (`Stimulus` vs `Target` → `CRESP`, `ACC`, `tc`)
-- `rsiAnchor`, `TriggerCondition`, `TriggerResponse` consistency
-- Meta row counts vs Trials sheet
-- **`sequenceSeed` replay:** rebuilds the block sequence and compares all 70 stimuli
+Use **`--strict`** to fail if any scored row is missing `Resp`.
 
-Use **`--strict`** to fail if any scored row is missing `Resp` (incomplete block export).
-
-Shared implementation: `scripts/glyphmind-core.mjs` (constants + `genSeqBlock`).
+Shared implementation: `scripts/glyphmind-core.mjs`.
 
 ---
 

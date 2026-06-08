@@ -137,7 +137,7 @@
       #ps-role, .title-main, .subtitle-main, .cr-break-title, .cr-break-sub,
       #cr-block-instr, #ps-lore, .badge-container-lbl, .badge-container-val,
       #ps-hint, #ps-back, #ps-begin, .mode-btn, .cond-btn, .stim-btn,
-      #cs-name, #cs-text, #cs-continue, #cs-skip, .pidinput, #pm-pid {
+      #cs-name, #cs-text, #cs-continue, .pidinput, #pm-pid {
         text-shadow: var(--txt-legibility);
       }
       /* 
@@ -489,6 +489,12 @@
       #reload-warn-txt b {
         color: rgba(255, 230, 170, 1);
       }
+      #reload-warn-actions {
+        display: flex;
+        flex-shrink: 0;
+        gap: 8px;
+      }
+      #reload-warn-restore,
       #reload-warn-dismiss {
         flex-shrink: 0;
         font-family: "Cinzel", serif;
@@ -499,6 +505,43 @@
         background: rgba(20, 10, 4, 0.9);
         color: rgba(255, 210, 150, 0.95);
         cursor: pointer;
+      }
+      .btn-download {
+        background: rgba(20, 40, 12, 0.96) !important;
+        border-color: rgba(120, 220, 90, 0.55) !important;
+        color: rgba(150, 240, 120, 0.96) !important;
+      }
+      .btn-download:hover,
+      .btn-download:focus {
+        background: rgba(28, 52, 16, 0.98) !important;
+        border-color: rgba(150, 240, 120, 0.75) !important;
+        color: rgba(180, 255, 150, 1) !important;
+      }
+      #export-toast {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%) translateY(12px);
+        z-index: 60;
+        padding: 10px 18px;
+        border: 1px solid rgba(120, 220, 90, 0.5);
+        background: rgba(12, 28, 8, 0.94);
+        color: rgba(150, 240, 120, 0.96);
+        font-family: "Cinzel", serif;
+        font-size: clamp(9px, 1.1vw, 12px);
+        letter-spacing: 0.12em;
+        text-shadow: var(--txt-legibility);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s, transform 0.25s;
+      }
+      #export-toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      #reload-warn-restore {
+        border-color: rgba(120, 220, 90, 0.55);
+        color: rgba(150, 240, 120, 0.95);
       }
 
       /* Tutorial */
@@ -626,17 +669,6 @@
         display: flex;
         gap: 7px;
         align-items: center;
-      }
-      .tbtn.tbtn-skip {
-        padding: 7px 14px;
-        font-size: clamp(8px, 1.05vw, 11px);
-        color: rgba(230, 190, 110, 0.95);
-        border-color: rgba(120, 84, 22, 0.42);
-      }
-      .tbtn.tbtn-skip:hover,
-      .tbtn.tbtn-skip:focus {
-        color: rgba(220, 170, 60, 0.95);
-        border-color: rgba(220, 170, 60, 0.6);
       }
       .tut-dot {
         width: 7px;
@@ -898,12 +930,12 @@
       #cr.show {
         display: flex;
       }
-      /* After block 1: one centered card (title + N-specific rules + buttons). */
+      /* After block 1: one card — Block 1 stats + next practice rules + continue. */
       #cr.cr-after-block1 #cr-particles,
-      #cr.cr-after-block1 #cr-summary,
-      #cr.cr-after-block1 #cr-savenext,
       #cr.cr-after-block1 #cr-menu,
-      #cr.cr-after-block1 #cr-next-lbl {
+      #cr.cr-after-block1 #cr-export,
+      #cr.cr-after-block1 #cr-body,
+      #cr.cr-after-block1 #cr-break-head {
         display: none !important;
       }
       #cr.cr-after-block1 {
@@ -914,21 +946,34 @@
         display: none;
         text-align: center;
       }
-      #cr.cr-after-block1 #cr-break-head {
-        display: block;
+      #cr.cr-after-block1 #cr-summary {
+        width: min(440px, 92vw);
+        max-width: 440px;
+        margin: 0 auto;
+        padding: 20px 18px 0;
+        border: 1px solid rgba(160, 108, 28, 0.45);
+        border-bottom: none;
+        background: rgba(10, 6, 2, 0.88);
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.35);
+        box-sizing: border-box;
       }
       #cr.cr-after-block1 #cr-actions {
         display: flex;
         flex-direction: column;
         align-items: stretch;
         gap: 0;
-        width: min(400px, 92vw);
-        max-width: 400px;
+        width: min(440px, 92vw);
+        max-width: 440px;
         margin: 0 auto;
-        padding: 20px 18px 18px;
+        padding: 14px 18px 18px;
         border: 1px solid rgba(160, 108, 28, 0.45);
+        border-top: none;
         background: rgba(10, 6, 2, 0.88);
-        box-shadow: 0 0 40px rgba(0, 0, 0, 0.45);
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.35);
+        box-sizing: border-box;
+      }
+      #cr.cr-after-block1 #cr-summary .cr-stats {
+        margin-bottom: 14px;
       }
       .cr-break-title {
         font-family: "Cinzel Decorative", serif;
@@ -994,9 +1039,6 @@
         border: none;
         order: unset;
       }
-      #cr.cr-after-block1 #cr-export {
-        display: none !important;
-      }
       /* After block 2 (protocol complete): one centered card (summary + buttons). */
       #cr.cr-final {
         justify-content: center;
@@ -1011,7 +1053,7 @@
         width: min(440px, 92vw);
         max-width: 440px;
         margin: 0 auto;
-        padding: 22px 20px 14px;
+        padding: 22px 20px 0;
         border: 1px solid rgba(160, 108, 28, 0.45);
         border-bottom: none;
         background: rgba(10, 6, 2, 0.88);
@@ -1026,11 +1068,15 @@
         width: min(440px, 92vw);
         max-width: 440px;
         margin: 0 auto;
-        padding: 0 20px 18px;
+        padding: 14px 20px 18px;
         border: 1px solid rgba(160, 108, 28, 0.45);
-        border-top: 1px solid rgba(160, 108, 28, 0.22);
+        border-top: none;
         background: rgba(10, 6, 2, 0.88);
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.35);
         box-sizing: border-box;
+      }
+      #cr.cr-final #cr-summary .cr-stats {
+        margin-bottom: 14px;
       }
       #cr.cr-final .cr-title {
         margin-bottom: 8px;
@@ -1039,9 +1085,46 @@
         margin-bottom: 16px;
         line-height: 1.45;
       }
-      #cr.cr-final .cr-stats {
+      #cr.cr-final .cr-stats,
+      #cr.cr-after-block1 .cr-stats {
         margin-bottom: 14px;
         gap: clamp(10px, 2.5vw, 20px);
+      }
+      .cr-session-blocks {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        width: 100%;
+        text-align: center;
+      }
+      .cr-session-block-h {
+        font-family: "Cinzel", serif;
+        font-size: clamp(9px, 1.1vw, 11px);
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        color: rgba(252, 228, 170, 0.95);
+        margin-bottom: 8px;
+      }
+      .cr-stats-compact {
+        gap: clamp(6px, 1.5vw, 14px) !important;
+        margin-bottom: 6px !important;
+      }
+      .cr-stats-compact .cr-stat-val {
+        font-size: clamp(14px, 2.8vw, 26px);
+      }
+      .cr-stats-compact .cr-stat-lbl {
+        font-size: clamp(6px, 0.75vw, 9px);
+      }
+      .cr-session-practice {
+        font-size: clamp(8px, 1vw, 10px);
+        color: rgba(200, 165, 90, 0.9);
+        letter-spacing: 0.06em;
+        margin-bottom: 2px;
+      }
+      .cr-session-total {
+        padding-top: 12px;
+        margin-top: 4px;
+        border-top: 1px solid rgba(160, 108, 28, 0.32);
       }
       #cr.cr-final .cr-body {
         text-align: center;
@@ -1061,8 +1144,12 @@
         max-width: 100%;
         margin: 0;
       }
-      #cr.cr-final #cr-savenext {
-        margin-top: 0 !important;
+      #cr #cr-export {
+        display: none !important;
+      }
+      #cr.cr-final #cr-export {
+        display: block !important;
+        margin-bottom: 10px;
       }
       #cr.cr-final #cr-menu {
         margin-top: 0 !important;
@@ -1139,12 +1226,6 @@
       }
       #bi .bi-body .bi-how-list li:last-child {
         margin-bottom: 0;
-      }
-      #bi .bi-body .bi-rule-divider {
-        height: 1px;
-        margin: 12px 0;
-        background: rgba(160, 108, 28, 0.28);
-        border: none;
       }
       #bi-go {
         flex-shrink: 0;
@@ -1578,6 +1659,19 @@
         background: rgba(34, 22, 6, 0.9);
         text-shadow: 0 0 12px rgba(245, 142, 26, 0.4);
       }
+      .mode-row.session-row {
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .sess-btn {
+        flex: 0 0 auto;
+        width: clamp(44px, 11vw, 56px);
+        min-width: 0;
+        padding: 8px 0;
+        font-size: clamp(12px, 1.5vw, 15px);
+        letter-spacing: 0.06em;
+      }
       .custom-n-wrap {
         display: none;
         align-items: center;
@@ -1842,25 +1936,6 @@
         animation: blink 2s ease-in-out infinite;
       }
 
-      #cs-skip {
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        font-family: "Cinzel", serif;
-        font-size: clamp(9px, 1.1vw, 12px);
-        letter-spacing: 0.2em;
-        color: rgba(200, 185, 150, 0.88);
-        cursor: pointer;
-        z-index: 55;
-        padding: 8px 16px;
-        border: 1px solid rgba(180, 160, 120, 0.45);
-        transition: all 0.2s;
-        touch-action: manipulation;
-      }
-      #cs-skip:hover {
-        color: rgba(200, 200, 200, 0.8);
-        border-color: rgba(200, 200, 200, 0.4);
-      }
       #cs-progress {
         position: fixed;
         bottom: 0;
@@ -2115,7 +2190,10 @@
   <body>
     <div id="reload-warn" role="alert" aria-live="polite">
       <span id="reload-warn-txt"></span>
-      <button type="button" id="reload-warn-dismiss">DISMISS</button>
+      <div id="reload-warn-actions">
+        <button type="button" id="reload-warn-restore">RESTORE DATA</button>
+        <button type="button" id="reload-warn-dismiss">DISMISS</button>
+      </div>
     </div>
     <canvas id="c" tabindex="0" aria-label="Game view"></canvas>
     <div id="gun"><canvas id="gc"></canvas></div>
@@ -2145,18 +2223,6 @@
       <div class="pdiv"></div>
       <button class="button-primary" id="pm-tutorial">CONTROLS</button>
       <button class="button-primary" id="pm-access">ACCESSIBILITY</button>
-      <button class="button-primary" id="pm-export">EXPORT DATA</button>
-      <button
-        class="button-primary"
-        id="pm-savenext"
-        style="
-          background: rgba(20, 40, 12, 0.96);
-          border-color: rgba(120, 220, 90, 0.55);
-          color: rgba(150, 240, 120, 0.92);
-        "
-      >
-        SAVE &amp; NEXT PARTICIPANT
-      </button>
       <div class="pdiv"></div>
       <button class="button-primary" id="pm-restart">RESTART BLOCK</button>
       <button class="button-primary" id="pm-title">BACK TO TITLE</button>
@@ -2210,24 +2276,13 @@
         <div id="cr-next-wrap">
           <button class="button-primary" id="cr-again">CONTINUE TO BLOCK 2</button>
         </div>
-        <button class="button-primary" id="cr-export">EXPORT DATA</button>
-        <button
-          class="button-primary"
-          id="cr-savenext"
-          style="
-            margin-top: 8px;
-            background: rgba(20, 40, 12, 0.96);
-            border-color: rgba(120, 220, 90, 0.55);
-            color: rgba(150, 240, 120, 0.92);
-          "
-        >
-          SAVE &amp; NEXT PARTICIPANT
-        </button>
+        <button class="button-primary btn-download" id="cr-export">DOWNLOAD DATA</button>
         <button class="button-primary" id="cr-menu" style="margin-top: 8px">TITLE SCREEN</button>
       </div>
     </div>
 
     <div id="rfl"><span id="rfl-txt"></span></div>
+    <div id="export-toast" aria-live="polite"></div>
 
     <div id="bi">
       <div class="bi-panel">
@@ -2249,7 +2304,6 @@
             <button class="tbtn" id="tut-prev" type="button">&#8592; BACK</button>
             <div class="tut-center">
               <div class="tut-dots" id="tut-dots"></div>
-              <button class="tbtn tbtn-skip" id="tut-skip" type="button">SKIP</button>
             </div>
             <button class="tbtn" id="tut-next" type="button">NEXT &#8594;</button>
           </div>
@@ -2278,7 +2332,6 @@
           </div>
         </div>
       </div>
-      <div id="cs-skip" onclick="skipCutscene()">SKIP [ESC]</div>
       <div id="cs-progress" style="width: 0%"></div>
     </div>
 
@@ -2302,20 +2355,18 @@
           id="tt-pid"
           class="pidinput"
           type="text"
-          maxlength="32"
-          placeholder="e.g. P001"
+          inputmode="numeric"
+          maxlength="2"
+          placeholder="01"
           autocomplete="off"
           aria-required="true"
         />
-        <div class="field-label" style="margin-top: 12px">SESSION ID</div>
-        <input
-          id="tt-sid"
-          class="pidinput"
-          type="text"
-          maxlength="32"
-          placeholder="e.g. S01"
-          autocomplete="off"
-        />
+        <div class="field-label" style="margin-top: 12px">SESSION</div>
+        <div class="mode-row session-row">
+          <button class="mode-btn sess-btn on" id="session-1" type="button">1</button>
+          <button class="mode-btn sess-btn" id="session-2" type="button">2</button>
+          <button class="mode-btn sess-btn" id="session-3" type="button">3</button>
+        </div>
         <div class="field-label" style="margin-top: 12px">STIMULATION</div>
         <div style="display: flex; gap: 6px; margin-bottom: 8px">
           <button
@@ -2391,7 +2442,7 @@
           <div class="badge-value" id="ps-badge-pid">-</div>
         </div>
         <div class="badge-cell">
-          <div class="badge-label">SESSION ID</div>
+          <div class="badge-label">SESSION</div>
           <div class="badge-value" id="ps-badge-sid">-</div>
         </div>
       </div>
@@ -2410,14 +2461,14 @@
     <div id="ag">
       <div id="ag-glyphs"></div>
       <div class="front-panel">
-        <div id="ag-role">PRACTICE COMPLETE</div>
-        <div class="title-main">READY FOR THE<br />ACTUAL GAME</div>
+        <div id="ag-role">GUIDED HALL COMPLETE</div>
+        <div class="title-main" id="ag-title">PRACTICE<br />20 PAINTINGS</div>
         <div id="ag-body">
-          Khenu has finished guiding you through the practice hall. Your practice responses were not saved.<br /><br />
-          When you continue, <b>Block 1</b> begins. Every trial will be recorded.
+          Next is a <b>20-painting practice block</b> at your first N-back level. Same task as the scored game; every trial is saved.<br /><br />
+          After that, Block 1 begins (<b>70 paintings</b>, recorded).
         </div>
         <div style="width: 100%">
-          <button id="ag-begin" type="button">BEGIN BLOCK 1</button>
+          <button id="ag-begin" type="button">BEGIN PRACTICE</button>
         </div>
       </div>
     </div>
@@ -2440,34 +2491,75 @@
       // 70 paintings per block; first N are observe-only; 30 true N-back matches.
 
       const TOTAL_TRIALS = 70;
-      const TUTORIAL_TRIALS = 5;
+      const TUTORIAL_PAINTINGS = 7;
+      const TUTORIAL_SEQUENCES = {
+        1: [0, 1, 1, 2, 0, 2, 1],
+        3: [0, 1, 2, 0, 3, 1, 2],
+      };
+      const PRACTICE_TRIALS = 20;
+
+      function tutorialTrialCount(N) {
+        return TUTORIAL_PAINTINGS;
+      }
+
+      function tutorialAnswerCount(N) {
+        return TUTORIAL_PAINTINGS - N;
+      }
+
+      function tutorialNForSession() {
+        return selectedOrder[0];
+      }
+
+      function tutorialBackPhrase(N) {
+        if (N === 1) return "the <b>previous</b> painting";
+        if (N === 3) return "the painting <b>3 steps back</b>";
+        return `the painting <b>${N} steps back</b>`;
+      }
       const MATCH_COUNT = 30;
       const NON_MATCH_PAINTING_COUNT = TOTAL_TRIALS - MATCH_COUNT;
 
-      function scoredCountForN(N) {
-        return TOTAL_TRIALS - N;
+      function scoredCountForN(N, totalTrials = TOTAL_TRIALS) {
+        return totalTrials - N;
       }
 
-      function scoredNonMatchCountForN(N) {
-        return scoredCountForN(N) - MATCH_COUNT;
+      function matchCountForBlock(N, totalTrials = TOTAL_TRIALS) {
+        const scored = scoredCountForN(N, totalTrials);
+        const fullScored = scoredCountForN(N, TOTAL_TRIALS);
+        if (scored <= 0 || fullScored <= 0) return 0;
+        return Math.max(1, Math.min(scored, Math.round((MATCH_COUNT * scored) / fullScored)));
       }
 
-      // Each block: 70 paintings total; first N observe-only (within those 70);
-      // export logs 30 isMatchPainting=1 and 40 isMatchPainting=0 across all 70 rows.
-      function validateBlockSequence(N, seq) {
-        if (!Array.isArray(seq) || seq.length !== TOTAL_TRIALS) {
+      function scoredNonMatchCountForN(N, totalTrials = TOTAL_TRIALS) {
+        return scoredCountForN(N, totalTrials) - matchCountForBlock(N, totalTrials);
+      }
+
+      function trialTotalForGame() {
+        if (game.isTutorialPhase) return tutorialTrialCount(game.N);
+        if (game.isPracticePhase) return PRACTICE_TRIALS;
+        return TOTAL_TRIALS;
+      }
+
+      function loggerTrialType(kind) {
+        if (game.isPracticePhase) return kind === "warmup" ? "practice_warmup" : "practice";
+        return kind;
+      }
+
+      // Each block: totalTrials paintings; first N observe-only; match count scales with length.
+      function validateBlockSequence(N, seq, totalTrials) {
+        const len = totalTrials || (seq ? seq.length : TOTAL_TRIALS);
+        const matchTarget = matchCountForBlock(N, len);
+        const nonMatchTarget = len - matchTarget;
+        if (!Array.isArray(seq) || seq.length !== len) {
+          throw new Error(`Block sequence must have ${len} paintings (got ${seq ? seq.length : 0})`);
+        }
+        if (countScoredMatches(seq, N) !== matchTarget) {
           throw new Error(
-            `Block sequence must have ${TOTAL_TRIALS} paintings (got ${seq ? seq.length : 0})`,
+            `Block sequence must have ${matchTarget} scored N-back matches (got ${countScoredMatches(seq, N)})`,
           );
         }
-        if (countScoredMatches(seq, N) !== MATCH_COUNT) {
+        if (N + scoredNonMatchCountForN(N, len) !== nonMatchTarget) {
           throw new Error(
-            `Block sequence must have ${MATCH_COUNT} scored N-back matches (got ${countScoredMatches(seq, N)})`,
-          );
-        }
-        if (N + scoredNonMatchCountForN(N) !== NON_MATCH_PAINTING_COUNT) {
-          throw new Error(
-            `Block must account for ${NON_MATCH_PAINTING_COUNT} non-match paintings (${N} observe + ${scoredNonMatchCountForN(N)} scored non-match)`,
+            `Block must account for ${nonMatchTarget} non-match paintings (${N} observe + ${scoredNonMatchCountForN(N, len)} scored non-match)`,
           );
         }
       }
@@ -2491,8 +2583,7 @@
         tutorialText = $("tut-txt"),
         tutorialDots = $("tut-dots");
       const tutorialNext = $("tut-next"),
-        tutorialPrev = $("tut-prev"),
-        tutorialSkip = $("tut-skip");
+        tutorialPrev = $("tut-prev");
       const crosshairRing = $("xring"),
         titleScreen = $("tt"),
         accessibilitySubmenu = $("acc-sub");
@@ -3676,8 +3767,8 @@
       // Count how many scored trials (i=N..end) are exact N-back matches.
       function countScoredMatches(sequence, N) {
         let matches = 0;
-        for (let i = N; i < TOTAL_TRIALS; i++) {
-          // Defensive access: if either side is undefined, it cannot be a match.
+        const len = sequence ? sequence.length : 0;
+        for (let i = N; i < len; i++) {
           if (sequence[i] !== undefined && sequence[i - N] !== undefined && sequence[i] === sequence[i - N]) {
             matches++;
           }
@@ -3732,7 +3823,7 @@
         return pool.slice(0, N);
       }
 
-      function buildIsMatchFlags(scoredN, rng) {
+      function buildIsMatchFlags(scoredN, rng, matchTarget) {
         const limits = [4, 5, 6, scoredN];
         for (const maxConsecutive of limits) {
           for (let inner = 0; inner < 48; inner++) {
@@ -3743,7 +3834,7 @@
             const isMatch = new Array(scoredN).fill(false);
             let placed = 0;
             for (const j of order) {
-              if (placed >= MATCH_COUNT) break;
+              if (placed >= matchTarget) break;
               isMatch[j] = true;
               if (maxConsecutiveTrue(isMatch) > maxConsecutive) {
                 isMatch[j] = false;
@@ -3751,7 +3842,7 @@
                 placed++;
               }
             }
-            if (placed === MATCH_COUNT && maxConsecutiveTrue(isMatch) <= maxConsecutive) {
+            if (placed === matchTarget && maxConsecutiveTrue(isMatch) <= maxConsecutive) {
               return isMatch;
             }
           }
@@ -3761,7 +3852,7 @@
           Array.from({ length: scoredN }, (_, j) => j),
           rng,
         );
-        for (let i = 0; i < MATCH_COUNT; i++) isMatch[matchable[i]] = true;
+        for (let i = 0; i < matchTarget; i++) isMatch[matchable[i]] = true;
         return isMatch;
       }
 
@@ -3773,23 +3864,24 @@
         return parts[0] === "gm" && parts[1] === "v2";
       }
 
-      function genSeqBlockLegacy(N, seed) {
+      function genSeqBlockLegacy(N, seed, totalTrials = TOTAL_TRIALS) {
+        const matchTarget = matchCountForBlock(N, totalTrials);
         const rng = rngFromSeed(seed || makeSequenceSeed(N, 0));
         for (let attempt = 0; attempt < 16; attempt++) {
-          const seq = new Array(TOTAL_TRIALS).fill(-1);
-          const scoredN = scoredCountForN(N);
+          const seq = new Array(totalTrials).fill(-1);
+          const scoredN = scoredCountForN(N, totalTrials);
           for (let i = 0; i < N; i++) seq[i] = randInt(N_GLYPHS, rng);
           const isMatch = new Array(scoredN).fill(false);
           const matchable = Array.from({ length: scoredN }, (_, j) => j);
           shuffle(matchable, rng);
-          for (let i = 0; i < MATCH_COUNT; i++) isMatch[matchable[i]] = true;
+          for (let i = 0; i < matchTarget; i++) isMatch[matchable[i]] = true;
           for (let j = 0; j < scoredN; j++) {
             const pos = N + j;
             const ref = seq[pos - N];
             seq[pos] = isMatch[j] ? ref : pickNonMatchGlyph(ref, rng);
           }
           for (let pass = 0; pass < 32; pass++) {
-            if (countScoredMatches(seq, N) === MATCH_COUNT) break;
+            if (countScoredMatches(seq, N) === matchTarget) break;
             for (let j = 0; j < scoredN; j++) {
               const pos = N + j;
               const ref = seq[pos - N];
@@ -3797,24 +3889,25 @@
             }
           }
           const allAssigned = seq.every((v) => Number.isInteger(v) && v >= 0 && v < N_GLYPHS);
-          if (countScoredMatches(seq, N) === MATCH_COUNT && allAssigned) {
-            validateBlockSequence(N, seq);
+          if (countScoredMatches(seq, N) === matchTarget && allAssigned) {
+            validateBlockSequence(N, seq, totalTrials);
             return seq;
           }
         }
-        throw new Error(`Could not build a valid ${N}-back sequence`);
+        throw new Error(`Could not build a valid ${N}-back sequence (${totalTrials} trials)`);
       }
 
-      function genSeqBlockSpread(N, seed) {
+      function genSeqBlockSpread(N, seed, totalTrials = TOTAL_TRIALS) {
+        const matchTarget = matchCountForBlock(N, totalTrials);
         const rng = rngFromSeed(seed || makeSequenceSeed(N, 0));
         const observeGlyphs = pickObserveGlyphs(N, rng);
         for (let attempt = 0; attempt < 64; attempt++) {
-          const seq = new Array(TOTAL_TRIALS).fill(-1);
-          const scoredN = scoredCountForN(N);
+          const seq = new Array(totalTrials).fill(-1);
+          const scoredN = scoredCountForN(N, totalTrials);
 
           for (let i = 0; i < N; i++) seq[i] = observeGlyphs[i];
 
-          const isMatch = buildIsMatchFlags(scoredN, rng);
+          const isMatch = buildIsMatchFlags(scoredN, rng, matchTarget);
 
           for (let j = 0; j < scoredN; j++) {
             const pos = N + j;
@@ -3823,7 +3916,7 @@
           }
 
           for (let pass = 0; pass < 32; pass++) {
-            if (countScoredMatches(seq, N) === MATCH_COUNT) break;
+            if (countScoredMatches(seq, N) === matchTarget) break;
             for (let j = 0; j < scoredN; j++) {
               const pos = N + j;
               const ref = seq[pos - N];
@@ -3834,20 +3927,20 @@
           const allAssigned = seq.every((v) => Number.isInteger(v) && v >= 0 && v < N_GLYPHS);
           const sameGlyphRun = maxConsecutiveSameGlyph(seq);
           if (
-            countScoredMatches(seq, N) === MATCH_COUNT &&
+            countScoredMatches(seq, N) === matchTarget &&
             allAssigned &&
             sameGlyphRun <= MAX_CONSECUTIVE_SAME_GLYPH
           ) {
-            validateBlockSequence(N, seq);
+            validateBlockSequence(N, seq, totalTrials);
             return seq;
           }
         }
-        throw new Error(`Could not build a valid ${N}-back sequence`);
+        throw new Error(`Could not build a valid ${N}-back sequence (${totalTrials} trials)`);
       }
 
-      function genSeqBlock(N, seed) {
-        if (sequenceSeedUsesSpreadAlgorithm(seed)) return genSeqBlockSpread(N, seed);
-        return genSeqBlockLegacy(N, seed);
+      function genSeqBlock(N, seed, totalTrials = TOTAL_TRIALS) {
+        if (sequenceSeedUsesSpreadAlgorithm(seed)) return genSeqBlockSpread(N, seed, totalTrials);
+        return genSeqBlockLegacy(N, seed, totalTrials);
       }
 
       function getGlyphData(gi) {
@@ -3882,6 +3975,7 @@
           this.sessionStart = Date.now();
           this.block = 1;
           this.exported = false;
+          clearSessionSnapshot();
           syncSessionGuard();
         },
 
@@ -3898,8 +3992,9 @@
         recordWarmup(opts) {
           const i = opts.trialIdx;
           const paintingNum = i + 1;
+          const trialType = loggerTrialType("warmup");
           const row = {
-            trialType: "warmup",
+            trialType,
             painting: paintingNum,
             warmupIndex: paintingNum,
             trial: paintingNum,
@@ -3924,7 +4019,8 @@
           };
 
           const existingIdx = this.trials.findIndex(
-            (t) => t.block === this.block && t.trialType === "warmup" && t.painting === paintingNum
+            (t) =>
+              t.block === this.block && t.trialType === trialType && t.painting === paintingNum,
           );
 
           if (existingIdx >= 0) {
@@ -3948,9 +4044,10 @@
           const stimulus = getGlyphData(opts.glyphIdx);
           const target = getGlyphData(opts.nbackGlyphIdx);
           const hasResponse = opts.resp === 1 || opts.resp === 2;
+          const trialType = loggerTrialType("scored");
 
           const row = {
-            trialType: "scored",
+            trialType,
             painting: paintingNum,
             warmupIndex: "",
             trial: paintingNum,
@@ -3975,7 +4072,8 @@
           };
 
           const existingIdx = this.trials.findIndex(
-            (t) => t.block === this.block && t.trialType === "scored" && t.painting === paintingNum
+            (t) =>
+              t.block === this.block && t.trialType === trialType && t.painting === paintingNum,
           );
 
           if (existingIdx >= 0) {
@@ -3997,8 +4095,23 @@
           });
         },
 
-        getRespondedTrials(block = null) {
-          return this.getScoredTrials(block).filter((t) => t.Resp === 1 || t.Resp === 2);
+        getPracticeTrials(block = null) {
+          return this.trials.filter((t) => {
+            return t.trialType === "practice" && (block === null || t.block === block);
+          });
+        },
+
+        getRespondedTrials(block = null, trialType = "scored") {
+          const pool =
+            trialType === "practice" ? this.getPracticeTrials(block) : this.getScoredTrials(block);
+          return pool.filter((t) => t.Resp === 1 || t.Resp === 2);
+        },
+
+        practiceAccuracy(block) {
+          const t = this.getRespondedTrials(block, "practice");
+          if (!t.length) return 0;
+          const correct = t.filter((row) => row.ACC === 1).length;
+          return Math.round((correct / t.length) * 1000) / 10;
         },
 
         /**
@@ -4038,17 +4151,18 @@
         /**
          * Generates and downloads the XLSX report.
          */
-        exportXLSX() {
+        exportXLSX(opts = {}) {
           if (!this.trials.length) {
-            alert("Nothing to export.");
-            return;
+            if (!opts.silent) alert("Nothing to download yet.");
+            return false;
           }
           if (typeof XLSX === "undefined") {
-            alert("Missing Excel library (lib/xlsx.full.min.js).");
-            return;
+            if (!opts.silent) alert("Missing Excel library (lib/xlsx.full.min.js).");
+            return false;
           }
 
-          const exportTime = new Date().toISOString();
+          const exportDate = new Date();
+          const exportTime = exportDate.toISOString();
           const pid = this.pid || "anonymous";
           const sid = this.sid || "";
           const sessionStartISO = this.sessionStart ? new Date(this.sessionStart).toISOString() : "";
@@ -4081,9 +4195,12 @@
           XLSX.utils.book_append_sheet(workbook, worksheet, "Trials");
 
           const scoredRows = this.trials.filter((t) => t.trialType === "scored").length;
+          const practiceRows = this.trials.filter((t) => t.trialType === "practice").length;
           const answeredScoredRows = this.getRespondedTrials().length;
           const pendingScoredRows = scoredRows - answeredScoredRows;
-          const warmupRows = this.trials.filter((t) => t.trialType === "warmup").length;
+          const warmupRows = this.trials.filter(
+            (t) => t.trialType === "warmup" || t.trialType === "practice_warmup",
+          ).length;
           
           const blockOrderStr = [...new Set(this.trials.map((t) => t.block))]
             .sort((a, b) => a - b)
@@ -4092,15 +4209,22 @@
               return r ? r.N : "?";
             })
             .join(" -> ");
-          
+          const orderTag = blockOrderFilenameTag();
+
           const blockIds = [...new Set(this.trials.map((t) => t.block))].sort((a, b) => a - b);
           const blockSeedMeta = [];
           blockIds.forEach((bk) => {
             const blockRows = this.trials.filter((t) => t.block === bk);
-            const r = blockRows[0];
-            const matchLogged = blockRows.filter((t) => t.isMatchPainting === 1).length;
-            const nonMatchLogged = blockRows.filter((t) => t.isMatchPainting === 0).length;
+            const sessionRows = blockRows.filter(isSessionTrialRow);
+            const practiceRows = blockRows.filter(
+              (t) => t.trialType === "practice" || t.trialType === "practice_warmup",
+            );
+            const r = sessionRows[0] || blockRows[0];
+            const matchLogged = sessionRows.filter((t) => t.isMatchPainting === 1).length;
+            const nonMatchLogged = sessionRows.filter((t) => t.isMatchPainting === 0).length;
             blockSeedMeta.push(["block" + bk + "_sequenceSeed", r ? r.sequenceSeed || "" : ""]);
+            blockSeedMeta.push(["block" + bk + "_session_rows", sessionRows.length]);
+            blockSeedMeta.push(["block" + bk + "_practice_rows", practiceRows.length]);
             blockSeedMeta.push(["block" + bk + "_matchPaintings_logged", matchLogged]);
             blockSeedMeta.push(["block" + bk + "_nonMatchPaintings_logged", nonMatchLogged]);
           });
@@ -4113,15 +4237,18 @@
             ["Session", sid],
             ["Condition", this.condition],
             ["blockOrder_N", blockOrderStr],
+            ["blockOrder_key", orderTag],
             ["paintingsPerBlock", TOTAL_TRIALS],
             ["matchPaintingsPerBlock", MATCH_COUNT],
             ["nonMatchPaintingsPerBlock", NON_MATCH_PAINTING_COUNT],
             ["rows_warmup", warmupRows],
+            ["rows_practice", practiceRows],
             ["rows_scored", scoredRows],
             ["rows_scored_answered", answeredScoredRows],
             ["rows_scored_pending", pendingScoredRows],
             ["rows_total", this.trials.length],
-            ["trialType", "warmup | scored"],
+            ["practicePaintingsPerBlock", PRACTICE_TRIALS],
+            ["trialType", "warmup | practice | practice_warmup | scored"],
             ["rsiAnchor", "none | prior_stimulus_onset | prior_response"],
             ...blockSeedMeta,
           ];
@@ -4129,28 +4256,54 @@
           metaSheet["!cols"] = [{ wch: 28 }, { wch: 56 }];
           XLSX.utils.book_append_sheet(workbook, metaSheet, "Meta");
 
-          const ns = [...new Set(this.trials.map((t) => t.N))].sort((a, b) => a - b);
-          const nTag = ns.length === 1 ? `n${ns[0]}` : `n${ns.join("+")}`;
-          const fn = `glyphmind_${pid}_${this.condition}_${nTag}_${exportTime.slice(0, 10)}.xlsx`;
-          
+          const dateStamp = exportTime.slice(0, 10);
+          const timeStamp = exportTime.slice(11, 19).replace(/:/g, "");
+          const fn = `glyphmind_${pid}_s${sid || "0"}_${this.condition}_${orderTag}_${dateStamp}_${timeStamp}.xlsx`;
+
           XLSX.writeFile(workbook, fn);
           this.exported = true;
           syncSessionGuard();
+          return true;
         },
       };
 
-      const SESSION_GUARD_KEY = "glyphmind_unsaved_session";
+      let exportToastTimer = 0;
 
-      function hasBothBlocks() {
-        return hasCompleteBlock(1) && hasCompleteBlock(2);
+      function showExportToast(message) {
+        const el = $("export-toast");
+        if (!el) return;
+        el.textContent = message;
+        el.classList.add("show");
+        clearTimeout(exportToastTimer);
+        exportToastTimer = setTimeout(() => el.classList.remove("show"), 4200);
+      }
+
+      function downloadSessionData(opts = {}) {
+        const ok = logger.exportXLSX({ silent: !!opts.silent });
+        if (ok && opts.notify !== false) {
+          showExportToast(opts.message || "Data downloaded.");
+        }
+        return ok;
+      }
+
+      const SESSION_GUARD_KEY = "glyphmind_unsaved_session";
+      const SESSION_SNAPSHOT_KEY = "glyphmind_session_snapshot";
+
+      function blockOrderFilenameTag() {
+        if (selectedOrderKey === "31") return "3to1";
+        if (selectedOrderKey === "13") return "1to3";
+        return selectedOrder.map((n) => String(n)).join("to");
+      }
+
+      function isSessionTrialRow(t) {
+        return t.trialType !== "practice" && t.trialType !== "practice_warmup";
       }
 
       function hasCompleteBlock(block) {
-        const rows = logger.trials.filter((t) => t.block === block);
-        if (rows.length !== TOTAL_TRIALS) return false;
+        const blockRows = logger.trials.filter((t) => t.block === block && isSessionTrialRow(t));
+        if (blockRows.length !== TOTAL_TRIALS) return false;
         const seen = new Set();
-        for (let i = 0; i < rows.length; i++) {
-          const row = rows[i];
+        for (const row of blockRows) {
           if (seen.has(row.painting)) return false;
           seen.add(row.painting);
           if (row.trialType === "scored" && row.Resp !== 1 && row.Resp !== 2) return false;
@@ -4158,13 +4311,45 @@
         return seen.size === TOTAL_TRIALS;
       }
 
-      function syncSessionGuard() {
-        if (!logger.trials.length) {
+      function hasCompletePracticeBlock(block, N) {
+        const expected = scoredCountForN(N, PRACTICE_TRIALS);
+        const rows = logger.getRespondedTrials(block, "practice");
+        if (rows.length !== expected) return false;
+        const seen = new Set();
+        for (const row of rows) {
+          if (seen.has(row.painting)) return false;
+          seen.add(row.painting);
+        }
+        return seen.size === expected;
+      }
+
+      function clearSessionSnapshot() {
+        try {
+          sessionStorage.removeItem(SESSION_SNAPSHOT_KEY);
           sessionStorage.removeItem(SESSION_GUARD_KEY);
-          $("reload-warn")?.classList.remove("show");
+        } catch (e) {}
+        $("reload-warn")?.classList.remove("show");
+      }
+
+      function persistSessionSnapshot() {
+        if (!logger.trials.length) {
+          clearSessionSnapshot();
           return;
         }
         try {
+          const payload = {
+            v: 1,
+            pid: logger.pid,
+            sid: logger.sid,
+            condition: logger.condition,
+            block: logger.block,
+            sessionStart: logger.sessionStart,
+            exported: logger.exported,
+            orderKey: selectedOrderKey,
+            trials: logger.trials,
+            at: Date.now(),
+          };
+          sessionStorage.setItem(SESSION_SNAPSHOT_KEY, JSON.stringify(payload));
           sessionStorage.setItem(
             SESSION_GUARD_KEY,
             JSON.stringify({
@@ -4176,7 +4361,70 @@
         } catch (e) {}
       }
 
+      function syncSessionGuard() {
+        persistSessionSnapshot();
+      }
+
+      function readSessionSnapshot() {
+        let raw;
+        try {
+          raw = sessionStorage.getItem(SESSION_SNAPSHOT_KEY);
+        } catch (e) {
+          return null;
+        }
+        if (!raw) return null;
+        try {
+          const data = JSON.parse(raw);
+          if (!data || !Array.isArray(data.trials) || !data.trials.length) return null;
+          return data;
+        } catch (e) {
+          sessionStorage.removeItem(SESSION_SNAPSHOT_KEY);
+          return null;
+        }
+      }
+
+      function restoreSessionSnapshot() {
+        const data = readSessionSnapshot();
+        if (!data) return false;
+        logger.pid = data.pid || "";
+        logger.sid = data.sid || "";
+        logger.condition = data.condition || logger.condition;
+        logger.block = data.block || 1;
+        logger.sessionStart = data.sessionStart || Date.now();
+        logger.exported = !!data.exported;
+        logger.trials = data.trials;
+        const pidInput = $("tt-pid");
+        if (pidInput) applyPidToInput(logger.pid);
+        const sidNum = parseInt(logger.sid, 10);
+        if ([1, 2, 3].includes(sidNum)) applySessionNum(sidNum);
+        document.querySelectorAll(".stim-btn").forEach((b) => b.classList.remove("on"));
+        const stimBtn = $("stim-" + logger.condition);
+        if (stimBtn) stimBtn.classList.add("on");
+        if (data.orderKey && BLOCK_ORDERS[data.orderKey]) {
+          applyOrderKey(data.orderKey);
+        }
+        game.N = selectedOrder[Math.max(0, logger.block - 1)] || selectedOrder[0];
+        nBackLevel.textContent = `N-BACK: ${game.N}`;
+        syncPauseMenuPid();
+        $("reload-warn")?.classList.remove("show");
+        return true;
+      }
+
       function showReloadDataBannerIfNeeded() {
+        if (logger.trials.length) return;
+        const snapshot = readSessionSnapshot();
+        const txt = $("reload-warn-txt");
+        if (!txt) return;
+        if (snapshot) {
+          txt.innerHTML =
+            "<b>Saved session found in this browser.</b> Participant <b>" +
+            (snapshot.pid || "?") +
+            "</b>, <b>" +
+            snapshot.trials.length +
+            "</b> trial rows. Click <b>RESTORE DATA</b> to load them back.";
+          $("reload-warn")?.classList.add("show");
+          return;
+        }
         let raw;
         try {
           raw = sessionStorage.getItem(SESSION_GUARD_KEY);
@@ -4191,73 +4439,50 @@
           sessionStorage.removeItem(SESSION_GUARD_KEY);
           return;
         }
-        const txt = $("reload-warn-txt");
-        if (!txt) return;
         txt.innerHTML =
           "<b>Reload may have cleared unsaved data.</b> Last session: <b>" +
           (info.pid || "?") +
           "</b>, " +
           (info.rows || "?") +
-          " rows.";
+          " rows (no full snapshot — finish session and download at the end).";
         $("reload-warn")?.classList.add("show");
-      }
-
-      function saveAndNextParticipant(requireBothBlocks) {
-        if (!logger.trials.length) {
-          if (!confirm("No data in memory. Go back to setup anyway?")) return;
-          resetForNextParticipant();
-          return;
-        }
-        if (requireBothBlocks && !hasBothBlocks()) {
-          alert("Finish block 2 first, or use Export only.");
-          return;
-        }
-        if (!requireBothBlocks && !hasBothBlocks()) {
-          if (!confirm("Only one block saved. Export partial session and reset?")) return;
-        }
-        logger.exportXLSX();
-        if (!logger.exported) {
-          alert("Export failed. Data not cleared.");
-          return;
-        }
-        resetForNextParticipant();
-      }
-
-      function resetForNextParticipant() {
-        sessionStorage.removeItem(SESSION_GUARD_KEY);
-        $("reload-warn")?.classList.remove("show");
-        logger.trials = [];
-        logger.exported = false;
-        logger.block = 1;
-        logger.pid = "";
-        $("tt-pid").value = "";
-        syncPauseMenuPid();
-        sessionHadTutorial = false;
-        tutSkippedThisSession = false;
-        corridorResults.classList.remove("show", "cr-after-block1", "cr-final");
-        hideBlockInstructionOverlay();
-        hideParticipantStart();
-        hideActualGameReady();
-        toTitle();
-        const pidInput = $("tt-pid");
-        if (pidInput) {
-          pidInput.focus();
-          pidInput.select();
-        }
       }
 
       function discardSessionTrials() {
         logger.trials = [];
         logger.exported = false;
         logger.block = 1;
+        game.isTutorialPhase = false;
+        game.isPracticePhase = false;
+        game.blockComplete = false;
+        clearSessionSnapshot();
         syncSessionGuard();
       }
 
+      function sanitizePidInput(raw) {
+        return String(raw || "").replace(/\D/g, "").slice(0, 2);
+      }
+
+      function formatPid(raw) {
+        const digits = sanitizePidInput(raw);
+        if (!digits) return "";
+        const n = Math.min(99, parseInt(digits, 10));
+        if (!Number.isFinite(n) || n < 0) return "";
+        return String(n).padStart(2, "0");
+      }
+
+      function applyPidToInput(raw) {
+        const pid = formatPid(raw);
+        const input = $("tt-pid");
+        if (input) input.value = pid;
+        logger.pid = pid;
+        return pid;
+      }
+
       function requireParticipantId() {
-        const raw = $("tt-pid").value.replace(/[^\w\-]/g, "").slice(0, 32);
-        $("tt-pid").value = raw;
-        if (!raw) {
-          alert("Enter a participant ID on the title screen (for example P001).");
+        const pid = applyPidToInput($("tt-pid")?.value);
+        if (!pid) {
+          alert("Enter a participant ID on the title screen (for example 01).");
           return false;
         }
         return true;
@@ -4272,22 +4497,40 @@
         const el = $("pm-hint");
         if (!el) return;
         
-        let status = game.isTutorialPhase 
-          ? "Currently Tutorial \u00b7 1-back" 
-          : `Currently Block ${logger.block} \u00b7 ${game.N}-back`;
+        let status = game.isTutorialPhase
+          ? `Currently Tutorial \u00b7 ${game.N}-back`
+          : game.isPracticePhase
+            ? `Practice ${game.N}-back \u00b7 ${PRACTICE_TRIALS} paintings \u00b7 Block ${logger.block}`
+            : `Currently Block ${logger.block} \u00b7 ${game.N}-back`;
           
         el.innerHTML = `<b>${status}</b><br><br>Take a short break. Press <b>Esc</b> to open this menu anytime.<br><br><span style="opacity:0.88;font-size:0.92em">Left click = MATCH &nbsp;·&nbsp; Right click = NO MATCH</span><br><br>Click <b>RESUME</b> when you are ready.`;
       }
 
       // title screen
       $("tt-pid").addEventListener("input", function () {
-        this.value = this.value.replace(/[^\w\-]/g, "").slice(0, 32);
+        this.value = sanitizePidInput(this.value);
         logger.pid = this.value;
       });
-      $("tt-sid").addEventListener("input", function () {
-        this.value = this.value.replace(/[^\w\-]/g, "").slice(0, 32);
-        logger.sid = this.value;
+      $("tt-pid").addEventListener("blur", function () {
+        applyPidToInput(this.value);
       });
+      let selectedSession = 1;
+
+      function applySessionNum(num) {
+        const n = [1, 2, 3].includes(num) ? num : 1;
+        selectedSession = n;
+        logger.sid = String(n);
+        document.querySelectorAll(".sess-btn").forEach((b) => b.classList.remove("on"));
+        const btn = $("session-" + n);
+        if (btn) btn.classList.add("on");
+      }
+
+      [1, 2, 3].forEach((n) => {
+        $("session-" + n)?.addEventListener("click", function () {
+          applySessionNum(n);
+        });
+      });
+
       ["anodal", "cathodal", "sham"].forEach((id) => {
         $("stim-" + id).addEventListener("click", () => {
           document.querySelectorAll(".stim-btn").forEach((b) => b.classList.remove("on"));
@@ -4297,18 +4540,126 @@
       });
 
       const BLOCK_ORDERS = { "13": [1, 3], "31": [3, 1] };
+      let selectedOrderKey = "13";
       let selectedOrder = BLOCK_ORDERS["13"];
       let selectedN = selectedOrder[0];
+      let SLIDES = [];
+
+      function applyOrderKey(key) {
+        selectedOrderKey = BLOCK_ORDERS[key] ? key : "13";
+        selectedOrder = BLOCK_ORDERS[selectedOrderKey];
+        selectedN = selectedOrder[0];
+        document.querySelectorAll(".mode-btn").forEach((b) => b.classList.remove("on"));
+        const modeBtn = $("mode-" + selectedOrderKey);
+        if (modeBtn) modeBtn.classList.add("on");
+        rebuildTutorialSlides();
+      }
+
+      function buildTutorialSlides(N) {
+        const total = tutorialTrialCount(N);
+        const seq = TUTORIAL_SEQUENCES[N] || TUTORIAL_SEQUENCES[1];
+        const back = tutorialBackPhrase(N);
+        const watchCount = N === 1 ? "the <b>first</b> painting" : `the <b>first ${N}</b> paintings`;
+        const compareLine =
+          N === 1
+            ? "<p>Is it the <b>same</b> as the <b>previous</b> painting in this block?</p>"
+            : `<p>Is it the <b>same</b> as ${back} in this block?</p>`;
+        const orderNote =
+          N === 1
+            ? "<p>Your session runs <b>1-back</b> first, then <b>3-back</b>.</p>"
+            : "<p>Your session runs <b>3-back</b> first, then <b>1-back</b>.</p>";
+
+        const quizMatch =
+          N === 1
+            ? {
+                refGi: 0,
+                currGi: 0,
+                expect: 1,
+                refLabel: "Example",
+                question: "Try it: are these two symbols the same?",
+              }
+            : {
+                refGi: seq[0],
+                currGi: seq[N],
+                expect: seq[N] === seq[0] ? 1 : 2,
+                refLabel: "3 paintings ago",
+                question: "Try it: is NOW the same symbol as THREE PAINTINGS AGO?",
+              };
+
+        const quizNoMatch =
+          N === 1
+            ? {
+                refGi: 1,
+                currGi: 2,
+                expect: 2,
+                refLabel: "Previous",
+                question: "Try again: are these two symbols the same?",
+              }
+            : {
+                refGi: seq[1],
+                currGi: seq[4],
+                expect: 2,
+                refLabel: "3 paintings ago",
+                question: "Try again: is NOW the same symbol as THREE PAINTINGS AGO?",
+              };
+
+        return [
+          {
+            anim: "bow",
+            html:
+              "<p><b>Welcome.</b> You will walk down a hallway and stop at <b>paintings</b> on the wall.</p>" +
+              "<p>When you stand close enough, a <b>symbol</b> appears. Try to <b>remember</b> each one.</p>" +
+              `<p>First: a <b>guided hall</b> (${total} paintings, ${N}-back), then <b>20-trial practice</b> before each scored block (saved), then scored blocks (70 paintings each).</p>` +
+              orderNote,
+          },
+          {
+            anim: "point",
+            html:
+              "<p>At the start of each block, the <b>first few paintings are watch only</b>.</p>" +
+              `<p>For ${watchCount}, <b>just look</b> and remember. <b>Do not answer</b> yet.</p>` +
+              "<p>The corner of the screen will say <b>OBSERVE</b> while you are watching only.</p>",
+          },
+          {
+            anim: "gesture",
+            html:
+              "<p>After the watch-only paintings, decide on each new symbol:</p>" +
+              compareLine +
+              "<p><b>Same symbol</b> \u2192 <b>MATCH</b> (left click). &nbsp; <b>Different symbol</b> \u2192 <b>NO MATCH</b> (right click).</p>",
+          },
+          {
+            anim: "gesture",
+            quiz: quizMatch,
+          },
+          {
+            anim: "point",
+            quiz: quizNoMatch,
+          },
+          {
+            anim: "point",
+            html: "",
+            controls: true,
+          },
+          {
+            anim: "bow",
+            html:
+              `<p>Next you will enter a <b>practice corridor</b> (${total} paintings, ${N}-back) and answer for real.</p>` +
+              "<p>You will get feedback if you miss. The guided hall is not saved.</p>" +
+              "<p>When you are ready, click <b>START PRACTICE</b>.</p>",
+          },
+        ];
+      }
+
+      function rebuildTutorialSlides() {
+        SLIDES = buildTutorialSlides(tutorialNForSession());
+      }
 
       function selectOrder(key, btn) {
-        document.querySelectorAll(".mode-btn").forEach((b) => b.classList.remove("on"));
+        applyOrderKey(key);
         if (btn) btn.classList.add("on");
-        selectedOrder = BLOCK_ORDERS[key] || BLOCK_ORDERS["13"];
-        selectedN = selectedOrder[0];
       }
 
       function syncMainMenuNBackUI() {
-        selectOrder("13", $("mode-13"));
+        applyOrderKey("13");
       }
 
       $("mode-13").addEventListener("click", function () {
@@ -4414,10 +4765,43 @@
           return;
         }
 
-        const n = logger.getScoredTrials(logger.block).length;
-        if (n && !confirm("Restart block " + logger.block + "? Drops " + n + " rows from this block."))
+        if (game.isPracticePhase) {
+          if (!confirm(`Restart ${game.N}-back practice (${PRACTICE_TRIALS} paintings)?`)) return;
+          logger.trials = logger.trials.filter(
+            (t) =>
+              !(
+                t.block === logger.block &&
+                (t.trialType === "practice" || t.trialType === "practice_warmup")
+              ),
+          );
+          logger.exported = false;
+          syncSessionGuard();
+          PAUSE_MENU.classList.remove("show");
+          corridorResults.classList.remove("show", "cr-after-block1", "cr-final");
+          hideActualGameReady();
+          if (game.phase === "paused") resumeGame();
+          const n = game.N;
+          fdOut(() => game.startPractice(n), 360);
           return;
-        logger.trials = logger.trials.filter((t) => t.block !== logger.block);
+        }
+
+        const n = logger.getScoredTrials(logger.block).length;
+        const keepsPractice = logger.trials.some(
+          (t) =>
+            t.block === logger.block &&
+            (t.trialType === "practice" || t.trialType === "practice_warmup"),
+        );
+        const restartMsg = keepsPractice
+          ? `Restart Block ${logger.block} scored run? Drops ${n} scored/warmup rows; practice rows for this block are kept.`
+          : `Restart block ${logger.block}? Drops ${n} scored rows from this block.`;
+        if (n && !confirm(restartMsg)) return;
+        logger.trials = logger.trials.filter(
+          (t) =>
+            !(
+              t.block === logger.block &&
+              (t.trialType === "scored" || t.trialType === "warmup")
+            ),
+        );
         logger.exported = false;
         syncSessionGuard();
         PAUSE_MENU.classList.remove("show");
@@ -4430,10 +4814,6 @@
         showTutorial(false);
         tutFromPause = true;
       });
-      $("pm-export").addEventListener("click", () => logger.exportXLSX());
-      $("pm-savenext").addEventListener("click", () => {
-        saveAndNextParticipant(false);
-      });
       $("pm-access").addEventListener("click", () => {
         accessibilitySubmenu.classList.add("show");
       });
@@ -4441,7 +4821,11 @@
         accessibilitySubmenu.classList.remove("show");
       });
       $("pm-title").addEventListener("click", () => {
-        if (logger.trials.length && !confirm("Trial data will be lost. Export first, or OK to discard."))
+        if (
+          logger.trials.length &&
+          !logger.exported &&
+          !confirm("Session data not downloaded yet. Download from the end screen first, or OK to discard.")
+        )
           return;
         if (logger.trials.length) discardSessionTrials();
         toTitle();
@@ -4479,6 +4863,10 @@
         game.nextIdx = 0;
         game.awaitingResponse = false;
         game.hudPaint = null;
+        game.isTutorialPhase = false;
+        game.isPracticePhase = false;
+        game.blockComplete = false;
+        game.currentTrialIdx = -1;
         titleScreen.classList.remove("gone");
         const psEl = $("ps");
         if (psEl) psEl.classList.remove("show");
@@ -4489,7 +4877,7 @@
         gamePrompt.textContent = "";
         gunGroup.visible = false;
         trialFeedback.className = "";
-        syncMainMenuNBackUI();
+        applyOrderKey(selectedOrderKey);
         game.N = selectedN;
         nBackLevel.textContent = `N-BACK: ${game.N}`;
         sessionHadTutorial = false;
@@ -4540,24 +4928,111 @@
       function blockInstructionContent(n, opts = {}) {
         const rules = '<p class="bi-how-h">' + n + "-back</p>" + nbackRuleParagraph(n);
         if (!opts.includeControls) return rules;
-        return rules + '<hr class="bi-rule-divider" />' + blockControlsBriefHtml();
+        return rules + blockControlsBriefHtml();
       }
 
-      function renderBreakBlockInstruction(nextN, nextBlockNum, completedN) {
-        const titleEl = $("cr-break-title");
-        const subEl = $("cr-break-sub");
-        if (titleEl) titleEl.textContent = `BLOCK ${nextBlockNum - 1} COMPLETE`;
-        if (subEl) {
-          subEl.textContent =
-            "Short break. Read the next rule below, then continue when you are ready.";
-        }
+      function scoredStatRowsForBlock(block) {
+        return [
+          [`${logger.accuracy(block)}%`, "ACCURACY"],
+          [`${logger.meanRT(block)}ms`, "MEAN RT"],
+          [logger.hits(block), "HITS"],
+          [logger.misses(block), "MISSES"],
+          [logger.falseAlarms(block), "FALSE ALARMS"],
+          [logger.correctRejections(block), "CORRECT REJ"],
+        ];
+      }
+
+      function statGridHtml(rows) {
+        return rows
+          .map(
+            (row) =>
+              `<div class="cr-stat"><div class="cr-stat-val">${row[0]}</div><div class="cr-stat-lbl">${row[1]}</div></div>`,
+          )
+          .join("");
+      }
+
+      function combinedScoredAccuracy() {
+        const t = logger.getRespondedTrials();
+        if (!t.length) return 0;
+        const correct = t.filter((row) => row.ACC === 1).length;
+        return Math.round((correct / t.length) * 1000) / 10;
+      }
+
+      function combinedScoredMeanRT() {
+        const t = logger.getRespondedTrials().filter((row) => row.RT > 0);
+        if (!t.length) return 0;
+        const sum = t.reduce((acc, row) => acc + row.RT, 0);
+        return Math.round(sum / t.length);
+      }
+
+      function renderBreakBlockInstruction(nextN, nextBlockNum) {
         const el = $("cr-block-instr");
         if (!el) return;
         el.innerHTML =
-          '<div class="cr-block-instr-h">Next: ' +
+          '<p class="cr-block-instr-sub">Next: <b>' +
           nextN +
-          "-back</div>" +
-          blockInstructionContent(nextN, { includeControls: true });
+          "-back practice</b> (" +
+          PRACTICE_TRIALS +
+          "), then <b>Block " +
+          nextBlockNum +
+          "</b> (" +
+          TOTAL_TRIALS +
+          " scored).</p>";
+      }
+
+      function showBlock1BreakScreen(completedN) {
+        const nextN = selectedOrder[1];
+        const titleEl = $("cr-title");
+        const subEl = $("cr-sub");
+        const statsEl = $("cr-stats");
+        if (titleEl) titleEl.textContent = "BLOCK 1 COMPLETE";
+        if (subEl) {
+          subEl.textContent = `${completedN}-back · saved`;
+        }
+        if (statsEl) statsEl.innerHTML = statGridHtml(scoredStatRowsForBlock(1));
+        if (resultsBody) resultsBody.innerHTML = "";
+        renderBreakBlockInstruction(nextN, 2);
+        const again = $("cr-again");
+        if (again) again.textContent = `BEGIN ${nextN}-BACK PRACTICE (${PRACTICE_TRIALS})`;
+      }
+
+      function renderSessionCompleteUI() {
+        const b1n = selectedOrder[0];
+        const b2n = selectedOrder[1];
+        $("cr-title").textContent = "SESSION COMPLETE";
+        $("cr-title").style.color = "";
+        $("cr-sub").textContent =
+          (logger.pid ? `Participant ${logger.pid} · ` : "") + `Order: ${b1n}-back → ${b2n}-back`;
+
+        const sessionRows = [
+          [`${combinedScoredAccuracy()}%`, "COMBINED ACC"],
+          [`${combinedScoredMeanRT()}ms`, "COMBINED RT"],
+          [`${bestCombo}x`, "BEST STREAK"],
+        ];
+
+        let html = '<div class="cr-session-blocks">';
+        for (const bk of [1, 2]) {
+          const n = selectedOrder[bk - 1];
+          html += '<div class="cr-session-block">';
+          html += `<div class="cr-session-block-h">BLOCK ${bk} · ${n}-BACK (SCORED)</div>`;
+          html += '<div class="cr-stats cr-stats-compact">' + statGridHtml(scoredStatRowsForBlock(bk)) + "</div>";
+          const pr = logger.getRespondedTrials(bk, "practice").length;
+          if (pr) {
+            html += `<div class="cr-session-practice">Practice (${PRACTICE_TRIALS} trials): ${logger.practiceAccuracy(bk)}% accuracy</div>`;
+          }
+          html += "</div>";
+        }
+        html += '<div class="cr-session-block cr-session-total">';
+        html += '<div class="cr-session-block-h">SESSION TOTALS (SCORED)</div>';
+        html += '<div class="cr-stats cr-stats-compact">' + statGridHtml(sessionRows) + "</div>";
+        html += "</div></div>";
+
+        const statsEl = $("cr-stats");
+        if (statsEl) statsEl.innerHTML = html;
+
+        if (resultsBody) {
+          resultsBody.innerHTML = "<p>Download your session data below.</p>";
+        }
       }
 
       let sessionHadTutorial = false;
@@ -4604,59 +5079,149 @@
         document.addEventListener("keydown", biDismissHandler);
       }
 
-      function showActualGameReady() {
+      let agBeginAction = null;
+
+      function showTransitionGate(opts) {
         const ag = $("ag");
-        const btn = $("ag-begin");
-        if (!ag) return;
+        if (!ag || !opts) return;
         game.isTutorialPhase = false;
-        game.N = selectedN;
-        nBackLevel.textContent = `N-BACK: ${game.N}`;
-        if (btn) btn.textContent = `BEGIN BLOCK 1 (${selectedN}-BACK)`;
         hideKhenuCoach();
         releasePointerLockForUI();
+        if ($("ag-role")) $("ag-role").textContent = opts.role || "";
+        const titleEl = $("ag-title") || ag.querySelector(".title-main");
+        if (titleEl) titleEl.innerHTML = opts.title || "";
+        if ($("ag-body")) $("ag-body").innerHTML = opts.body || "";
+        const btn = $("ag-begin");
+        if (btn) btn.textContent = opts.btn || "CONTINUE";
+        agBeginAction = opts.onBegin || null;
         spawnTitleGlyphs();
         ag.classList.add("show");
       }
 
       function hideActualGameReady() {
         $("ag")?.classList.remove("show");
+        agBeginAction = null;
+      }
+
+      function showPreBlockPracticeReady(blockNum) {
+        const n = selectedOrder[blockNum - 1];
+        const afterTutorial = blockNum === 1 && selectedSession === 1;
+        const role = afterTutorial
+          ? "GUIDED HALL COMPLETE"
+          : blockNum === 1
+            ? String(selectedSession)
+            : "BLOCK 1 COMPLETE";
+        const body = afterTutorial
+          ? `Next is a <b>20-painting ${n}-back practice block</b>. Same rules as the scored game: left click = MATCH, right click = NO MATCH.<br><br>` +
+            "Every practice trial is <b>saved</b> to your session file (trialType <b>practice</b>).<br><br>" +
+            `After that, <b>Block ${blockNum}</b> begins (${TOTAL_TRIALS} paintings, scored).`
+          : blockNum === 1
+            ? `Session <b>${selectedSession}</b>. First up: a <b>20-painting ${n}-back practice block</b>. Same rules as the scored game: left click = MATCH, right click = NO MATCH.<br><br>` +
+              "Every practice trial is <b>saved</b> to your session file (trialType <b>practice</b>).<br><br>" +
+              `After that, <b>Block ${blockNum}</b> begins (${TOTAL_TRIALS} paintings, scored).`
+            : `Next is a <b>20-painting ${n}-back practice block</b>. Same rules as the scored game: left click = MATCH, right click = NO MATCH.<br><br>` +
+              "Every practice trial is <b>saved</b> to your session file (trialType <b>practice</b>).<br><br>" +
+              `After that, <b>Block ${blockNum}</b> begins (${TOTAL_TRIALS} paintings, scored).`;
+        showTransitionGate({
+          role,
+          title: `${n}-BACK PRACTICE<br />20 PAINTINGS`,
+          body,
+          btn: `BEGIN ${n}-BACK PRACTICE (20)`,
+          onBegin: () => game.startPractice(n),
+        });
+      }
+
+      function showPractice1Ready() {
+        showPreBlockPracticeReady(1);
+      }
+
+      function showActualGameReady() {
+        const blockN = selectedOrder[0];
+        const acc = logger.getRespondedTrials(1, "practice").length
+          ? `${logger.practiceAccuracy(1)}%`
+          : "--%";
+        showTransitionGate({
+          role: "PRACTICE SAVED",
+          title: "READY FOR THE<br />SCORED SESSION",
+          body:
+            `${blockN}-back practice complete (${PRACTICE_TRIALS} paintings). Practice accuracy: <b>${acc}</b>. All rows are in the export.<br><br>` +
+            `When you continue, <b>Block 1</b> begins (${TOTAL_TRIALS} paintings, <b>${blockN}-back scored</b>).`,
+          btn: `BEGIN BLOCK 1 (${blockN}-BACK)`,
+          onBegin: () => {
+            game.isPracticePhase = false;
+            game.N = blockN;
+            nBackLevel.textContent = `N-BACK: ${game.N}`;
+            game.start();
+          },
+        });
+      }
+
+      function showScoredBlock2Ready() {
+        const practiceN = selectedOrder[1];
+        const acc = logger.getRespondedTrials(2, "practice").length
+          ? `${logger.practiceAccuracy(2)}%`
+          : "--%";
+        showTransitionGate({
+          role: "PRACTICE SAVED",
+          title: "READY FOR<br />BLOCK 2",
+          body:
+            `${practiceN}-back practice complete (${PRACTICE_TRIALS} paintings). Practice accuracy: <b>${acc}</b>.<br><br>` +
+            `When you continue, <b>Block 2</b> begins (${TOTAL_TRIALS} paintings, scored).`,
+          btn: `BEGIN BLOCK 2 (${practiceN}-BACK)`,
+          onBegin: () => {
+            game.isPracticePhase = false;
+            game.N = practiceN;
+            nBackLevel.textContent = `N-BACK: ${game.N}`;
+            game.start();
+          },
+        });
       }
 
       $("ag-begin")?.addEventListener("click", () => {
         if (!panelTextures) return;
+        const fn = agBeginAction;
         hideActualGameReady();
         releasePointerLockForUI();
-        fdOut(() => game.start(), 360);
+        if (fn) fdOut(fn, 360);
       });
 
       $("cr-again").addEventListener("click", () => {
         corridorResults.classList.remove("show", "cr-after-block1", "cr-final");
         hideBlockInstructionOverlay();
 
-        if (logger.block >= 2) return;
-        logger.nextBlock();
-        game.N = selectedOrder[logger.block - 1];
-        nBackLevel.textContent = `N-BACK: ${game.N}`;
-        requestPointerLockFromGesture();
-        fdOut(() => game.start({ skipBlockInstruction: true }), 360);
+        if (logger.block === 1 && hasCompleteBlock(1)) {
+          logger.nextBlock();
+          game.N = selectedOrder[1];
+          nBackLevel.textContent = `N-BACK: ${game.N}`;
+          releasePointerLockForUI();
+          fdOut(() => game.startPractice(selectedOrder[1]), 360);
+          return;
+        }
+        if (logger.block === 2 && hasCompletePracticeBlock(2, selectedOrder[1]) && !hasCompleteBlock(2)) {
+          game.N = selectedOrder[1];
+          nBackLevel.textContent = `N-BACK: ${game.N}`;
+          releasePointerLockForUI();
+          fdOut(() => game.start(), 360);
+        }
       });
 
       $("cr-menu").addEventListener("click", () => {
-        if (logger.trials.length && !confirm("Trial data will be lost. Export first, or OK to discard."))
+        if (
+          logger.trials.length &&
+          !logger.exported &&
+          !confirm("Session data not downloaded yet. Download first, or OK to discard.")
+        )
           return;
         if (logger.trials.length) discardSessionTrials();
         toTitle();
       });
 
-      $("cr-export").addEventListener("click", () => logger.exportXLSX());
-      
-      $("cr-savenext").addEventListener("click", () => {
-        saveAndNextParticipant(corridorResults.classList.contains("cr-final"));
+      $("cr-export").addEventListener("click", () => {
+        downloadSessionData({ message: "Data downloaded." });
       });
 
       function paintingsInBlock() {
-        if (game.isTutorialPhase) return game.seq.length || TUTORIAL_TRIALS;
-        return TOTAL_TRIALS;
+        return trialTotalForGame();
       }
 
       /**
@@ -4683,11 +5248,15 @@
        */
       function getFormattedAccuracy() {
         const now = performance.now();
-        if (hudAccCache.block !== logger.block || now - hudAccCache.t > 300) {
-          hudAccCache.block = logger.block;
+        const mode = game.isPracticePhase ? "practice" : "scored";
+        const cacheKey = `${logger.block}-${mode}`;
+        if (hudAccCache.block !== cacheKey || now - hudAccCache.t > 300) {
+          hudAccCache.block = cacheKey;
           hudAccCache.t = now;
-          const responded = logger.getRespondedTrials(logger.block).length;
-          hudAccCache.val = responded ? `${logger.accuracy(logger.block)}%` : "--%";
+          const responded = logger.getRespondedTrials(logger.block, mode).length;
+          hudAccCache.val = responded
+            ? `${mode === "practice" ? logger.practiceAccuracy(logger.block) : logger.accuracy(logger.block)}%`
+            : "--%";
         }
         return hudAccCache.val;
       }
@@ -4713,14 +5282,16 @@
           const total = paintingsInBlock();
           const n = getActivePaintingNumber();
           const label = `PAINTING ${n}/${total}`;
-          const observeThrough = game.isTutorialPhase ? 1 : game.N;
+          const observeThrough = game.N;
 
           if (game.blockComplete) {
             statusText = game.isTutorialPhase
               ? `${label} \u00b7 PRACTICE DONE`
-              : `${label} \u00b7 BLOCK DONE`;
+              : game.isPracticePhase
+                ? `${label} \u00b7 PRACTICE DONE`
+                : `${label} \u00b7 BLOCK DONE`;
           } else if (game.awaitingResponse) {
-            statusText = `${label} \u00b7 ANSWER`;
+            statusText = label;
           } else if (n <= observeThrough) {
             statusText = `${label} \u00b7 OBSERVE`;
           } else {
@@ -4728,7 +5299,11 @@
           }
         }
 
-        const accLine = game.isTutorialPhase ? "PRACTICE" : `ACC ${getFormattedAccuracy()}`;
+        const accLine = game.isTutorialPhase
+          ? "GUIDED"
+          : game.isPracticePhase
+            ? `PRACTICE ACC ${getFormattedAccuracy()}`
+            : `ACC ${getFormattedAccuracy()}`;
         const snap = `${statusText}|${accLine}`;
         
         if (!force && snap === hudSnapshot) return;
@@ -4793,12 +5368,18 @@
         hudPaint: null,
         sequenceSeed: "",
         isTutorialPhase: false,
+        isPracticePhase: false,
 
         /**
-         * Initializes a 5-painting interactive tutorial.
+         * Guided hall: TUTORIAL_PAINTINGS (7) paintings; N-back matches first block order.
          */
         startTutorial() {
+          const tutN = tutorialNForSession();
+          const tutTotal = tutorialTrialCount(tutN);
+          const tutSeq = TUTORIAL_SEQUENCES[tutN] || TUTORIAL_SEQUENCES[1];
+
           this.isTutorialPhase = true;
+          this.isPracticePhase = false;
           this.phase = "busy";
           this.nextIdx = 0;
           this.awaitingResponse = false;
@@ -4808,40 +5389,43 @@
           this.lastEventTime = 0;
           this.hudPaint = null;
           this.sequenceSeed = "tutorial";
-          this.N = 1; // Tutorial is always 1-back
-          
+          this.N = tutN;
+          nBackLevel.textContent = `N-BACK: ${this.N}`;
+
           combo = 0;
           bestCombo = 0;
           updateComboHUD();
           clearBullets();
-          
+
           for (let i = FX_PARTICLES.length - 1; i >= 0; i--) {
             scene.remove(FX_PARTICLES[i].mesh);
             FX_PARTICLES[i].mat.dispose();
           }
           FX_PARTICLES.length = 0;
-          
+
           if (this.world && this.world.panels) {
             this.world.panels.forEach((p) => {
               if (p.glowTimer) cancelSafeTimeout(p.glowTimer);
             });
           }
-          
+
           AMBIENT.intensity = 1.9;
-          
-          // Fixed tutorial sequence: [A, B, B, C, A] -> indices 0, 1, 1, 2, 0
-          this.seq = [0, 1, 1, 2, 0];
+
+          if (tutSeq.length !== tutTotal) {
+            console.error(`Tutorial sequence length ${tutSeq.length} != ${tutTotal} for N=${tutN}`);
+          }
+          this.seq = tutSeq.slice();
           this.world = buildLevel(this.seq);
-          
+
           cam.position.set(0, EYE_HEIGHT, 3.5);
           euler.set(0, 0, 0);
           cam.quaternion.setFromEuler(euler);
-          
+
           gunGroup.visible = true;
           crosshairRing.classList.add("aim");
-          
+
           hudUpdate();
-          
+
           const enterCorridor = () => {
             fdIn(580);
             setTimeout(() => {
@@ -4851,13 +5435,98 @@
             }, 660);
           };
 
-          showBlockInstructionOverlay(1, 1, enterCorridor, {
-            title: "PRACTICE HALL \u00b7 1-BACK",
+          const watchNote =
+            tutN === 1
+              ? "Watch the <b>first symbol</b> (painting 1), then answer at paintings 2\u20137."
+              : `Watch the <b>first ${tutN} symbols</b> (paintings 1\u2013${tutN}, no answers), then answer at paintings ${tutN + 1}\u2013${tutTotal}.`;
+
+          showBlockInstructionOverlay(1, tutN, enterCorridor, {
+            title: `PRACTICE HALL \u00b7 ${tutN}-BACK`,
             bodyHtml:
               "<p class=\"bi-how-h\">Khenu will guide you</p>" +
-              "<p>Walk to each of the <b>5 paintings</b>. <b>Khenu</b> appears in the corner with instructions. Watch the first symbol only, then answer at each new painting.</p>" +
-              blockInstructionContent(1, { includeControls: true }),
+              `<p>Walk to each of the <b>${tutTotal} paintings</b>. <b>Khenu</b> appears in the corner with instructions. ${watchNote}</p>` +
+              blockInstructionContent(tutN, { includeControls: true }),
             goLabel: "ENTER PRACTICE HALL",
+          });
+        },
+
+        /**
+         * 20-trial practice block (logged as trialType practice).
+         */
+        startPractice(n) {
+          this.isTutorialPhase = false;
+          this.isPracticePhase = true;
+          this.phase = "busy";
+          this.nextIdx = 0;
+          this.awaitingResponse = false;
+          this.currentTrialIdx = -1;
+          this.respondedCount = 0;
+          this.blockComplete = false;
+          this.lastEventTime = 0;
+          this.hudPaint = null;
+          this.N = n;
+          nBackLevel.textContent = `N-BACK: ${this.N}`;
+          this.sequenceSeed = makeSequenceSeed(this.N, `practice${n}_b${logger.block}`);
+
+          combo = 0;
+          bestCombo = 0;
+          updateComboHUD();
+          clearBullets();
+
+          for (let i = FX_PARTICLES.length - 1; i >= 0; i--) {
+            scene.remove(FX_PARTICLES[i].mesh);
+            FX_PARTICLES[i].mat.dispose();
+          }
+          FX_PARTICLES.length = 0;
+
+          if (this.world && this.world.panels) {
+            this.world.panels.forEach((p) => {
+              if (p.glowTimer) cancelSafeTimeout(p.glowTimer);
+            });
+          }
+
+          AMBIENT.intensity = 1.9;
+
+          try {
+            this.seq = genSeqBlock(this.N, this.sequenceSeed, PRACTICE_TRIALS);
+          } catch (err) {
+            console.error("Practice sequence generation failed:", err);
+            alert("Could not build the practice sequence. Reload and try again.");
+            fdIn(400);
+            showPreBlockPracticeReady(logger.block);
+            return;
+          }
+
+          this.world = buildLevel(this.seq);
+
+          cam.position.set(0, EYE_HEIGHT, 3.5);
+          euler.set(0, 0, 0);
+          cam.quaternion.setFromEuler(euler);
+
+          gunGroup.visible = true;
+          crosshairRing.classList.add("aim");
+
+          hudUpdate();
+
+          const enterCorridor = () => {
+            fdIn(580);
+            setTimeout(() => {
+              this.phase = "corridor";
+              gamePrompt.textContent = "";
+              ensurePointerLock();
+              syncPointerLockUI();
+            }, 660);
+          };
+
+          showBlockInstructionOverlay(n, logger.block, enterCorridor, {
+            title: `PRACTICE \u00b7 ${n}-BACK \u00b7 ${PRACTICE_TRIALS} PAINTINGS`,
+            bodyHtml:
+              "<p class=\"bi-how-h\">Practice block (data saved)</p>" +
+              `<p>This is a <b>${PRACTICE_TRIALS}-painting practice run</b> at <b>${n}-back</b>. Rules are the same as the scored blocks.</p>` +
+              "<p>Every trial is logged to the export file with trialType <b>practice</b> (same columns as scored trials).</p>" +
+              blockInstructionContent(n, { includeControls: true }),
+            goLabel: `BEGIN ${n}-BACK PRACTICE`,
+            includeControls: false,
           });
         },
 
@@ -4866,6 +5535,7 @@
          */
         start(opts = {}) {
           this.isTutorialPhase = false;
+          this.isPracticePhase = false;
           this.phase = "busy";
           this.nextIdx = 0;
           this.awaitingResponse = false;
@@ -4941,7 +5611,7 @@
          */
         revealPanel(p) {
           if (p.revealed || this.blockComplete) return;
-          const paintTotal = this.isTutorialPhase ? this.seq.length : TOTAL_TRIALS;
+          const paintTotal = trialTotalForGame();
           if (p.idx < 0 || p.idx >= paintTotal) return;
           
           const panels = this.world && this.world.panels;
@@ -4980,7 +5650,7 @@
 
           if (this.isTutorialPhase) {
             this.lastEventTime = p.revealTime;
-            if (p.idx === 0) {
+            if (p.idx < this.N) {
               this.awaitingResponse = false;
               this.currentTrialIdx = -1;
               showKhenuTutorialStep(p.idx, "observe");
@@ -5090,8 +5760,8 @@
 
             if (shouldKeepPointerLock()) ensurePointerLock();
 
-            if (this.respondedCount >= 4) {
-              this.nextIdx = TUTORIAL_TRIALS;
+            if (this.respondedCount >= tutorialAnswerCount(this.N)) {
+              this.nextIdx = tutorialTrialCount(this.N);
               showKhenuTutorialStep(i, "complete");
               hudUpdate(true);
               safeTimeout(() => this.endTutorial(), 1100);
@@ -5102,15 +5772,16 @@
             return;
           }
 
-          if (correct) {
-            combo++;
-            if (combo > bestCombo) bestCombo = combo;
-          } else {
-            combo = 0;
+          if (!this.isPracticePhase) {
+            if (correct) {
+              combo++;
+              if (combo > bestCombo) bestCombo = combo;
+            } else {
+              combo = 0;
+            }
+            updateComboHUD();
+            updateTorchBrightness(correct);
           }
-
-          updateComboHUD();
-          updateTorchBrightness(correct);
 
           logger.record({
             trialIdx: i,
@@ -5139,12 +5810,16 @@
 
           if (shouldKeepPointerLock()) ensurePointerLock();
 
-          const blockDone = this.respondedCount >= scoredCountForN(this.N);
+          const paintTotal = trialTotalForGame();
+          const blockDone = this.respondedCount >= scoredCountForN(this.N, paintTotal);
           if (blockDone) {
-            this.nextIdx = TOTAL_TRIALS;
-            gamePrompt.textContent = "Block complete";
+            this.nextIdx = paintTotal;
+            gamePrompt.textContent = this.isPracticePhase ? "Practice complete" : "Block complete";
             hudUpdate(true);
-            safeTimeout(() => this.endBlock(), 800);
+            safeTimeout(
+              () => (this.isPracticePhase ? this.endPractice() : this.endBlock()),
+              800,
+            );
           } else {
             gamePrompt.textContent = "";
             hudUpdate(true);
@@ -5156,7 +5831,7 @@
          */
         endTutorial() {
           this.blockComplete = true;
-          this.nextIdx = TUTORIAL_TRIALS;
+          this.nextIdx = tutorialTrialCount(this.N);
           hudUpdate(true);
           this.phase = "results";
 
@@ -5167,7 +5842,35 @@
           releasePointerLockForUI();
           corridorResults.classList.remove("show", "cr-after-block1", "cr-final");
           gamePrompt.textContent = "";
-          showActualGameReady();
+          showPractice1Ready();
+        },
+
+        /**
+         * After a 20-trial practice block.
+         */
+        endPractice() {
+          this.blockComplete = true;
+          this.nextIdx = PRACTICE_TRIALS;
+          hudUpdate(true);
+          this.phase = "results";
+
+          clearBullets();
+          gunGroup.visible = false;
+          crosshairRing.classList.remove("aim");
+          hideKhenuCoach();
+          releasePointerLockForUI();
+          corridorResults.classList.remove("show", "cr-after-block1", "cr-final");
+          gamePrompt.textContent = "";
+          invalidateHudAcc();
+
+          const block = logger.block;
+          const practiceN = selectedOrder[block - 1];
+          if (!hasCompletePracticeBlock(block, practiceN)) {
+            showPreBlockPracticeReady(block);
+            return;
+          }
+          if (block === 1) showActualGameReady();
+          else showScoredBlock2Ready();
         },
 
         /**
@@ -5194,45 +5897,14 @@
           if (isFinal) {
             corridorResults.classList.remove("cr-after-block1");
             corridorResults.classList.add("cr-final");
-            $("cr-title").textContent = "SESSION COMPLETE";
-            $("cr-title").style.color = "";
-            $("cr-sub").textContent = `Block ${b} of 2 \u00b7 ${this.N}-back`;
-
-            const stats = $("cr-stats");
-            const rows = [
-              [`${logger.accuracy(b)}%`, "ACCURACY"],
-              [`${logger.meanRT(b)}ms`, "MEAN RT"],
-              [logger.hits(b), "HITS"],
-              [logger.misses(b), "MISSES"],
-              [logger.falseAlarms(b), "FALSE ALARMS"],
-              [logger.correctRejections(b), "CORRECT REJ"],
-              [`${bestCombo}x`, "BEST STREAK"],
-            ];
-            
-            stats.innerHTML = rows
-              .map((row) => `
-                <div class="cr-stat">
-                  <div class="cr-stat-val">${row[0]}</div>
-                  <div class="cr-stat-lbl">${row[1]}</div>
-                </div>
-              `)
-              .join("");
-
+            renderSessionCompleteUI();
             if (nextWrap) nextWrap.style.display = "none";
-            resultsBody.innerHTML = `
-              <p>Session complete.</p>
-              <p><b>Save &amp; next participant</b> exports both blocks and clears the form for a new PID.</p>
-              <p><b>Export data</b> saves a copy without resetting.</p>
-            `;
             spawnResultParticles();
           } else {
             corridorResults.classList.remove("cr-final");
             corridorResults.classList.add("cr-after-block1");
-            const nextN = selectedOrder[1];
-            const completedN = this.N;
             if (nextWrap) nextWrap.style.display = "";
-            $("cr-again").textContent = `CONTINUE TO BLOCK 2 (${nextN}-BACK)`;
-            renderBreakBlockInstruction(nextN, 2, completedN);
+            showBlock1BreakScreen(this.N);
           }
 
           corridorResults.classList.add("show");
@@ -5253,65 +5925,12 @@
         );
       }
 
-      const SLIDES = [
-        {
-          anim: "bow",
-          html:
-            "<p><b>Welcome.</b> You will walk down a hallway and stop at <b>paintings</b> on the wall.</p>" +
-            "<p>When you stand close enough, a <b>symbol</b> appears. Try to <b>remember</b> each one.</p>" +
-            "<p>First you will try a <b>short practice hall</b> (5 paintings), then the real blocks (70 paintings each).</p>",
-        },
-        {
-          anim: "point",
-          html:
-            "<p>At the start of each block, the <b>first few paintings are watch only</b>.</p>" +
-            "<p>For those, <b>just look</b> and remember. <b>Do not answer</b> yet.</p>" +
-            "<p>The corner of the screen will say <b>OBSERVE</b> while you are watching only.</p>",
-        },
-        {
-          anim: "gesture",
-          html:
-            "<p>After the watch-only paintings, decide on each new symbol:</p>" +
-            "<p>Is it the <b>same</b> as the <b>previous</b> painting in this block?</p>" +
-            "<p><b>Same symbol</b> \u2192 <b>MATCH</b> (left click). &nbsp; <b>Different symbol</b> \u2192 <b>NO MATCH</b> (right click).</p>" +
-            "<p>In the real game you may compare to <b>one</b> painting back (1-back) or <b>three</b> back (3-back).</p>",
-        },
-        {
-          anim: "gesture",
-          quiz: {
-            refGi: 0,
-            currGi: 0,
-            expect: 1,
-            question: "Try it: are these two symbols the same?",
-          },
-        },
-        {
-          anim: "point",
-          quiz: {
-            refGi: 1,
-            currGi: 2,
-            expect: 2,
-            question: "Try again: are these two symbols the same?",
-          },
-        },
-        {
-          anim: "point",
-          html: "",
-          controls: true,
-        },
-        {
-          anim: "bow",
-          html:
-            "<p>Next you will enter a <b>practice corridor</b> (5 paintings) and answer for real.</p>" +
-            "<p>You will get feedback if you miss. The practice is not saved.</p>" +
-            "<p>When you are ready, click <b>START PRACTICE</b>.</p>",
-        },
-      ];
       let tutPage = 0,
         tutFromTitle = false,
         tutFromPause = false,
         tutQuizPassed = true;
       function showTutorial(fromTitle) {
+        rebuildTutorialSlides();
         tutFromTitle = fromTitle;
         tutFromPause = false;
         tutPage = 0;
@@ -5331,8 +5950,7 @@
       function finishTutorial() {
         hideTutorial();
         if (tutFromTitle) {
-          if (!tutSkippedThisSession) sessionHadTutorial = true;
-          tutSkippedThisSession = false;
+          sessionHadTutorial = true;
           startGameDirect();
         } else {
           afterTutorialFromPauseIfNeeded();
@@ -5367,10 +5985,11 @@
       function tutorialQuizHtml(quiz) {
         const ref = GLYPHS[quiz.refGi];
         const cur = GLYPHS[quiz.currGi];
+        const refLbl = quiz.refLabel || "Previous";
         return (
           `<p>${quiz.question}</p>` +
           '<div class="tut-quiz-glyphs">' +
-          '<div class="tut-quiz-glyph"><span class="tut-quiz-lbl">Previous</span>' +
+          `<div class="tut-quiz-glyph"><span class="tut-quiz-lbl">${refLbl}</span>` +
           `<span class="tut-quiz-ch">${ref.ch}</span></div>` +
           '<span class="tut-quiz-vs">vs</span>' +
           '<div class="tut-quiz-glyph"><span class="tut-quiz-lbl">Now</span>' +
@@ -5437,12 +6056,6 @@
           renderSlide();
         }
       });
-      let tutSkippedThisSession = false;
-      tutorialSkip.addEventListener("click", () => {
-        tutSkippedThisSession = true;
-        finishTutorial();
-      });
-
       function renderSlide() {
         const slide = SLIDES[tutPage];
         if (slide.controls) tutorialText.innerHTML = desktopControlsSlideHtml();
@@ -5462,8 +6075,6 @@
             : "NEXT \u2192";
         tutorialNext.disabled = !!slide.quiz && !tutQuizPassed;
         tutorialPrev.disabled = first;
-        tutorialSkip.textContent = tutFromTitle ? "SKIP" : "CLOSE";
-        tutorialSkip.style.visibility = last && !tutFromTitle ? "hidden" : "";
         tutorialDots.innerHTML = "";
         for (let i = 0; i < SLIDES.length; i++) {
           const d = document.createElement("div");
@@ -5718,25 +6329,36 @@
           return;
         }
         const n = panelIdx >= 0 ? panelIdx + 1 : 0;
+        const total = tutorialTrialCount(game.N);
+        const back = tutorialBackPhrase(game.N);
         let pose = "gesture";
         let html = "";
 
         if (state === "welcome") {
           pose = "bow";
           html =
-            "<b>Khenu:</b> I will guide you through <b>5 practice paintings</b>. " +
+            `<b>Khenu:</b> I will guide you through <b>${total} practice paintings</b> (${game.N}-back). ` +
             "Press <b>W</b> to walk. When you see <b>CLICK TO LOOK AROUND</b>, click the view so you can turn your head. " +
+            (game.N > 1
+              ? `Watch the <b>first ${game.N} symbols</b> without answering. `
+              : "") +
             "I will tell you when to answer.";
         } else if (state === "observe") {
           pose = "point";
-          html = `<b>Khenu:</b> Painting <b>${n}/5</b>. Study this symbol. <b>Do not answer.</b> Walk forward when you remember it.`;
+          const observeNote =
+            game.N > 1 && n < game.N
+              ? ` You need <b>${game.N}</b> symbols in memory before you answer.`
+              : "";
+          html =
+            `<b>Khenu:</b> Painting <b>${n}/${total}</b>. Study this symbol. <b>Do not answer.</b> Walk forward when you remember it.${observeNote}`;
         } else if (state === "answer") {
           pose = "gesture";
-          html = `<b>Khenu:</b> Painting <b>${n}/5</b>. Same symbol as the <b>previous</b> painting? <b>Left click</b> = MATCH, <b>right click</b> = NO MATCH.`;
+          html =
+            `<b>Khenu:</b> Painting <b>${n}/${total}</b>. Same symbol as ${back}? ` +
+            "<b>Left click</b> = MATCH, <b>right click</b> = NO MATCH.";
         } else if (state === "wrong") {
           pose = "think";
-          html =
-            "<b>Khenu:</b> Not quite. Compare only to the <b>previous</b> painting, then try again.";
+          html = `<b>Khenu:</b> Not quite. Compare only to ${back}, then try again.`;
         } else if (state === "hint") {
           pose = "point";
           html = `<b>Khenu:</b> The answer is <b>${extra.need}</b>. <b>Left click</b> = MATCH, <b>right click</b> = NO MATCH. Try once more, then walk forward.`;
@@ -5778,7 +6400,7 @@
         const inCorridor = game.phase === "corridor" && game.world;
         if (inCorridor) {
           moveCam(dt, game.world.cBound);
-          const paintTotal = game.isTutorialPhase ? game.seq.length : TOTAL_TRIALS;
+          const paintTotal = trialTotalForGame();
           if (!game.awaitingResponse && !game.blockComplete && game.nextIdx < paintTotal) {
             const p = game.world.panels[game.nextIdx];
             if (p && !p.revealed && Math.abs(cam.position.z - p.z) < REVEAL_DIST) {
@@ -6407,11 +7029,6 @@
         });
       }
 
-      function skipCutscene() {
-        if (!csActive) return;
-        endCutscene();
-      }
-
       function endCutscene() {
         csActive = false;
         csTimers.forEach((t) => clearTimeout(t));
@@ -6431,48 +7048,43 @@
         }
       }
 
-      document.addEventListener("keydown", (e) => {
-        if (e.code === "Escape" && csActive) {
-          e.preventDefault();
-          skipCutscene();
-        }
-      });
+      function syncLoggerFromSetupForm() {
+        const pid = formatPid($("tt-pid")?.value);
+        if (pid) applyPidToInput(pid);
+        else logger.pid = "";
+        logger.sid = String(selectedSession);
+        syncPauseMenuPid();
+      }
 
       function startGameDirect() {
         if (!panelTextures) return;
         if (!requireParticipantId()) return;
         initAudio();
         game.N = selectedN;
-        logger.pid =
-          $("tt-pid")
-            .value.replace(/[^\w\-]/g, "")
-            .slice(0, 32) || logger.pid;
-        logger.sid =
-          $("tt-sid")
-            .value.replace(/[^\w\-]/g, "")
-            .slice(0, 32) || logger.sid;
-        syncPauseMenuPid();
+        syncLoggerFromSetupForm();
         titleScreen.classList.add("gone");
         alive = true;
         logger.begin();
         game.startTutorial();
       }
 
+      function startPracticeOnlySession() {
+        if (!panelTextures) return;
+        if (!requireParticipantId()) return;
+        syncLoggerFromSetupForm();
+        titleScreen.classList.add("gone");
+        alive = true;
+        logger.begin();
+        sessionHadTutorial = false;
+        showPreBlockPracticeReady(1);
+      }
+
       // Researcher confirms session config → hand off to the Participant Start screen.
       const participantStart = $("ps");
       function showParticipantStart() {
-        // Pull the latest values from the setup form into logger + the badge.
-        logger.pid =
-          $("tt-pid")
-            .value.replace(/[^\w\-]/g, "")
-            .slice(0, 32) || logger.pid;
-        logger.sid =
-          $("tt-sid")
-            .value.replace(/[^\w\-]/g, "")
-            .slice(0, 32) || logger.sid;
-        syncPauseMenuPid();
+        syncLoggerFromSetupForm();
         $("ps-badge-pid").textContent = logger.pid || "-";
-        $("ps-badge-sid").textContent = logger.sid || "-";
+        $("ps-badge-sid").textContent = String(selectedSession);
         titleScreen.classList.add("gone");
         participantStart.classList.add("show");
         spawnTitleGlyphs();
@@ -6484,7 +7096,11 @@
       $("enter-btn").addEventListener("click", () => {
         if (!panelTextures) return;
         if (!requireParticipantId()) return;
-        if (logger.trials.length && !confirm("Trial data will be lost. Export first, or OK to discard."))
+        if (
+          logger.trials.length &&
+          !logger.exported &&
+          !confirm("Session data not downloaded yet. Download from the end screen first, or OK to discard.")
+        )
           return;
         if (logger.trials.length) discardSessionTrials();
         showParticipantStart();
@@ -6500,8 +7116,12 @@
         initAudio();
         game.N = selectedN;
         hideParticipantStart();
-        await playCutscene();
-        showTutorial(true);
+        if (selectedSession === 1) {
+          await playCutscene();
+          showTutorial(true);
+        } else {
+          startPracticeOnlySession();
+        }
       });
 
       function buildGlyphTextures() {
@@ -6593,20 +7213,33 @@
       requestAnimationFrame(loop);
 
       window.addEventListener("beforeunload", function (e) {
-        if (!logger.trials.length) return;
+        if (!logger.trials.length || logger.exported) return;
         e.preventDefault();
-        e.returnValue = "Unsaved trial data. Export before leaving.";
+        e.returnValue = "Session data not downloaded yet. Finish and download before leaving.";
         return e.returnValue;
       });
       window.addEventListener("pagehide", function () {
         if (logger.trials.length) syncSessionGuard();
       });
 
+      const reloadWarnRestore = $("reload-warn-restore");
+      if (reloadWarnRestore) {
+        reloadWarnRestore.addEventListener("click", function () {
+          if (restoreSessionSnapshot()) {
+            alert(
+              "Session data restored (" +
+                logger.trials.length +
+                " rows). Finish the session and download from the end screen.",
+            );
+          } else {
+            alert("No restorable snapshot found.");
+          }
+        });
+      }
       const reloadWarnDismiss = $("reload-warn-dismiss");
       if (reloadWarnDismiss) {
         reloadWarnDismiss.addEventListener("click", function () {
-          sessionStorage.removeItem(SESSION_GUARD_KEY);
-          $("reload-warn")?.classList.remove("show");
+          clearSessionSnapshot();
         });
       }
     </script>

@@ -24,6 +24,23 @@ import {
   scoredCountForN,
 } from "./glyphmind-core.mjs";
 
+const PRACTICE_TRIALS = 20;
+
+function scoredCountForTrials(N, totalTrials) {
+  return totalTrials - N;
+}
+
+function matchCountForBlock(N, totalTrials = TOTAL_TRIALS) {
+  const scored = scoredCountForTrials(N, totalTrials);
+  const fullScored = scoredCountForN(N);
+  if (scored <= 0 || fullScored <= 0) return 0;
+  return Math.max(1, Math.min(scored, Math.round((MATCH_COUNT * scored) / fullScored)));
+}
+
+function isSessionTrialType(trialType) {
+  return trialType !== "practice" && trialType !== "practice_warmup";
+}
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 const XLSX = require(path.join(__dirname, "../lib/xlsx.full.min.js"));
@@ -148,7 +165,9 @@ function auditBlock(blockNum, rows, meta, issues, options) {
 
   const warmupRows = rows.filter((r) => asStr(r.trialType) === "warmup");
   const scoredRows = rows.filter((r) => asStr(r.trialType) === "scored");
-  const otherTypes = rows.filter((r) => !["warmup", "scored"].includes(asStr(r.trialType)));
+  const otherTypes = rows.filter(
+    (r) => !["warmup", "scored", "practice", "practice_warmup"].includes(asStr(r.trialType)),
+  );
 
   if (otherTypes.length) issues.push(`${prefix}: invalid trialType values`);
   if (warmupRows.length !== N) {
@@ -318,7 +337,72 @@ function auditBlock(blockNum, rows, meta, issues, options) {
     }
   }
 
-  return { N, seed, pendingScored, matchLogged, nonMatchLogged };
+  return { N, seed, pendingScored, matchLogged, nonMatchLogged, kind: "session" };
+}
+
+function auditPracticeBlock(blockNum, rows, issues, options) {
+  const prefix = `block ${blockNum} practice`;
+
+  if (rows.length !== PRACTICE_TRIALS) {
+    issues.push(`${prefix}: expected ${PRACTICE_TRIALS} rows, got ${rows.length}`);
+    return;
+  }
+
+  const N = asInt(rows[0].N);
+  if (N == null || N < 1) {
+    issues.push(`${prefix}: invalid N`);
+    return;
+  }
+  if (rows.some((r) => asInt(r.N) !== N)) {
+    issues.push(`${prefix}: inconsistent N across rows`);
+  }
+
+  const warmupRows = rows.filter((r) => asStr(r.trialType) === "practice_warmup");
+  const scoredRows = rows.filter((r) => asStr(r.trialType) === "practice");
+  const badTypes = rows.filter(
+    (r) => !["practice", "practice_warmup"].includes(asStr(r.trialType)),
+  );
+  if (badTypes.length) issues.push(`${prefix}: invalid trialType values`);
+  if (warmupRows.length !== N) {
+    issues.push(`${prefix}: expected ${N} practice_warmup rows, got ${warmupRows.length}`);
+  }
+  const expectedScored = scoredCountForTrials(N, PRACTICE_TRIALS);
+  if (scoredRows.length !== expectedScored) {
+    issues.push(
+      `${prefix}: expected ${expectedScored} practice rows, got ${scoredRows.length}`,
+    );
+  }
+
+  const matchTarget = matchCountForBlock(N, PRACTICE_TRIALS);
+  const matchLogged = rows.filter((r) => asInt(r.isMatchPainting) === 1).length;
+  const nonMatchLogged = rows.filter((r) => asInt(r.isMatchPainting) === 0).length;
+  const nonMatchTarget = PRACTICE_TRIALS - matchTarget;
+  if (matchLogged !== matchTarget) {
+    issues.push(`${prefix}: expected ${matchTarget} isMatchPainting=1 rows, got ${matchLogged}`);
+  }
+  if (nonMatchLogged !== nonMatchTarget) {
+    issues.push(
+      `${prefix}: expected ${nonMatchTarget} isMatchPainting=0 rows, got ${nonMatchLogged}`,
+    );
+  }
+
+  let pendingScored = 0;
+  if (options.strict) {
+    for (const row of scoredRows) {
+      if (!hasResp(row.Resp)) pendingScored++;
+    }
+    if (pendingScored) {
+      issues.push(`${prefix}: ${pendingScored} practice scored row(s) missing Resp (--strict)`);
+    }
+  }
+
+  for (const row of scoredRows) {
+    if (hasResp(row.Resp) && asInt(row.ACC) !== (asInt(row.CRESP) === asInt(row.Resp) ? 1 : 0)) {
+      issues.push(`${prefix} painting ${row.painting}: ACC does not match CRESP/Resp`);
+    }
+  }
+
+  return { N, seed: asStr(rows[0].sequenceSeed), pendingScored, matchLogged, nonMatchLogged, kind: "practice" };
 }
 
 /**
@@ -350,7 +434,17 @@ export function auditExportData(trials, meta = {}, options = {}) {
   const blockSummaries = [];
 
   for (const [blockNum, rows] of blockGroups) {
-    blockSummaries.push(auditBlock(blockNum, rows, meta, issues, options));
+    const sessionRows = rows.filter((r) => isSessionTrialType(asStr(r.trialType)));
+    const practiceRows = rows.filter((r) => {
+      const tt = asStr(r.trialType);
+      return tt === "practice" || tt === "practice_warmup";
+    });
+    if (sessionRows.length) {
+      blockSummaries.push(auditBlock(blockNum, sessionRows, meta, issues, options));
+    }
+    if (practiceRows.length) {
+      blockSummaries.push(auditPracticeBlock(blockNum, practiceRows, issues, options));
+    }
   }
 
   const metaPaintings = asInt(meta.paintingsPerBlock);
