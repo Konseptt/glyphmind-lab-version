@@ -1,5 +1,5 @@
 /**
- * Simulates full session logging (practice + scored per block) and audits export shape.
+ * Simulates full session logging (scored blocks only; practice not exported) and audits export shape.
  * Run: node scripts/verify-session-data.mjs
  */
 import {
@@ -7,6 +7,7 @@ import {
   MATCH_COUNT,
   NON_MATCH_PAINTING_COUNT,
   N_GLYPHS,
+  GLYPHS,
   genSeqBlock,
   genSeqBlockSpread,
   glyphIdForIndex,
@@ -115,6 +116,11 @@ function genSeqBlockLen(N, seed, totalTrials) {
   throw new Error(`Could not build ${N}-back / ${totalTrials} sequence`);
 }
 
+function glyphLogFields(gi) {
+  const g = GLYPHS[gi];
+  return { StimulusName: g.name, StimulusChar: g.ch };
+}
+
 function makeGameLogger() {
   let isPracticePhase = false;
   const logger = {
@@ -125,58 +131,46 @@ function makeGameLogger() {
       return kind;
     },
     recordWarmup(opts) {
-      const paintingNum = opts.trialIdx + 1;
+      if (isPracticePhase) return;
+      const trialNum = opts.trialIdx + 1;
       const trialType = logger.trialType("warmup");
       const row = {
         trialType,
-        painting: paintingNum,
-        warmupIndex: paintingNum,
-        trial: paintingNum,
+        trial: trialNum,
         block: logger.block,
         N: opts.n,
         sequenceSeed: opts.sequenceSeed,
-        isMatchPainting: 0,
-        tc: "",
         CRESP: "",
         Resp: "",
         ACC: "",
+        isMatch: "",
         RT: "",
         RSI: Math.round(opts.rsi || 0),
-        rsiAnchor: opts.trialIdx === 0 ? "none" : "prior_stimulus_onset",
-        TriggerCondition: opts.glyphIdx + 1,
-        TriggerResponse: "",
-        Stimulus: glyphIdForIndex(opts.glyphIdx),
-        Target: "",
+        ...glyphLogFields(opts.glyphIdx),
       };
       upsert(row);
     },
     record(opts) {
+      if (isPracticePhase) return;
       const i = opts.trialIdx;
-      const paintingNum = i + 1;
+      const trialNum = i + 1;
       const isMatch = opts.glyphIdx === opts.nbackGlyphIdx;
       const expectedResp = isMatch ? 1 : 2;
       const hasResponse = opts.resp === 1 || opts.resp === 2;
       const trialType = logger.trialType("scored");
       const row = {
         trialType,
-        painting: paintingNum,
-        warmupIndex: "",
-        trial: paintingNum,
-        tc: expectedResp,
+        trial: trialNum,
         block: logger.block,
         N: opts.n,
         sequenceSeed: opts.sequenceSeed,
-        isMatchPainting: isMatch ? 1 : 0,
         CRESP: expectedResp,
         Resp: hasResponse ? opts.resp : "",
         ACC: hasResponse ? (expectedResp === opts.resp ? 1 : 0) : "",
+        isMatch: isMatch ? 1 : 0,
         RT: hasResponse ? Math.round(opts.rt || 0) : "",
         RSI: Math.round(opts.rsi || 0),
-        rsiAnchor: i === opts.n ? "prior_stimulus_onset" : "prior_response",
-        TriggerCondition: opts.glyphIdx + 1,
-        TriggerResponse: hasResponse ? (opts.resp === 1 ? 11 : 12) : "",
-        Stimulus: glyphIdForIndex(opts.glyphIdx),
-        Target: glyphIdForIndex(opts.nbackGlyphIdx),
+        ...glyphLogFields(opts.glyphIdx),
       };
       upsert(row);
     },
@@ -184,7 +178,7 @@ function makeGameLogger() {
 
   function upsert(row) {
     const idx = logger.trials.findIndex(
-      (t) => t.block === row.block && t.trialType === row.trialType && t.painting === row.painting,
+      (t) => t.block === row.block && t.trialType === row.trialType && t.trial === row.trial,
     );
     if (idx >= 0) logger.trials[idx] = row;
     else logger.trials.push(row);
@@ -265,8 +259,8 @@ function hasCompleteBlock(trials, block) {
   if (blockRows.length !== TOTAL_TRIALS) return false;
   const seen = new Set();
   for (const row of blockRows) {
-    if (seen.has(row.painting)) return false;
-    seen.add(row.painting);
+    if (seen.has(row.trial)) return false;
+    seen.add(row.trial);
     if (row.trialType === "scored" && row.Resp !== 1 && row.Resp !== 2) return false;
   }
   return seen.size === TOTAL_TRIALS;
@@ -278,22 +272,13 @@ function validateRowLogic(trials) {
     const tt = row.trialType;
     if (tt === "scored" || tt === "practice") {
       if (row.Resp === 1 || row.Resp === 2) {
-        if (row.CRESP !== row.tc) {
-          issues.push(`p${row.painting} b${row.block} ${tt}: CRESP ${row.CRESP} != tc ${row.tc}`);
-        }
         if (row.ACC !== (row.Resp === row.CRESP ? 1 : 0)) {
-          issues.push(`p${row.painting} b${row.block} ${tt}: ACC wrong`);
+          issues.push(`t${row.trial} b${row.block} ${tt}: ACC wrong`);
         }
-        if (row.isMatchPainting !== (row.CRESP === 1 ? 1 : 0)) {
-          issues.push(`p${row.painting} b${row.block} ${tt}: isMatchPainting vs CRESP`);
-        }
-      }
-      if (row.trial !== row.painting) {
-        issues.push(`p${row.painting}: trial != painting`);
       }
     }
-    if ((tt === "warmup" || tt === "practice_warmup") && row.isMatchPainting !== 0) {
-      issues.push(`p${row.painting} ${tt}: warmup should not be match painting`);
+    if ((tt === "warmup" || tt === "practice_warmup") && row.CRESP !== "" && row.CRESP != null) {
+      issues.push(`t${row.trial} ${tt}: warmup should leave CRESP blank`);
     }
   }
   return issues;
@@ -314,12 +299,12 @@ function ok(cond, msg) {
 const order13 = [1, 3];
 const sim = makeGameLogger();
 
-// Block 1: practice 1-back, scored 1-back
+// Block 1: practice (not logged), scored 1-back
 sim.setPractice(true);
 const p1 = simulateCorridor(sim, order13[0], PRACTICE_TRIALS, "gm-v2-practice-b1", 1);
 ok(p1.respondedCount === scoredCountForN(1, PRACTICE_TRIALS), "block1 practice scored count");
-ok(countByType(sim.logger.trials, 1, "practice_warmup") === 1, "block1 practice warmup rows");
-ok(countByType(sim.logger.trials, 1, "practice") === p1.expectedScored, "block1 practice answered rows");
+ok(countByType(sim.logger.trials, 1, "practice_warmup") === 0, "block1 practice not logged");
+ok(countByType(sim.logger.trials, 1, "practice") === 0, "block1 practice answered not logged");
 
 sim.setPractice(false);
 const s1 = simulateCorridor(sim, order13[0], TOTAL_TRIALS, "gm-v2-scored-b1", 1);
@@ -335,12 +320,12 @@ const s2 = simulateCorridor(sim, order13[1], TOTAL_TRIALS, "gm-v2-scored-b2", 2)
 ok(hasCompleteBlock(sim.logger.trials, 2), "block2 session complete");
 
 const trials = sim.logger.trials;
-ok(trials.length === 180, `full session row count (got ${trials.length})`);
+ok(trials.length === 140, `full session row count (got ${trials.length})`);
 
-// No overwrite: block1 painting 5 has both practice and scored
-const p5practice = trials.filter((t) => t.block === 1 && t.painting === 5 && t.trialType === "practice");
-const p5scored = trials.filter((t) => t.block === 1 && t.painting === 5 && t.trialType === "scored");
-ok(p5practice.length === 1 && p5scored.length === 1, "practice+scored same painting coexist");
+ok(
+  trials.filter((t) => t.trialType === "practice" || t.trialType === "practice_warmup").length === 0,
+  "no practice rows in export",
+);
 
 const logicIssues = validateRowLogic(trials);
 ok(logicIssues.length === 0, `row logic: ${logicIssues.join("; ")}`);
@@ -348,45 +333,31 @@ ok(logicIssues.length === 0, `row logic: ${logicIssues.join("; ")}`);
 // Match counts per session block
 for (const [block, N] of [[1, 1], [2, 3]]) {
   const sessionRows = trials.filter((t) => t.block === block && isSessionTrialRow(t));
-  const matchLogged = sessionRows.filter((t) => t.isMatchPainting === 1).length;
+  const matchLogged = sessionRows.filter((t) => t.CRESP === 1).length;
   ok(matchLogged === MATCH_COUNT, `block ${block} session matches ${matchLogged}`);
-  const nonMatch = sessionRows.filter((t) => t.isMatchPainting === 0).length;
+  const nonMatch = sessionRows.filter((t) => t.CRESP !== 1).length;
   ok(nonMatch === NON_MATCH_PAINTING_COUNT, `block ${block} session nonmatches ${nonMatch}`);
 }
 
-// Practice match counts
-for (const [block, N] of [[1, 1], [2, 3]]) {
+// Practice is not exported
+for (const block of [1, 2]) {
   const practiceRows = trials.filter(
     (t) => t.block === block && (t.trialType === "practice" || t.trialType === "practice_warmup"),
   );
-  ok(practiceRows.length === PRACTICE_TRIALS, `block ${block} practice row count`);
-  const target = matchCountForBlock(N, PRACTICE_TRIALS);
-  const matchLogged = practiceRows.filter((t) => t.isMatchPainting === 1).length;
-  ok(matchLogged === target, `block ${block} practice matches ${matchLogged} vs ${target}`);
+  ok(practiceRows.length === 0, `block ${block} has no practice rows`);
 }
 
-const audit = auditExportData(
-  trials.map((t) => ({
-    ...t,
-    StimulusName: "",
-    StimulusUnicode: "",
-    StimulusChar: "",
-    TargetName: "",
-    TargetUnicode: "",
-    TargetChar: "",
-  })),
-  {
-    rows_total: trials.length,
-    paintingsPerBlock: TOTAL_TRIALS,
-    practicePaintingsPerBlock: PRACTICE_TRIALS,
-  },
-  { strict: true },
-);
+const audit = auditExportData(trials, {
+  rows_total: trials.length,
+  paintingsPerBlock: TOTAL_TRIALS,
+  block1_sequenceSeed: "gm-v2-scored-b1",
+  block2_sequenceSeed: "gm-v2-scored-b2",
+}, { strict: true });
 
 ok(audit.ok, `audit export: ${audit.issues.join("; ")}`);
 
 console.log(failed ? `\n${failed} check(s) failed.` : "\nAll session data checks passed.");
-console.log(`  Rows: ${trials.length} (90 per block: 20 practice + 70 scored)`);
-console.log(`  Block 1: ${countByType(trials, 1, "practice")} practice + ${countByType(trials, 1, "scored")} scored`);
-console.log(`  Block 2: ${countByType(trials, 2, "practice")} practice + ${countByType(trials, 2, "scored")} scored`);
+console.log(`  Rows: ${trials.length} (70 scored per block)`);
+console.log(`  Block 1: ${countByType(trials, 1, "scored")} scored`);
+console.log(`  Block 2: ${countByType(trials, 2, "scored")} scored`);
 process.exit(failed ? 1 : 0);

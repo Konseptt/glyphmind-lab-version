@@ -6,7 +6,19 @@ Thumbs.db
 .env.*
 .venv/
 .vscode/
+.cursor/
+
+# Local data exports (not for the repo)
 *.xlsx
 *.xls
 *.csv
 Downloads/
+downloads-auto/
+
+# Node (optional local verify tooling only; not required to run the task)
+node_modules/
+package-lock.json
+
+# Editor / agent skill folders (local only)
+.agents/
+skills-lock.json

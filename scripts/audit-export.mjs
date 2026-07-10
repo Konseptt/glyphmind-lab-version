@@ -16,11 +16,8 @@ import {
   MATCH_COUNT,
   NON_MATCH_PAINTING_COUNT,
   GLYPHS,
-  GLYPH_ID_TO_INDEX,
   genSeqBlock,
   glyphIdForIndex,
-  indexForGlyphId,
-  expectedCresp,
   scoredCountForN,
 } from "./glyphmind-core.mjs";
 
@@ -47,24 +44,20 @@ const XLSX = require(path.join(__dirname, "../lib/xlsx.full.min.js"));
 
 const REQUIRED_TRIAL_COLUMNS = [
   "block",
-  "N",
-  "sequenceSeed",
-  "isMatchPainting",
+  "nback",
   "trialType",
-  "painting",
   "trial",
-  "tc",
   "CRESP",
   "Resp",
   "ACC",
   "RT",
   "RSI",
-  "rsiAnchor",
-  "TriggerCondition",
-  "TriggerResponse",
-  "Stimulus",
-  "Target",
 ];
+
+function nbackFromRow(row) {
+  if (row.nback !== undefined && row.nback !== "") return asInt(row.nback);
+  return asInt(row.N);
+}
 
 function blank(v) {
   return v === "" || v === null || typeof v === "undefined";
@@ -112,23 +105,26 @@ function groupByBlock(trials) {
   return [...blocks.entries()].sort((a, b) => a[0] - b[0]);
 }
 
-function expectedRsiAnchor(trialType, painting, N) {
-  if (trialType === "warmup") {
-    return painting === 1 ? "none" : "prior_stimulus_onset";
-  }
-  return painting === N + 1 ? "prior_stimulus_onset" : "prior_response";
+function trialNum(row) {
+  const n = asInt(row.trial);
+  if (n != null) return n;
+  return asInt(row.painting);
 }
 
-function stimulusIndexFromRow(row) {
-  const id = asStr(row.Stimulus);
-  if (!id) return null;
-  if (!(id in GLYPH_ID_TO_INDEX)) throw new Error(`unknown Stimulus id ${id}`);
-  return GLYPH_ID_TO_INDEX[id];
+function glyphIndexFromRow(row) {
+  const ch = asStr(row.StimulusChar);
+  if (ch) {
+    const idx = GLYPHS.findIndex((g) => g.ch === ch);
+    if (idx >= 0) return idx;
+  }
+  const trig = asInt(row.TriggerCondition);
+  if (trig != null && trig >= 1) return trig - 1;
+  return null;
 }
 
 function sequenceFromRows(rows) {
-  const sorted = [...rows].sort((a, b) => asInt(a.painting) - asInt(b.painting));
-  return sorted.map((row) => stimulusIndexFromRow(row));
+  const sorted = [...rows].sort((a, b) => trialNum(a) - trialNum(b));
+  return sorted.map((row) => glyphIndexFromRow(row));
 }
 
 function auditBlock(blockNum, rows, meta, issues, options) {
@@ -139,29 +135,27 @@ function auditBlock(blockNum, rows, meta, issues, options) {
     return;
   }
 
-  const paintings = rows.map((r) => asInt(r.painting));
-  const paintingSet = new Set(paintings);
-  if (paintingSet.size !== TOTAL_TRIALS) {
-    issues.push(`${prefix}: painting numbers are not unique 1..${TOTAL_TRIALS}`);
+  const trials = rows.map((r) => trialNum(r));
+  const trialSet = new Set(trials);
+  if (trialSet.size !== TOTAL_TRIALS) {
+    issues.push(`${prefix}: trial numbers are not unique 1..${TOTAL_TRIALS}`);
   }
   for (let p = 1; p <= TOTAL_TRIALS; p++) {
-    if (!paintingSet.has(p)) issues.push(`${prefix}: missing painting ${p}`);
+    if (!trialSet.has(p)) issues.push(`${prefix}: missing trial ${p}`);
   }
 
-  const N = asInt(rows[0].N);
+  const N = nbackFromRow(rows[0]);
   if (N == null || N < 1) {
-    issues.push(`${prefix}: invalid N`);
+    issues.push(`${prefix}: invalid nback`);
     return;
   }
-  if (rows.some((r) => asInt(r.N) !== N)) {
-    issues.push(`${prefix}: inconsistent N across rows`);
+  if (rows.some((r) => nbackFromRow(r) !== N)) {
+    issues.push(`${prefix}: inconsistent nback across rows`);
   }
 
-  const seed = asStr(rows[0].sequenceSeed);
-  if (!seed) issues.push(`${prefix}: missing sequenceSeed`);
-  if (rows.some((r) => asStr(r.sequenceSeed) !== seed)) {
-    issues.push(`${prefix}: inconsistent sequenceSeed across rows`);
-  }
+  const seed =
+    asStr(meta[`block${blockNum}_sequenceSeed`]) || asStr(rows[0].sequenceSeed);
+  if (!seed) issues.push(`${prefix}: missing sequenceSeed (Meta block${blockNum}_sequenceSeed)`);
 
   const warmupRows = rows.filter((r) => asStr(r.trialType) === "warmup");
   const scoredRows = rows.filter((r) => asStr(r.trialType) === "scored");
@@ -179,14 +173,14 @@ function auditBlock(blockNum, rows, meta, issues, options) {
     );
   }
 
-  const matchLogged = rows.filter((r) => asInt(r.isMatchPainting) === 1).length;
-  const nonMatchLogged = rows.filter((r) => asInt(r.isMatchPainting) === 0).length;
+  const matchLogged = rows.filter((r) => asInt(r.CRESP) === 1).length;
+  const nonMatchLogged = rows.filter((r) => asInt(r.CRESP) !== 1).length;
   if (matchLogged !== MATCH_COUNT) {
-    issues.push(`${prefix}: expected ${MATCH_COUNT} isMatchPainting=1 rows, got ${matchLogged}`);
+    issues.push(`${prefix}: expected ${MATCH_COUNT} CRESP=1 rows, got ${matchLogged}`);
   }
   if (nonMatchLogged !== NON_MATCH_PAINTING_COUNT) {
     issues.push(
-      `${prefix}: expected ${NON_MATCH_PAINTING_COUNT} isMatchPainting=0 rows, got ${nonMatchLogged}`,
+      `${prefix}: expected ${NON_MATCH_PAINTING_COUNT} non-match rows (CRESP!=1), got ${nonMatchLogged}`,
     );
   }
 
@@ -206,114 +200,73 @@ function auditBlock(blockNum, rows, meta, issues, options) {
   let pendingScored = 0;
 
   for (const row of rows) {
-    const painting = asInt(row.painting);
-    const trial = asInt(row.trial);
+    const trial = trialNum(row);
     const trialType = asStr(row.trialType);
 
-    if (trial !== painting) {
-      issues.push(`${prefix} painting ${painting}: trial (${trial}) != painting`);
-    }
-
-    const stimIdx = stimulusIndexFromRow(row);
-    const triggerCond = asInt(row.TriggerCondition);
-    if (stimIdx != null && triggerCond !== stimIdx + 1) {
-      issues.push(
-        `${prefix} painting ${painting}: TriggerCondition ${triggerCond} != stimulus index+1 (${stimIdx + 1})`,
-      );
-    }
-
-    const anchor = asStr(row.rsiAnchor);
-    const expectedAnchor = expectedRsiAnchor(trialType, painting, N);
-    if (anchor !== expectedAnchor) {
-      issues.push(
-        `${prefix} painting ${painting}: rsiAnchor ${anchor} != expected ${expectedAnchor}`,
-      );
-    }
+    const stimIdx = glyphIndexFromRow(row);
 
     const rsi = asInt(row.RSI);
     if (rsi != null && rsi < 0) {
-      issues.push(`${prefix} painting ${painting}: negative RSI (${rsi})`);
+      issues.push(`${prefix} trial ${trial}: negative RSI (${rsi})`);
     }
 
     if (trialType === "warmup") {
-      if (asInt(row.isMatchPainting) !== 0) {
-        issues.push(`${prefix} painting ${painting}: warmup isMatchPainting must be 0`);
-      }
       if (!blank(row.CRESP) || !blank(row.Resp) || !blank(row.ACC) || !blank(row.RT)) {
-        issues.push(`${prefix} painting ${painting}: warmup must leave CRESP/Resp/ACC/RT blank`);
+        issues.push(`${prefix} trial ${trial}: warmup must leave CRESP/Resp/ACC/RT blank`);
       }
-      if (!blank(row.Target)) {
-        issues.push(`${prefix} painting ${painting}: warmup Target must be blank`);
-      }
-      const warmupIndex = asInt(row.warmupIndex);
-      if (warmupIndex !== painting) {
-        issues.push(`${prefix} painting ${painting}: warmupIndex must equal painting`);
+      if (!blank(row.isMatch)) {
+        issues.push(`${prefix} trial ${trial}: warmup must leave isMatch blank`);
       }
       continue;
     }
 
     if (trialType !== "scored") continue;
 
-    const targetId = asStr(row.Target);
-    if (!targetId) {
-      issues.push(`${prefix} painting ${painting}: scored row missing Target`);
-      continue;
-    }
-    if (!(targetId in GLYPH_ID_TO_INDEX)) {
-      issues.push(`${prefix} painting ${painting}: unknown Target id ${targetId}`);
-      continue;
-    }
-
-    const cresp = expectedCresp(asStr(row.Stimulus), targetId);
+    const targetIdx =
+      trial > N
+        ? glyphIndexFromRow(rows.find((r) => trialNum(r) === trial - N) || {})
+        : null;
+    const cresp =
+      stimIdx != null && targetIdx != null && stimIdx === targetIdx ? 1 : 2;
     const loggedCresp = asInt(row.CRESP);
-    const loggedTc = asInt(row.tc);
-    const loggedMatch = asInt(row.isMatchPainting);
 
     if (loggedCresp !== cresp) {
-      issues.push(`${prefix} painting ${painting}: CRESP ${loggedCresp} != expected ${cresp}`);
-    }
-    if (loggedTc !== cresp) {
-      issues.push(`${prefix} painting ${painting}: tc ${loggedTc} != expected ${cresp}`);
-    }
-    if (loggedMatch !== (cresp === 1 ? 1 : 0)) {
-      issues.push(`${prefix} painting ${painting}: isMatchPainting inconsistent with Stimulus/Target`);
+      issues.push(`${prefix} trial ${trial}: CRESP ${loggedCresp} != expected ${cresp}`);
     }
 
-    if (painting <= N) {
-      issues.push(`${prefix} painting ${painting}: scored row inside warmup range`);
+    const expectedIsMatch = cresp === 1 ? 1 : 0;
+    const loggedIsMatch = asInt(row.isMatch);
+    if (loggedIsMatch != null && loggedIsMatch !== expectedIsMatch) {
+      issues.push(`${prefix} trial ${trial}: isMatch ${loggedIsMatch} != expected ${expectedIsMatch}`);
     }
 
-    const nbackPainting = painting - N;
-    const nbackRow = rows.find((r) => asInt(r.painting) === nbackPainting);
-    if (nbackRow && asStr(nbackRow.Stimulus) !== targetId) {
+    if (trial <= N) {
+      issues.push(`${prefix} trial ${trial}: scored row inside warmup range`);
+    }
+
+    const nbackTrial = trial - N;
+    const nbackRow = rows.find((r) => trialNum(r) === nbackTrial);
+    if (nbackRow && glyphIndexFromRow(nbackRow) !== targetIdx) {
       issues.push(
-        `${prefix} painting ${painting}: Target ${targetId} != Stimulus at painting ${nbackPainting} (${asStr(nbackRow.Stimulus)})`,
+        `${prefix} trial ${trial}: n-back stimulus mismatch at trial ${nbackTrial}`,
       );
-    }
-
-    if (!blank(row.warmupIndex)) {
-      issues.push(`${prefix} painting ${painting}: scored row must leave warmupIndex blank`);
     }
 
     if (hasResp(row.Resp)) {
       const resp = asInt(row.Resp);
       const acc = asInt(row.ACC);
       const rt = asInt(row.RT);
-      const trigResp = asInt(row.TriggerResponse);
 
       if (acc !== (resp === cresp ? 1 : 0)) {
-        issues.push(`${prefix} painting ${painting}: ACC ${acc} inconsistent with Resp/CRESP`);
+        issues.push(`${prefix} trial ${trial}: ACC ${acc} inconsistent with Resp/CRESP`);
       }
       if (rt == null || rt <= 0) {
-        issues.push(`${prefix} painting ${painting}: answered scored row needs RT > 0`);
-      }
-      if (trigResp !== (resp === 1 ? 11 : 12)) {
-        issues.push(`${prefix} painting ${painting}: TriggerResponse ${trigResp} inconsistent with Resp`);
+        issues.push(`${prefix} trial ${trial}: answered scored row needs RT > 0`);
       }
     } else {
       pendingScored++;
       if (options.strict) {
-        issues.push(`${prefix} painting ${painting}: scored row missing Resp (--strict)`);
+        issues.push(`${prefix} trial ${trial}: scored row missing Resp (--strict)`);
       }
     }
   }
@@ -327,7 +280,7 @@ function auditBlock(blockNum, rows, meta, issues, options) {
         const loggedId = glyphIdForIndex(loggedSeq[i]);
         if (expectedId !== loggedId) {
           issues.push(
-            `${prefix}: sequenceSeed replay mismatch at painting ${i + 1} (${loggedId} vs ${expectedId})`,
+            `${prefix}: sequenceSeed replay mismatch at trial ${i + 1} (${loggedId} vs ${expectedId})`,
           );
           break;
         }
@@ -348,13 +301,13 @@ function auditPracticeBlock(blockNum, rows, issues, options) {
     return;
   }
 
-  const N = asInt(rows[0].N);
+  const N = nbackFromRow(rows[0]);
   if (N == null || N < 1) {
-    issues.push(`${prefix}: invalid N`);
+    issues.push(`${prefix}: invalid nback`);
     return;
   }
-  if (rows.some((r) => asInt(r.N) !== N)) {
-    issues.push(`${prefix}: inconsistent N across rows`);
+  if (rows.some((r) => nbackFromRow(r) !== N)) {
+    issues.push(`${prefix}: inconsistent nback across rows`);
   }
 
   const warmupRows = rows.filter((r) => asStr(r.trialType) === "practice_warmup");
@@ -398,7 +351,7 @@ function auditPracticeBlock(blockNum, rows, issues, options) {
 
   for (const row of scoredRows) {
     if (hasResp(row.Resp) && asInt(row.ACC) !== (asInt(row.CRESP) === asInt(row.Resp) ? 1 : 0)) {
-      issues.push(`${prefix} painting ${row.painting}: ACC does not match CRESP/Resp`);
+      issues.push(`${prefix} trial ${trialNum(row)}: ACC does not match CRESP/Resp`);
     }
   }
 
@@ -418,9 +371,13 @@ export function auditExportData(trials, meta = {}, options = {}) {
     return { ok: false, issues, blocks: [] };
   }
 
-  const missingCols = REQUIRED_TRIAL_COLUMNS.filter(
-    (col) => !Object.prototype.hasOwnProperty.call(trials[0], col),
-  );
+  const missingCols = REQUIRED_TRIAL_COLUMNS.filter((col) => {
+    if (col === "nback") {
+      return !Object.prototype.hasOwnProperty.call(trials[0], "nback") &&
+        !Object.prototype.hasOwnProperty.call(trials[0], "N");
+    }
+    return !Object.prototype.hasOwnProperty.call(trials[0], col);
+  });
   if (missingCols.length) {
     issues.push(`Trials sheet missing columns: ${missingCols.join(", ")}`);
   }
@@ -439,11 +396,11 @@ export function auditExportData(trials, meta = {}, options = {}) {
       const tt = asStr(r.trialType);
       return tt === "practice" || tt === "practice_warmup";
     });
+    if (practiceRows.length) {
+      issues.push(`block ${blockNum}: unexpected practice rows in export (${practiceRows.length})`);
+    }
     if (sessionRows.length) {
       blockSummaries.push(auditBlock(blockNum, sessionRows, meta, issues, options));
-    }
-    if (practiceRows.length) {
-      blockSummaries.push(auditPracticeBlock(blockNum, practiceRows, issues, options));
     }
   }
 

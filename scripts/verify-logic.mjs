@@ -17,46 +17,39 @@ import {
   scoredCountForN,
   scoredNonMatchCountForN,
   glyphIdForIndex,
+  GLYPHS,
   MAX_CONSECUTIVE_SAME_GLYPH,
 } from "./glyphmind-core.mjs";
 import { auditExportData } from "./audit-export.mjs";
+
+function glyphLogFields(gi) {
+  const g = GLYPHS[gi];
+  return { StimulusName: g.name, StimulusChar: g.ch };
+}
 
 function makeRecorder() {
   return {
     trials: [],
     block: 1,
     recordWarmup(o) {
-      const painting = o.trialIdx + 1;
+      const trialNum = o.trialIdx + 1;
       this.trials.push({
         trialType: "warmup",
         block: this.block,
         N: o.n,
-        painting,
-        trial: painting,
-        warmupIndex: painting,
+        trial: trialNum,
         sequenceSeed: o.sequenceSeed,
-        isMatchPainting: 0,
-        tc: "",
         CRESP: "",
         Resp: "",
         ACC: "",
+        isMatch: "",
         RT: "",
         RSI: 0,
-        rsiAnchor: o.trialIdx === 0 ? "none" : "prior_stimulus_onset",
-        TriggerCondition: o.glyphIdx + 1,
-        TriggerResponse: "",
-        Stimulus: glyphIdForIndex(o.glyphIdx),
-        StimulusName: "",
-        StimulusUnicode: "",
-        StimulusChar: "",
-        Target: "",
-        TargetName: "",
-        TargetUnicode: "",
-        TargetChar: "",
+        ...glyphLogFields(o.glyphIdx),
       });
     },
     record(o) {
-      const painting = o.trialIdx + 1;
+      const trialNum = o.trialIdx + 1;
       const match = o.glyphIdx === o.nbackGlyphIdx;
       const cresp = match ? 1 : 2;
       const hasResponse = o.resp === 1 || o.resp === 2;
@@ -64,31 +57,18 @@ function makeRecorder() {
         trialType: "scored",
         block: this.block,
         N: o.n,
-        painting,
-        trial: painting,
-        warmupIndex: "",
+        trial: trialNum,
         sequenceSeed: o.sequenceSeed,
-        isMatchPainting: match ? 1 : 0,
-        tc: cresp,
         CRESP: cresp,
         Resp: hasResponse ? o.resp : "",
         ACC: hasResponse ? (o.resp === cresp ? 1 : 0) : "",
+        isMatch: match ? 1 : 0,
         RT: hasResponse ? Math.round(o.rt || 0) : "",
         RSI: 100,
-        rsiAnchor: o.trialIdx === o.n ? "prior_stimulus_onset" : "prior_response",
-        TriggerCondition: o.glyphIdx + 1,
-        TriggerResponse: hasResponse ? (o.resp === 1 ? 11 : 12) : "",
-        Stimulus: glyphIdForIndex(o.glyphIdx),
-        StimulusName: "",
-        StimulusUnicode: "",
-        StimulusChar: "",
-        Target: glyphIdForIndex(o.nbackGlyphIdx),
-        TargetName: "",
-        TargetUnicode: "",
-        TargetChar: "",
+        ...glyphLogFields(o.glyphIdx),
       };
       const existingIdx = this.trials.findIndex((t) => {
-        return t.block === this.block && t.trialType === "scored" && t.painting === painting;
+        return t.block === this.block && t.trialType === "scored" && t.trial === trialNum;
       });
       if (existingIdx >= 0) this.trials[existingIdx] = row;
       else this.trials.push(row);
@@ -112,8 +92,8 @@ function hasCompleteBlock(recorder, block) {
   if (rows.length !== TOTAL_TRIALS) return false;
   const seen = new Set();
   for (const row of rows) {
-    if (seen.has(row.painting)) return false;
-    seen.add(row.painting);
+    if (seen.has(row.trial)) return false;
+    seen.add(row.trial);
     if (row.trialType === "scored" && row.Resp !== 1 && row.Resp !== 2) return false;
   }
   return seen.size === TOTAL_TRIALS;
@@ -160,14 +140,14 @@ function simulateBlock(recorder, N, seed) {
   }
 
   const blockRows = recorder.trials.filter((t) => t.block === recorder.block);
-  ok(blockRows.length === TOTAL_TRIALS, `N=${N} one row per painting after updates`);
+  ok(blockRows.length === TOTAL_TRIALS, `N=${N} one row per trial after updates`);
   ok(recorder.scoredTrials(recorder.block).length === scoredCountForN(N), `N=${N} scored row count`);
   ok(recorder.respondedScoredTrials(recorder.block).length === scoredCountForN(N), `N=${N} answered row count`);
   ok(hasCompleteBlock(recorder, recorder.block), `N=${N} complete block recognized`);
   ok(recorder.accuracy(recorder.block) === 100, `N=${N} accuracy ignores pending and counts answered`);
-  ok(blockRows.filter((t) => t.isMatchPainting === 1).length === MATCH_COUNT, `N=${N} logged matches`);
+  ok(blockRows.filter((t) => t.CRESP === 1).length === MATCH_COUNT, `N=${N} logged matches`);
   ok(
-    blockRows.filter((t) => t.isMatchPainting === 0).length === NON_MATCH_PAINTING_COUNT,
+    blockRows.filter((t) => t.CRESP !== 1).length === NON_MATCH_PAINTING_COUNT,
     `N=${N} logged nonmatches`,
   );
 }

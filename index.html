@@ -495,6 +495,7 @@
         gap: 8px;
       }
       #reload-warn-restore,
+      #reload-warn-download,
       #reload-warn-dismiss {
         flex-shrink: 0;
         font-family: "Cinzel", serif;
@@ -579,9 +580,9 @@
       }
       #tut-bubble {
         flex: 1;
-        min-width: 280px;
-        max-width: 520px;
-        min-height: clamp(260px, 40vh, 320px);
+        min-width: 300px;
+        max-width: 540px;
+        min-height: clamp(300px, 44vh, 380px);
         display: flex;
         flex-direction: column;
       }
@@ -602,14 +603,14 @@
         margin-bottom: 6px;
       }
       .tut-txt {
-        font-size: clamp(13px, 1.65vw, 18px);
-        line-height: 1.55;
+        font-size: clamp(14px, 1.75vw, 19px);
+        line-height: 1.6;
         color: rgba(252, 222, 160, 0.98);
         letter-spacing: 0.04em;
         border-left: 2px solid rgba(160, 108, 28, 0.36);
         padding-left: 18px;
         flex: 0 1 auto;
-        max-height: clamp(220px, 38vh, 320px);
+        max-height: clamp(260px, 44vh, 400px);
         overflow-y: auto;
       }
       .tut-txt p {
@@ -688,6 +689,14 @@
         margin: 14px 0 16px;
         flex-wrap: wrap;
       }
+      .tut-quiz-seq {
+        display: flex;
+        align-items: stretch;
+        justify-content: center;
+        gap: clamp(6px, 1.2vw, 10px);
+        margin: 12px 0 14px;
+        flex-wrap: wrap;
+      }
       .tut-quiz-glyph {
         display: flex;
         flex-direction: column;
@@ -697,6 +706,31 @@
         padding: 10px 12px;
         border: 1px solid rgba(160, 108, 28, 0.45);
         background: rgba(8, 5, 2, 0.75);
+      }
+      .tut-quiz-seq .tut-quiz-glyph {
+        min-width: clamp(56px, 14vw, 72px);
+        padding: 8px 6px;
+      }
+      .tut-quiz-seq .tut-quiz-ch {
+        font-size: clamp(26px, 5.5vw, 38px);
+      }
+      .tut-quiz-glyph.tut-quiz-ref {
+        border-color: rgba(200, 155, 70, 0.75);
+      }
+      .tut-quiz-glyph.tut-quiz-now {
+        border-color: rgba(245, 192, 82, 0.95);
+        background: rgba(18, 12, 4, 0.88);
+        box-shadow: 0 0 14px rgba(245, 142, 26, 0.22);
+      }
+      .tut-quiz-prompt {
+        font-size: clamp(12px, 1.35vw, 15px);
+        line-height: 1.55;
+        color: rgba(238, 198, 115, 0.96);
+        text-align: center;
+        margin: 0 0 12px;
+      }
+      .tut-quiz-prompt b {
+        color: rgba(245, 192, 82, 1);
       }
       .tut-quiz-lbl {
         font-size: clamp(8px, 1vw, 10px);
@@ -930,7 +964,7 @@
       #cr.show {
         display: flex;
       }
-      /* After block 1: one card — Block 1 stats + next practice rules + continue. */
+      /* After block 1: one card with block 1 stats, next practice rules, continue. */
       #cr.cr-after-block1 #cr-particles,
       #cr.cr-after-block1 #cr-menu,
       #cr.cr-after-block1 #cr-export,
@@ -1170,11 +1204,18 @@
         display: flex;
       }
       #bi .bi-panel {
-        width: min(440px, 92vw);
+        width: min(580px, 94vw);
         max-height: min(88vh, 720px);
         display: flex;
         flex-direction: column;
         text-align: center;
+        padding: clamp(20px, 3vh, 28px) clamp(18px, 3vw, 24px);
+        border: 1px solid rgba(160, 108, 28, 0.3);
+        background: rgba(8, 5, 2, 0.78);
+        box-shadow:
+          0 20px 56px rgba(0, 0, 0, 0.42),
+          inset 0 0 36px rgba(245, 142, 26, 0.04);
+        box-sizing: border-box;
       }
       #bi .bi-title {
         font-family: "Cinzel Decorative", serif;
@@ -1205,11 +1246,12 @@
       }
       #bi .bi-body .bi-how-h {
         font-family: "Cinzel", serif;
-        font-size: clamp(10px, 1.2vw, 13px);
+        font-size: clamp(10px, 1.15vw, 12px);
         font-weight: 600;
-        color: rgba(252, 228, 170, 0.98);
-        letter-spacing: 0.06em;
-        margin: 14px 0 8px;
+        color: rgba(245, 192, 82, 0.96);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        margin: 16px 0 10px;
       }
       #bi .bi-body .bi-how-h:first-child {
         margin-top: 0;
@@ -1227,9 +1269,30 @@
       #bi .bi-body .bi-how-list li:last-child {
         margin-bottom: 0;
       }
+      #bi .bi-body .pointer-opts {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        margin: 10px 0 4px;
+        justify-content: stretch;
+      }
+      #bi .bi-body .ptr-opt {
+        min-width: 0;
+        width: 100%;
+        box-sizing: border-box;
+      }
       #bi-go {
         flex-shrink: 0;
         width: 100%;
+        background: rgba(12, 8, 2, 0.92);
+        border: 2px solid rgba(245, 192, 82, 0.78);
+        color: rgba(245, 220, 140, 1);
+        font-family: "Cinzel Decorative", serif;
+        font-size: clamp(16px, 2vw, 21px);
+        letter-spacing: 0.16em;
+        padding: 16px 18px;
+        cursor: pointer;
+        text-shadow: 0 0 18px rgba(245, 142, 26, 0.7);
       }
       #cr-actions {
         display: contents;
@@ -1277,6 +1340,35 @@
         color: rgba(220, 180, 100, 0.92);
         letter-spacing: 0.18em;
         margin-top: 2px;
+      }
+      .cr-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px 12px;
+        width: 100%;
+        margin: 0;
+      }
+      .cr-stats-grid .cr-stat {
+        min-width: 0;
+        padding: 10px 8px;
+        border: 1px solid rgba(160, 108, 28, 0.22);
+        background: rgba(6, 4, 1, 0.45);
+        box-sizing: border-box;
+      }
+      .cr-stats-grid .cr-stat-val {
+        font-size: clamp(16px, 2.2vw, 24px);
+      }
+      .cr-stats-grid .cr-stat-lbl {
+        font-size: clamp(7px, 0.85vw, 9px);
+        letter-spacing: 0.12em;
+      }
+      .ag-results-note {
+        margin: 8px 0 0;
+        font-size: clamp(11px, 1.25vw, 13px);
+        color: rgba(200, 165, 90, 0.92);
+        letter-spacing: 0.05em;
+        text-align: center;
+        line-height: 1.5;
       }
       #cr-particles {
         position: absolute;
@@ -1351,14 +1443,14 @@
         width: 100%;
         max-width: 100%;
       }
-      #ps-role {
+      #ps-role,
+      #ag-role {
         font-family: "Cinzel", serif;
-        font-size: clamp(11px, 1.35vw, 14px);
-        letter-spacing: 0.14em;
+        font-size: clamp(10px, 1.15vw, 12px);
+        letter-spacing: 0.28em;
         color: rgba(240, 200, 120, 0.96);
-        margin-bottom: 10px;
+        margin-bottom: 12px;
         text-align: center;
-        max-width: 100%;
         text-shadow: 0 0 14px rgba(245, 142, 26, 0.18);
       }
       #tt-glyphs {
@@ -1422,25 +1514,33 @@
         color: rgba(245, 192, 82, 1);
         font-weight: 600;
       }
-      /* Participant start screen: readable type scale inside narrow panel */
+      /* Participant start screen: larger type for corridor briefing */
       #ps .front-panel {
-        width: min(420px, 92vw);
-        max-width: 420px;
+        width: min(580px, 94vw);
+        max-width: 580px;
+        align-items: stretch;
+        padding: clamp(24px, 4vh, 36px) clamp(20px, 3vw, 28px) clamp(28px, 4vh, 40px);
+        border: 1px solid rgba(160, 108, 28, 0.3);
+        background: rgba(8, 5, 2, 0.78);
+        box-shadow:
+          0 20px 56px rgba(0, 0, 0, 0.42),
+          inset 0 0 36px rgba(245, 142, 26, 0.04);
       }
       #ps .front-panel .title-main {
-        font-size: clamp(32px, 6.5vw, 56px);
-        margin-bottom: 6px;
+        font-size: clamp(34px, 7vw, 58px);
+        margin-bottom: 8px;
       }
       #ps .subtitle-main {
-        font-size: clamp(11px, 1.35vw, 14px);
-        margin-bottom: 14px;
+        font-size: clamp(12px, 1.5vw, 15px);
+        margin-bottom: 16px;
+        line-height: 1.55;
       }
       #ps-lore {
-        margin-bottom: 16px;
+        margin-bottom: 18px;
       }
       #ps-lore .tt-lore {
-        font-size: clamp(12px, 1.45vw, 16px);
-        line-height: 1.65;
+        font-size: clamp(13px, 1.55vw, 17px);
+        line-height: 1.7;
       }
       #ps-glyphs,
       #ag-glyphs {
@@ -1451,54 +1551,262 @@
         opacity: 0.14;
       }
       #ag .front-panel {
-        width: min(420px, 92vw);
-        max-width: 420px;
+        width: min(580px, 94vw);
+        max-width: 580px;
+        align-items: stretch;
+        padding: clamp(24px, 4vh, 36px) clamp(20px, 3vw, 28px) clamp(28px, 4vh, 40px);
+        border: 1px solid rgba(160, 108, 28, 0.3);
+        background: rgba(8, 5, 2, 0.78);
+        box-shadow:
+          0 20px 56px rgba(0, 0, 0, 0.42),
+          inset 0 0 36px rgba(245, 142, 26, 0.04);
       }
       #ag-role {
-        font-family: "Cinzel", serif;
-        font-size: clamp(10px, 1.2vw, 12px);
-        letter-spacing: 0.28em;
-        color: rgba(46, 220, 90, 0.92);
-        margin-bottom: 10px;
-        text-align: center;
+        margin-bottom: 12px;
       }
       #ag .title-main {
-        font-size: clamp(26px, 5.5vw, 44px);
-        margin-bottom: 8px;
+        font-size: clamp(30px, 5vw, 46px);
+        margin-bottom: 18px;
         text-align: center;
-        line-height: 1.15;
+        line-height: 1.12;
+      }
+      #ag .ag-title-sub {
+        display: block;
+        margin-top: 8px;
+        font-family: "Cinzel", serif;
+        font-size: clamp(11px, 1.35vw, 14px);
+        font-weight: 400;
+        letter-spacing: 0.24em;
+        color: rgba(235, 195, 115, 0.9);
+        text-shadow: none;
       }
       #ag-body {
         font-family: "Cinzel", serif;
-        font-size: clamp(12px, 1.45vw, 16px);
         line-height: 1.65;
         color: rgba(235, 195, 115, 0.94);
-        text-align: center;
-        margin-bottom: 18px;
+        text-align: left;
+        margin-bottom: 22px;
         letter-spacing: 0.04em;
       }
       #ag-body b {
         color: rgba(245, 192, 82, 1);
         font-weight: 600;
       }
+      #ag-body .ag-brief {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      #ag-body .ag-lead {
+        margin: 0 auto;
+        max-width: 34em;
+        font-size: clamp(13px, 1.5vw, 16px);
+        line-height: 1.65;
+        color: rgba(238, 198, 115, 0.96);
+        text-align: center;
+        padding: 0 4px;
+      }
+      #ag-body .ag-section {
+        border: 1px solid rgba(160, 108, 28, 0.36);
+        background: rgba(12, 8, 2, 0.62);
+        padding: 16px 18px;
+      }
+      #ag-body .ag-section-h {
+        font-family: "Cinzel", serif;
+        font-size: clamp(10px, 1.15vw, 12px);
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: rgba(245, 192, 82, 0.96);
+        margin-bottom: 10px;
+      }
+      #ag-body .ag-rules p {
+        margin: 0 0 0.55em;
+        font-size: clamp(12px, 1.35vw, 15px);
+        line-height: 1.65;
+        color: rgba(238, 198, 115, 0.96);
+      }
+      #ag-body .ag-rules p:last-child {
+        margin-bottom: 0;
+      }
+      #ag-body .pointer-opts {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        margin: 0;
+        justify-content: stretch;
+      }
+      #ag-body .ptr-opt {
+        min-width: 0;
+        width: 100%;
+        padding: 14px 10px 12px;
+        box-sizing: border-box;
+      }
+      #ag-body .ptr-icon {
+        width: 34px;
+        height: 48px;
+      }
+      #ag-body .ptr-name {
+        font-size: clamp(9px, 1vw, 11px);
+      }
+      #ag-body .ptr-action {
+        font-size: clamp(13px, 1.45vw, 16px);
+      }
+      #ag-actions {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      #ag-secondary {
+        background: transparent;
+        border: 1px solid rgba(120, 84, 22, 0.42);
+        color: rgba(225, 185, 105, 0.94);
+        font-family: "Cinzel", serif;
+        font-size: clamp(11px, 1.25vw, 13px);
+        letter-spacing: 0.12em;
+        padding: 12px 18px;
+        width: 100%;
+        cursor: pointer;
+        touch-action: manipulation;
+      }
+      #ag-secondary:hover,
+      #ag-secondary:focus {
+        color: rgba(245, 220, 140, 1);
+        border-color: rgba(200, 150, 60, 0.65);
+        outline: none;
+      }
+      #ag-particles {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      #ps-begin,
       #ag-begin {
         background: rgba(12, 8, 2, 0.92);
-        border: 2px solid rgba(46, 220, 90, 0.65);
-        color: rgba(180, 255, 160, 1);
+        border: 2px solid rgba(245, 192, 82, 0.78);
+        color: rgba(245, 220, 140, 1);
         font-family: "Cinzel Decorative", serif;
-        font-size: clamp(15px, 2vw, 20px);
+        font-size: clamp(16px, 2vw, 21px);
         letter-spacing: 0.16em;
         padding: 16px 18px;
         width: 100%;
         cursor: pointer;
-        text-shadow: 0 0 16px rgba(46, 200, 90, 0.45);
+        text-shadow: 0 0 18px rgba(245, 142, 26, 0.7);
+        box-shadow:
+          0 0 32px rgba(196, 90, 4, 0.25),
+          inset 0 0 22px rgba(245, 142, 26, 0.08);
+        transition:
+          background 0.16s,
+          border-color 0.16s,
+          box-shadow 0.16s,
+          transform 0.16s;
         touch-action: manipulation;
       }
+      #ps-begin {
+        animation: gateBtnPulse 2.6s ease-in-out infinite;
+      }
+      #ps-begin:hover,
+      #ps-begin:focus,
       #ag-begin:hover,
       #ag-begin:focus {
-        background: rgba(16, 36, 12, 0.96);
-        border-color: rgba(120, 255, 140, 0.9);
+        background: rgba(34, 22, 6, 0.96);
+        border-color: rgba(255, 220, 130, 0.95);
+        box-shadow:
+          0 0 44px rgba(245, 142, 26, 0.45),
+          inset 0 0 30px rgba(245, 142, 26, 0.16);
         outline: none;
+      }
+      #ps-begin:active,
+      #ag-begin:active {
+        transform: scale(0.98);
+      }
+      @keyframes gateBtnPulse {
+        0%,
+        100% {
+          box-shadow:
+            0 0 28px rgba(196, 90, 4, 0.22),
+            inset 0 0 22px rgba(245, 142, 26, 0.08);
+        }
+        50% {
+          box-shadow:
+            0 0 44px rgba(245, 142, 26, 0.4),
+            inset 0 0 30px rgba(245, 142, 26, 0.14);
+        }
+      }
+      #ag-body .ag-stats {
+        margin-bottom: 4px;
+      }
+      #ag-body .ag-stats .cr-stats-grid {
+        justify-items: stretch;
+      }
+      /* Session complete: compact single-screen summary */
+      #ag.ag-session-complete {
+        padding: 12px 0;
+      }
+      #ag.ag-session-complete .front-panel {
+        width: min(520px, 94vw);
+        max-width: 520px;
+        padding: clamp(14px, 2.5vh, 22px) clamp(14px, 2.5vw, 20px) clamp(16px, 2.5vh, 24px);
+      }
+      #ag.ag-session-complete .title-main {
+        font-size: clamp(22px, 3.8vw, 34px);
+        margin-bottom: 10px;
+      }
+      #ag.ag-session-complete #ag-body {
+        margin-bottom: 12px;
+      }
+      #ag.ag-session-complete .ag-brief.ag-session-summary {
+        gap: 8px;
+      }
+      #ag.ag-session-complete .ag-session-blocks {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+      #ag.ag-session-complete .ag-section {
+        padding: 10px 12px;
+      }
+      #ag.ag-session-complete .ag-section-h {
+        margin-bottom: 6px;
+        font-size: clamp(8px, 0.95vw, 10px);
+        letter-spacing: 0.12em;
+      }
+      #ag.ag-session-complete .cr-stats-grid {
+        gap: 6px;
+        margin-bottom: 0;
+      }
+      #ag.ag-session-complete .cr-stats-grid .cr-stat-val {
+        font-size: clamp(13px, 1.8vw, 18px);
+      }
+      #ag.ag-session-complete .cr-stats-grid .cr-stat-lbl {
+        font-size: clamp(6px, 0.7vw, 8px);
+      }
+      #ag.ag-session-complete .ag-results-note {
+        margin: 4px 0 0;
+        font-size: clamp(8px, 0.95vw, 10px);
+      }
+      #ag.ag-session-complete .ag-session-overall .ag-results-note {
+        margin-top: 6px;
+      }
+      #ag.ag-session-complete .ag-lead {
+        font-size: clamp(10px, 1.15vw, 12px);
+        line-height: 1.45;
+        margin: 0;
+      }
+      #ag.ag-session-complete #ag-actions {
+        gap: 8px;
+      }
+      #ag.ag-session-complete #ag-begin,
+      #ag.ag-session-complete #ag-secondary {
+        padding: 10px 14px;
+        font-size: clamp(10px, 1.1vw, 12px);
+      }
+      @media (max-width: 460px) {
+        #ag.ag-session-complete .ag-session-blocks {
+          grid-template-columns: 1fr;
+        }
       }
       #badge-container {
         display: grid;
@@ -1545,7 +1853,7 @@
       }
       #ps-hint {
         font-family: "Cinzel", serif;
-        font-size: clamp(12px, 1.4vw, 15px);
+        font-size: clamp(13px, 1.55vw, 16px);
         letter-spacing: 0.06em;
         max-width: 100%;
         color: rgba(235, 195, 115, 0.94);
@@ -1553,53 +1861,6 @@
         text-align: center;
         position: relative;
         z-index: 1;
-      }
-      #ps-begin {
-        background: rgba(12, 8, 2, 0.92);
-        border: 2px solid rgba(245, 192, 82, 0.78);
-        color: rgba(245, 220, 140, 1);
-        font-family: "Cinzel Decorative", serif;
-        font-size: clamp(17px, 2.2vw, 22px);
-        letter-spacing: 0.18em;
-        padding: 16px 18px;
-        width: 100%;
-        cursor: pointer;
-        text-shadow: 0 0 18px rgba(245, 142, 26, 0.7);
-        box-shadow:
-          0 0 32px rgba(196, 90, 4, 0.25),
-          inset 0 0 22px rgba(245, 142, 26, 0.08);
-        transition:
-          background 0.16s,
-          border-color 0.16s,
-          box-shadow 0.16s,
-          transform 0.16s;
-        touch-action: manipulation;
-        animation: psBeginPulse 2.6s ease-in-out infinite;
-      }
-      #ps-begin:hover,
-      #ps-begin:focus {
-        background: rgba(34, 22, 6, 0.96);
-        border-color: rgba(255, 220, 130, 0.95);
-        box-shadow:
-          0 0 44px rgba(245, 142, 26, 0.45),
-          inset 0 0 30px rgba(245, 142, 26, 0.16);
-        outline: none;
-      }
-      #ps-begin:active {
-        transform: scale(0.98);
-      }
-      @keyframes psBeginPulse {
-        0%,
-        100% {
-          box-shadow:
-            0 0 28px rgba(196, 90, 4, 0.22),
-            inset 0 0 22px rgba(245, 142, 26, 0.08);
-        }
-        50% {
-          box-shadow:
-            0 0 44px rgba(245, 142, 26, 0.4),
-            inset 0 0 30px rgba(245, 142, 26, 0.14);
-        }
       }
       #ps-back {
         margin-top: 18px;
@@ -1849,16 +2110,22 @@
       #cs-khenu {
         position: absolute;
         inset: 0;
-        display: none;
+        display: flex;
         align-items: center;
         justify-content: center;
         z-index: 5;
         opacity: 0;
-        transition: opacity 1.2s ease;
+        visibility: hidden;
+        pointer-events: none;
+        transition:
+          opacity 1.2s ease,
+          visibility 0s linear 1.2s;
       }
       #cs-khenu.on {
-        display: flex;
         opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transition: opacity 1.2s ease, visibility 0s;
       }
       #cs-khenu-inner {
         display: flex;
@@ -1926,6 +2193,9 @@
       #cs-text .highlight {
         color: rgba(255, 160, 40, 1);
         text-shadow: 0 0 12px rgba(255, 120, 20, 0.4);
+      }
+      #cs-text .term-cursor {
+        background: rgba(245, 192, 82, 0.7);
       }
       #cs-continue {
         font-family: "Cinzel", serif;
@@ -2075,6 +2345,14 @@
       #prompt:not(:empty) {
         opacity: 1;
       }
+      .ag-khenu-line {
+        margin: 0 0 12px;
+        font-size: clamp(11px, 1.3vw, 14px);
+        color: rgba(220, 185, 120, 0.94);
+        letter-spacing: 0.06em;
+        line-height: 1.55;
+        text-align: center;
+      }
       #lockhint {
         position: fixed;
         inset: 0;
@@ -2191,7 +2469,8 @@
     <div id="reload-warn" role="alert" aria-live="polite">
       <span id="reload-warn-txt"></span>
       <div id="reload-warn-actions">
-        <button type="button" id="reload-warn-restore">RESTORE DATA</button>
+        <button type="button" class="btn-download" id="reload-warn-download" hidden>DOWNLOAD DATA</button>
+        <button type="button" id="reload-warn-restore" hidden>RESTORE DATA</button>
         <button type="button" id="reload-warn-dismiss">DISMISS</button>
       </div>
     </div>
@@ -2355,9 +2634,8 @@
           id="tt-pid"
           class="pidinput"
           type="text"
-          inputmode="numeric"
-          maxlength="2"
-          placeholder="01"
+          maxlength="32"
+          placeholder="e.g. PT-06"
           autocomplete="off"
           aria-required="true"
         />
@@ -2427,7 +2705,7 @@
       <div class="front-panel">
       <div id="ps-role">FOR THE WANDERER</div>
       <div class="title-main">GLYPHMIND</div>
-      <div class="subtitle-main">DLPFC N-BACK<br />COGNITIVE TRAINING</div>
+      <div class="subtitle-main">MEMORY HALLS<br />TRIAL OF RECALL</div>
       <div id="ps-lore">
         <span class="tt-lore">
           WALK TO EACH PAINTING.<br />
@@ -2457,18 +2735,17 @@
       </div>
     </div>
 
-    <!-- Shown after the practice tutorial corridor; before scored Block 1. -->
+    <!-- Transition gate: practice or block briefing before entering the corridor. -->
     <div id="ag">
       <div id="ag-glyphs"></div>
+      <div id="ag-particles"></div>
       <div class="front-panel">
-        <div id="ag-role">GUIDED HALL COMPLETE</div>
+        <div id="ag-role">GETTING STARTED</div>
         <div class="title-main" id="ag-title">PRACTICE<br />20 PAINTINGS</div>
-        <div id="ag-body">
-          Next is a <b>20-painting practice block</b> at your first N-back level. Same task as the scored game; every trial is saved.<br /><br />
-          After that, Block 1 begins (<b>70 paintings</b>, recorded).
-        </div>
-        <div style="width: 100%">
+        <div id="ag-body"></div>
+        <div id="ag-actions">
           <button id="ag-begin" type="button">BEGIN PRACTICE</button>
+          <button id="ag-secondary" type="button" hidden>TITLE SCREEN</button>
         </div>
       </div>
     </div>
@@ -2515,6 +2792,7 @@
         if (N === 3) return "the painting <b>3 steps back</b>";
         return `the painting <b>${N} steps back</b>`;
       }
+
       const MATCH_COUNT = 30;
       const NON_MATCH_PAINTING_COUNT = TOTAL_TRIALS - MATCH_COUNT;
 
@@ -2700,7 +2978,86 @@
         pass: () => {
           beep(260, "sine", 0.12, 0.08);
         },
+        chime: () => {
+          beep(660, "sine", 0.14, 0.06);
+          beep(880, "sine", 0.12, 0.04, 0.05);
+        },
+        footstep: () => {
+          beep(62 + Math.random() * 18, "triangle", 0.06, 0.07);
+          beep(38 + Math.random() * 12, "sine", 0.08, 0.05, 0.02);
+        },
+        streakPing: () => {
+          [784, 988].forEach((f, i) => beep(f, "sine", 0.22, 0.1, i * 0.05));
+        },
+        roundComplete: () => {
+          [140, 95, 62].forEach((f, i) => beep(f, "sine", 0.55, 0.14 - i * 0.02, i * 0.12));
+          beep(220, "triangle", 0.35, 0.08, 0.38);
+        },
       };
+
+      let corridorAmbient = null;
+      let footstepTimer = 0;
+
+      function corridorAudioActive() {
+        return audioCtx && !accessibility.mute && game.phase === "corridor";
+      }
+
+      function startCorridorAmbient() {
+        if (!audioCtx || accessibility.mute || corridorAmbient) return;
+        const bufferSize = audioCtx.sampleRate * 2;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        let last = 0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          last = last * 0.985 + white * 0.015;
+          data[i] = last * 0.42;
+        }
+        const source = audioCtx.createBufferSource();
+        source.buffer = buffer;
+        source.loop = true;
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = "lowpass";
+        filter.frequency.value = 160;
+        const gain = audioCtx.createGain();
+        gain.gain.value = 0.035;
+        source.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        source.start();
+        corridorAmbient = { source, filter, gain };
+      }
+
+      function stopCorridorAmbient() {
+        if (!corridorAmbient) return;
+        const { source, filter, gain } = corridorAmbient;
+        corridorAmbient = null;
+        try {
+          source.stop();
+        } catch (e) {}
+        try {
+          source.disconnect();
+        } catch (e) {}
+        try {
+          filter.disconnect();
+        } catch (e) {}
+        try {
+          gain.disconnect();
+        } catch (e) {}
+      }
+
+      function tickFootsteps(dt, moving, sprint) {
+        if (!moving || !corridorAudioActive()) {
+          footstepTimer = 0;
+          return;
+        }
+        const interval = sprint ? 0.3 : 0.46;
+        footstepTimer += dt;
+        if (footstepTimer >= interval) {
+          footstepTimer -= interval;
+          sounds.footstep();
+        }
+      }
 
       /**
        * --- VISUAL ENGINE ---
@@ -3394,25 +3751,31 @@
           cy = Math.cos(euler.y);
         const sprint = KEYS["ShiftLeft"] || KEYS["ShiftRight"];
         const spd = sprint ? 8.0 : 4.2;
+        let moved = false;
         if (KEYS["KeyW"] || KEYS["ArrowUp"]) {
+          moved = true;
           cam.position.x -= sy * spd * dt;
           cam.position.z -= cy * spd * dt;
         }
         if (KEYS["KeyS"] || KEYS["ArrowDown"]) {
+          moved = true;
           cam.position.x += sy * spd * dt;
           cam.position.z += cy * spd * dt;
         }
         if (KEYS["KeyA"] || KEYS["ArrowLeft"]) {
+          moved = true;
           cam.position.x -= cy * spd * 0.7 * dt;
           cam.position.z += sy * spd * 0.7 * dt;
         }
         if (KEYS["KeyD"] || KEYS["ArrowRight"]) {
+          moved = true;
           cam.position.x += cy * spd * 0.7 * dt;
           cam.position.z -= sy * spd * 0.7 * dt;
         }
         cam.position.y = EYE_HEIGHT;
         cam.position.x = Math.max(b.x0, Math.min(b.x1, cam.position.x));
         cam.position.z = Math.max(b.z0, Math.min(b.z1, cam.position.z));
+        tickFootsteps(dt, moved, sprint);
       }
 
       // revolver + tracers (cheap)
@@ -3691,8 +4054,13 @@
         }
         
         if (key === "mute" && audioCtx) {
-          if (accessibility.mute) audioCtx.suspend();
-          else audioCtx.resume();
+          if (accessibility.mute) {
+            audioCtx.suspend();
+            stopCorridorAmbient();
+          } else {
+            audioCtx.resume();
+            if (game.phase === "corridor") startCorridorAmbient();
+          }
         }
       }
       
@@ -3708,7 +4076,7 @@
         }
       });
 
-      // Sequence generation helpers (expanded for readability and maintainability)
+      // Sequence generation (seeded RNG, match counts, glyph fill)
       function hashSeed(seed) {
         const s = String(seed || "glyphmind");
         let h = 2166136261;
@@ -3856,9 +4224,7 @@
         return isMatch;
       }
 
-      // Build a single block sequence for N-back. The implementation is
-      // intentionally verbose so reviewers and future maintainers can follow
-      // the steps (seed warmup, mark match positions, assign glyphs, retry).
+      // Build one block sequence (observe glyphs, match positions, fill, retry).
       function sequenceSeedUsesSpreadAlgorithm(seed) {
         const parts = String(seed || "").split("-");
         return parts[0] === "gm" && parts[1] === "v2";
@@ -3943,12 +4309,10 @@
         return genSeqBlockLegacy(N, seed, totalTrials);
       }
 
-      function getGlyphData(gi) {
+      function getGlyphLogFields(gi) {
         const g = GLYPHS[gi];
         return {
-          Stimulus: g.id,
           StimulusName: g.name,
-          StimulusUnicode: g.u,
           StimulusChar: g.ch,
         };
       }
@@ -3975,6 +4339,11 @@
           this.sessionStart = Date.now();
           this.block = 1;
           this.exported = false;
+          game.practiceCompleted = { 1: false, 2: false };
+          game.practiceStats = {
+            1: { correct: 0, responded: 0 },
+            2: { correct: 0, responded: 0 },
+          };
           clearSessionSnapshot();
           syncSessionGuard();
         },
@@ -3991,36 +4360,27 @@
          */
         recordWarmup(opts) {
           const i = opts.trialIdx;
-          const paintingNum = i + 1;
+          const trialNum = i + 1;
           const trialType = loggerTrialType("warmup");
           const row = {
             trialType,
-            painting: paintingNum,
-            warmupIndex: paintingNum,
-            trial: paintingNum,
-            tc: "",
+            trial: trialNum,
             block: this.block,
             N: opts.n,
             sequenceSeed: opts.sequenceSeed || "",
-            isMatchPainting: 0,
             CRESP: "",
             Resp: "",
             ACC: "",
+            isMatch: "",
+            runningAccuracy: "",
             RT: "",
             RSI: Math.round(opts.rsi || 0),
-            rsiAnchor: i === 0 ? "none" : "prior_stimulus_onset",
-            TriggerCondition: opts.glyphIdx + 1,
-            TriggerResponse: "",
-            ...getGlyphData(opts.glyphIdx),
-            Target: "",
-            TargetName: "",
-            TargetUnicode: "",
-            TargetChar: "",
+            ...getGlyphLogFields(opts.glyphIdx),
           };
 
           const existingIdx = this.trials.findIndex(
             (t) =>
-              t.block === this.block && t.trialType === trialType && t.painting === paintingNum,
+              t.block === this.block && t.trialType === trialType && t.trial === trialNum,
           );
 
           if (existingIdx >= 0) {
@@ -4038,48 +4398,42 @@
          */
         record(opts) {
           const i = opts.trialIdx;
-          const paintingNum = i + 1;
+          const trialNum = i + 1;
           const isMatch = opts.glyphIdx === opts.nbackGlyphIdx;
           const expectedResp = isMatch ? 1 : 2;
-          const stimulus = getGlyphData(opts.glyphIdx);
-          const target = getGlyphData(opts.nbackGlyphIdx);
           const hasResponse = opts.resp === 1 || opts.resp === 2;
           const trialType = loggerTrialType("scored");
+          const stimulus = getGlyphLogFields(opts.glyphIdx);
 
           const row = {
             trialType,
-            painting: paintingNum,
-            warmupIndex: "",
-            trial: paintingNum,
-            tc: expectedResp,
+            trial: trialNum,
             block: this.block,
             N: opts.n,
             sequenceSeed: opts.sequenceSeed || "",
-            isMatchPainting: isMatch ? 1 : 0,
             CRESP: expectedResp,
             Resp: hasResponse ? opts.resp : "",
             ACC: hasResponse ? (expectedResp === opts.resp ? 1 : 0) : "",
+            isMatch: isMatch ? 1 : 0,
+            runningAccuracy: "",
             RT: hasResponse ? Math.round(opts.rt || 0) : "",
             RSI: Math.round(opts.rsi || 0),
-            rsiAnchor: i === opts.n ? "prior_stimulus_onset" : "prior_response",
-            TriggerCondition: opts.glyphIdx + 1,
-            TriggerResponse: hasResponse ? (opts.resp === 1 ? 11 : 12) : "",
             ...stimulus,
-            Target: target.Stimulus,
-            TargetName: target.StimulusName,
-            TargetUnicode: target.StimulusUnicode,
-            TargetChar: target.StimulusChar,
           };
 
           const existingIdx = this.trials.findIndex(
             (t) =>
-              t.block === this.block && t.trialType === trialType && t.painting === paintingNum,
+              t.block === this.block && t.trialType === trialType && t.trial === trialNum,
           );
 
           if (existingIdx >= 0) {
             this.trials[existingIdx] = row;
           } else {
             this.trials.push(row);
+          }
+
+          if (trialType === "scored") {
+            this.refreshRunningAccuracy(this.block);
           }
 
           this.exported = false;
@@ -4133,19 +4487,44 @@
         },
 
         hits(block) {
-          return this.getRespondedTrials(block).filter((t) => t.tc === 1 && t.Resp === 1).length;
+          return this.getRespondedTrials(block).filter((t) => t.CRESP === 1 && t.Resp === 1).length;
         },
 
         misses(block) {
-          return this.getRespondedTrials(block).filter((t) => t.tc === 1 && t.Resp === 2).length;
+          return this.getRespondedTrials(block).filter((t) => t.CRESP === 1 && t.Resp === 2).length;
         },
 
         falseAlarms(block) {
-          return this.getRespondedTrials(block).filter((t) => t.tc === 2 && t.Resp === 1).length;
+          return this.getRespondedTrials(block).filter((t) => t.CRESP === 2 && t.Resp === 1).length;
         },
 
         correctRejections(block) {
-          return this.getRespondedTrials(block).filter((t) => t.tc === 2 && t.Resp === 2).length;
+          return this.getRespondedTrials(block).filter((t) => t.CRESP === 2 && t.Resp === 2).length;
+        },
+
+        /**
+         * Cumulative scored accuracy through each answered trial in a block (%).
+         */
+        refreshRunningAccuracy(block) {
+          const sorted = this.trials
+            .filter((t) => t.block === block && t.trialType === "scored")
+            .sort((a, b) => a.trial - b.trial);
+          let correct = 0;
+          let answered = 0;
+          for (const t of sorted) {
+            if (t.Resp !== 1 && t.Resp !== 2) {
+              t.runningAccuracy = "";
+              continue;
+            }
+            answered++;
+            if (t.ACC === 1) correct++;
+            t.runningAccuracy = Math.round((correct / answered) * 1000) / 10;
+          }
+          this.trials
+            .filter((t) => t.block === block && t.trialType !== "scored")
+            .forEach((t) => {
+              t.runningAccuracy = "";
+            });
         },
 
         /**
@@ -4167,25 +4546,24 @@
           const sid = this.sid || "";
           const sessionStartISO = this.sessionStart ? new Date(this.sessionStart).toISOString() : "";
 
+          [...new Set(this.trials.map((t) => t.block))].forEach((bk) => {
+            this.refreshRunningAccuracy(bk);
+          });
+
           const headers = [
-            "PID", "Session", "Condition", "sessionStartISO", "exportedAt",
-            "block", "N", "sequenceSeed", "isMatchPainting", "trialType",
-            "painting", "warmupIndex", "trial", "tc", "CRESP", "Resp",
-            "ACC", "RT", "RSI", "rsiAnchor", "TriggerCondition", "TriggerResponse",
-            "Stimulus", "StimulusName", "StimulusUnicode", "StimulusChar",
-            "Target", "TargetName", "TargetUnicode", "TargetChar",
+            "PID", "Session", "Condition",
+            "block", "nback", "trialType", "trial", "isMatch", "CRESP", "Resp",
+            "ACC", "runningAccuracy", "RT", "RSI",
+            "StimulusName", "StimulusChar",
           ];
 
           const format = (v) => (v === "" || v === null || v === undefined ? "" : v);
 
           const rows = this.trials.map((t) => [
-            pid, sid, this.condition, sessionStartISO, exportTime,
-            t.block, t.N, t.sequenceSeed || "", format(t.isMatchPainting), t.trialType || "scored",
-            t.painting, format(t.warmupIndex), format(t.trial), format(t.tc), format(t.CRESP),
-            format(t.Resp), format(t.ACC), format(t.RT), format(t.RSI), t.rsiAnchor || "",
-            t.TriggerCondition, format(t.TriggerResponse),
-            t.Stimulus, t.StimulusName, t.StimulusUnicode, t.StimulusChar,
-            t.Target, t.TargetName, t.TargetUnicode, t.TargetChar,
+            pid, sid, this.condition,
+            t.block, t.N, t.trialType || "scored", format(t.trial), format(t.isMatch), format(t.CRESP),
+            format(t.Resp), format(t.ACC), format(t.runningAccuracy), format(t.RT), format(t.RSI),
+            t.StimulusName, t.StimulusChar,
           ]);
 
           const workbook = XLSX.utils.book_new();
@@ -4195,12 +4573,9 @@
           XLSX.utils.book_append_sheet(workbook, worksheet, "Trials");
 
           const scoredRows = this.trials.filter((t) => t.trialType === "scored").length;
-          const practiceRows = this.trials.filter((t) => t.trialType === "practice").length;
           const answeredScoredRows = this.getRespondedTrials().length;
           const pendingScoredRows = scoredRows - answeredScoredRows;
-          const warmupRows = this.trials.filter(
-            (t) => t.trialType === "warmup" || t.trialType === "practice_warmup",
-          ).length;
+          const warmupRows = this.trials.filter((t) => t.trialType === "warmup").length;
           
           const blockOrderStr = [...new Set(this.trials.map((t) => t.block))]
             .sort((a, b) => a - b)
@@ -4216,15 +4591,11 @@
           blockIds.forEach((bk) => {
             const blockRows = this.trials.filter((t) => t.block === bk);
             const sessionRows = blockRows.filter(isSessionTrialRow);
-            const practiceRows = blockRows.filter(
-              (t) => t.trialType === "practice" || t.trialType === "practice_warmup",
-            );
             const r = sessionRows[0] || blockRows[0];
-            const matchLogged = sessionRows.filter((t) => t.isMatchPainting === 1).length;
-            const nonMatchLogged = sessionRows.filter((t) => t.isMatchPainting === 0).length;
+            const matchLogged = sessionRows.filter((t) => t.CRESP === 1).length;
+            const nonMatchLogged = sessionRows.filter((t) => t.CRESP !== 1).length;
             blockSeedMeta.push(["block" + bk + "_sequenceSeed", r ? r.sequenceSeed || "" : ""]);
             blockSeedMeta.push(["block" + bk + "_session_rows", sessionRows.length]);
-            blockSeedMeta.push(["block" + bk + "_practice_rows", practiceRows.length]);
             blockSeedMeta.push(["block" + bk + "_matchPaintings_logged", matchLogged]);
             blockSeedMeta.push(["block" + bk + "_nonMatchPaintings_logged", nonMatchLogged]);
           });
@@ -4242,27 +4613,26 @@
             ["matchPaintingsPerBlock", MATCH_COUNT],
             ["nonMatchPaintingsPerBlock", NON_MATCH_PAINTING_COUNT],
             ["rows_warmup", warmupRows],
-            ["rows_practice", practiceRows],
             ["rows_scored", scoredRows],
             ["rows_scored_answered", answeredScoredRows],
             ["rows_scored_pending", pendingScoredRows],
             ["rows_total", this.trials.length],
-            ["practicePaintingsPerBlock", PRACTICE_TRIALS],
-            ["trialType", "warmup | practice | practice_warmup | scored"],
-            ["rsiAnchor", "none | prior_stimulus_onset | prior_response"],
+            ["trialType", "warmup | scored"],
             ...blockSeedMeta,
           ];
           const metaSheet = XLSX.utils.aoa_to_sheet(meta);
           metaSheet["!cols"] = [{ wch: 28 }, { wch: 56 }];
           XLSX.utils.book_append_sheet(workbook, metaSheet, "Meta");
 
-          const dateStamp = exportTime.slice(0, 10);
-          const timeStamp = exportTime.slice(11, 19).replace(/:/g, "");
-          const fn = `glyphmind_${pid}_s${sid || "0"}_${this.condition}_${orderTag}_${dateStamp}_${timeStamp}.xlsx`;
+          const fn = exportFilename(pid, sid);
 
           XLSX.writeFile(workbook, fn);
-          this.exported = true;
-          syncSessionGuard();
+          if (opts.markExported !== false) {
+            this.exported = true;
+          }
+          if (opts.persist !== false) {
+            syncSessionGuard();
+          }
           return true;
         },
       };
@@ -4276,6 +4646,71 @@
         el.classList.add("show");
         clearTimeout(exportToastTimer);
         exportToastTimer = setTimeout(() => el.classList.remove("show"), 4200);
+      }
+
+      function downloadLostSessionData() {
+        const snapshot = readSessionSnapshot();
+        if (!snapshot || !snapshot.trials.length) {
+          alert("No full session snapshot available to download.");
+          return false;
+        }
+
+        const backup =
+          logger.trials.length > 0
+            ? {
+                pid: logger.pid,
+                sid: logger.sid,
+                condition: logger.condition,
+                trials: logger.trials,
+                sessionStart: logger.sessionStart,
+                exported: logger.exported,
+                block: logger.block,
+                orderKey: selectedOrderKey,
+              }
+            : null;
+        const prevOrderKey = selectedOrderKey;
+
+        logger.pid = snapshot.pid || "";
+        logger.sid = snapshot.sid || "";
+        logger.condition = snapshot.condition || logger.condition;
+        logger.trials = snapshot.trials;
+        logger.sessionStart = snapshot.sessionStart || Date.now();
+        logger.block = snapshot.block || 1;
+        if (snapshot.orderKey && BLOCK_ORDERS[snapshot.orderKey]) {
+          applyOrderKey(snapshot.orderKey);
+        }
+
+        const ok = logger.exportXLSX({ silent: true, markExported: false, persist: false });
+
+        if (backup) {
+          logger.pid = backup.pid;
+          logger.sid = backup.sid;
+          logger.condition = backup.condition;
+          logger.trials = backup.trials;
+          logger.sessionStart = backup.sessionStart;
+          logger.exported = backup.exported;
+          logger.block = backup.block;
+          applyOrderKey(backup.orderKey);
+        } else {
+          logger.trials = [];
+          logger.exported = false;
+          logger.block = 1;
+          applyOrderKey(prevOrderKey);
+        }
+
+        if (ok) {
+          showExportToast("Recovered data downloaded.");
+        } else {
+          alert("Could not download recovered data.");
+        }
+        return ok;
+      }
+
+      function setReloadWarnRecoveryActions(hasSnapshot) {
+        const downloadBtn = $("reload-warn-download");
+        const restoreBtn = $("reload-warn-restore");
+        if (downloadBtn) downloadBtn.hidden = !hasSnapshot;
+        if (restoreBtn) restoreBtn.hidden = !hasSnapshot;
       }
 
       function downloadSessionData(opts = {}) {
@@ -4304,23 +4739,15 @@
         if (blockRows.length !== TOTAL_TRIALS) return false;
         const seen = new Set();
         for (const row of blockRows) {
-          if (seen.has(row.painting)) return false;
-          seen.add(row.painting);
+          if (seen.has(row.trial)) return false;
+          seen.add(row.trial);
           if (row.trialType === "scored" && row.Resp !== 1 && row.Resp !== 2) return false;
         }
         return seen.size === TOTAL_TRIALS;
       }
 
-      function hasCompletePracticeBlock(block, N) {
-        const expected = scoredCountForN(N, PRACTICE_TRIALS);
-        const rows = logger.getRespondedTrials(block, "practice");
-        if (rows.length !== expected) return false;
-        const seen = new Set();
-        for (const row of rows) {
-          if (seen.has(row.painting)) return false;
-          seen.add(row.painting);
-        }
-        return seen.size === expected;
+      function hasCompletePracticeBlock(block) {
+        return !!game.practiceCompleted[block];
       }
 
       function clearSessionSnapshot() {
@@ -4347,6 +4774,8 @@
             exported: logger.exported,
             orderKey: selectedOrderKey,
             trials: logger.trials,
+            practiceCompleted: { ...game.practiceCompleted },
+            practiceStats: { ...game.practiceStats },
             at: Date.now(),
           };
           sessionStorage.setItem(SESSION_SNAPSHOT_KEY, JSON.stringify(payload));
@@ -4403,6 +4832,15 @@
         if (data.orderKey && BLOCK_ORDERS[data.orderKey]) {
           applyOrderKey(data.orderKey);
         }
+        if (data.practiceCompleted) {
+          game.practiceCompleted = { 1: !!data.practiceCompleted[1], 2: !!data.practiceCompleted[2] };
+        }
+        if (data.practiceStats) {
+          game.practiceStats = {
+            1: { correct: 0, responded: 0, ...(data.practiceStats[1] || {}) },
+            2: { correct: 0, responded: 0, ...(data.practiceStats[2] || {}) },
+          };
+        }
         game.N = selectedOrder[Math.max(0, logger.block - 1)] || selectedOrder[0];
         nBackLevel.textContent = `N-BACK: ${game.N}`;
         syncPauseMenuPid();
@@ -4421,10 +4859,12 @@
             (snapshot.pid || "?") +
             "</b>, <b>" +
             snapshot.trials.length +
-            "</b> trial rows. Click <b>RESTORE DATA</b> to load them back.";
+            "</b> trial rows. <b>DOWNLOAD DATA</b> to save the file, or <b>RESTORE DATA</b> to continue the session.";
+          setReloadWarnRecoveryActions(true);
           $("reload-warn")?.classList.add("show");
           return;
         }
+        setReloadWarnRecoveryActions(false);
         let raw;
         try {
           raw = sessionStorage.getItem(SESSION_GUARD_KEY);
@@ -4444,7 +4884,7 @@
           (info.pid || "?") +
           "</b>, " +
           (info.rows || "?") +
-          " rows (no full snapshot — finish session and download at the end).";
+          " rows (no full snapshot; finish session and download at the end).";
         $("reload-warn")?.classList.add("show");
       }
 
@@ -4455,20 +4895,33 @@
         game.isTutorialPhase = false;
         game.isPracticePhase = false;
         game.blockComplete = false;
+        game.practiceCompleted = { 1: false, 2: false };
+        game.practiceStats = {
+          1: { correct: 0, responded: 0 },
+          2: { correct: 0, responded: 0 },
+        };
         clearSessionSnapshot();
         syncSessionGuard();
       }
 
       function sanitizePidInput(raw) {
-        return String(raw || "").replace(/\D/g, "").slice(0, 2);
+        return String(raw || "").replace(/[\r\n\t]/g, "").slice(0, 32);
       }
 
       function formatPid(raw) {
-        const digits = sanitizePidInput(raw);
-        if (!digits) return "";
-        const n = Math.min(99, parseInt(digits, 10));
-        if (!Number.isFinite(n) || n < 0) return "";
-        return String(n).padStart(2, "0");
+        return sanitizePidInput(raw).trim();
+      }
+
+      function exportFilename(pid, sid) {
+        const session = sid || "0";
+        const participant = pidForFilename(pid);
+        return `BSVG_STANDARD_SESSION${session}_${participant}.xlsx`;
+      }
+
+      function pidForFilename(pid) {
+        const s = formatPid(pid);
+        if (!s) return "anonymous";
+        return s.replace(/[/\\:*?"<>|]/g, "_") || "anonymous";
       }
 
       function applyPidToInput(raw) {
@@ -4479,10 +4932,17 @@
         return pid;
       }
 
+      function resetParticipantId() {
+        const input = $("tt-pid");
+        if (input) input.value = "";
+        logger.pid = "";
+        syncPauseMenuPid();
+      }
+
       function requireParticipantId() {
         const pid = applyPidToInput($("tt-pid")?.value);
         if (!pid) {
-          alert("Enter a participant ID on the title screen (for example 01).");
+          alert("Enter a participant ID on the title screen.");
           return false;
         }
         return true;
@@ -4553,55 +5013,46 @@
         const modeBtn = $("mode-" + selectedOrderKey);
         if (modeBtn) modeBtn.classList.add("on");
         rebuildTutorialSlides();
+        if ($("ps")?.classList.contains("show")) syncParticipantStartLore();
+      }
+
+      function tutorialFourPaintingQuiz(N, variant) {
+        const refTrial = N === 1 ? 3 : 1;
+        const currTrial = 4;
+        const intro =
+          "These <b>four paintings</b> appeared in order. Remember each symbol, then answer below.";
+        if (N === 1) {
+          const paintings =
+            variant === "match" ? [0, 1, 1, 1] : [0, 1, 1, 2];
+          return {
+            paintings,
+            refTrial,
+            currTrial,
+            expect: variant === "match" ? 1 : 2,
+            question: intro,
+            prompt: `Is painting <b>4</b> the same symbol as painting <b>3</b>?`,
+          };
+        }
+        const paintings = variant === "match" ? [0, 1, 2, 0] : [0, 1, 2, 3];
+        return {
+          paintings,
+          refTrial,
+          currTrial,
+          expect: variant === "match" ? 1 : 2,
+          question: intro,
+          prompt: `Is painting <b>4</b> the same symbol as painting <b>1</b> (three steps back)?`,
+        };
       }
 
       function buildTutorialSlides(N) {
-        const total = tutorialTrialCount(N);
-        const seq = TUTORIAL_SEQUENCES[N] || TUTORIAL_SEQUENCES[1];
-        const back = tutorialBackPhrase(N);
         const watchCount = N === 1 ? "the <b>first</b> painting" : `the <b>first ${N}</b> paintings`;
-        const compareLine =
-          N === 1
-            ? "<p>Is it the <b>same</b> as the <b>previous</b> painting in this block?</p>"
-            : `<p>Is it the <b>same</b> as ${back} in this block?</p>`;
         const orderNote =
-          N === 1
+          selectedOrderKey === "13"
             ? "<p>Your session runs <b>1-back</b> first, then <b>3-back</b>.</p>"
             : "<p>Your session runs <b>3-back</b> first, then <b>1-back</b>.</p>";
 
-        const quizMatch =
-          N === 1
-            ? {
-                refGi: 0,
-                currGi: 0,
-                expect: 1,
-                refLabel: "Example",
-                question: "Try it: are these two symbols the same?",
-              }
-            : {
-                refGi: seq[0],
-                currGi: seq[N],
-                expect: seq[N] === seq[0] ? 1 : 2,
-                refLabel: "3 paintings ago",
-                question: "Try it: is NOW the same symbol as THREE PAINTINGS AGO?",
-              };
-
-        const quizNoMatch =
-          N === 1
-            ? {
-                refGi: 1,
-                currGi: 2,
-                expect: 2,
-                refLabel: "Previous",
-                question: "Try again: are these two symbols the same?",
-              }
-            : {
-                refGi: seq[1],
-                currGi: seq[4],
-                expect: 2,
-                refLabel: "3 paintings ago",
-                question: "Try again: is NOW the same symbol as THREE PAINTINGS AGO?",
-              };
+        const quizMatch = tutorialFourPaintingQuiz(N, "match");
+        const quizNoMatch = tutorialFourPaintingQuiz(N, "noMatch");
 
         return [
           {
@@ -4609,7 +5060,7 @@
             html:
               "<p><b>Welcome.</b> You will walk down a hallway and stop at <b>paintings</b> on the wall.</p>" +
               "<p>When you stand close enough, a <b>symbol</b> appears. Try to <b>remember</b> each one.</p>" +
-              `<p>First: a <b>guided hall</b> (${total} paintings, ${N}-back), then <b>20-trial practice</b> before each scored block (saved), then scored blocks (70 paintings each).</p>` +
+              `<p>First: a <b>practice</b> before each block, then the <b>main rounds</b>.</p>` +
               orderNote,
           },
           {
@@ -4623,8 +5074,9 @@
             anim: "gesture",
             html:
               "<p>After the watch-only paintings, decide on each new symbol:</p>" +
-              compareLine +
-              "<p><b>Same symbol</b> \u2192 <b>MATCH</b> (left click). &nbsp; <b>Different symbol</b> \u2192 <b>NO MATCH</b> (right click).</p>",
+              "<p><b>1-back:</b> Is it the <b>same</b> as the <b>previous</b> painting in this block?</p>" +
+              "<p><b>3-back:</b> Is it the <b>same</b> as the painting <b>3 steps back</b> in this block?</p>" +
+              "<p><b>Same symbol</b> \u2192 <b>MATCH</b> (left click).<br><b>Different symbol</b> \u2192 <b>NO MATCH</b> (right click).</p>",
           },
           {
             anim: "gesture",
@@ -4642,9 +5094,9 @@
           {
             anim: "bow",
             html:
-              `<p>Next you will enter a <b>practice corridor</b> (${total} paintings, ${N}-back) and answer for real.</p>` +
-              "<p>You will get feedback if you miss. The guided hall is not saved.</p>" +
-              "<p>When you are ready, click <b>START PRACTICE</b>.</p>",
+              `<p>Next is a <b>practice block</b> (${PRACTICE_TRIALS} paintings, ${N}-back). You will answer for real.</p>` +
+              "<p>You will get feedback when you miss. Finish every painting to complete the warm-up. Practice accuracy does not gate progression.</p>" +
+              "<p>When you are ready, click <b>BEGIN PRACTICE</b>.</p>",
           },
         ];
       }
@@ -4713,9 +5165,7 @@
         syncPointerLockUI();
       }
 
-      // timers that respect pause (safeTimeout / pauseAllTimers / resumeAllTimers)
-      // Each record tracks the callback, remaining time, and the active timeout id.
-      // Using a Set makes it easy to pause/resume/cancel individual timers.
+      // Pause-aware timers (safeTimeout / pauseAllTimers / resumeAllTimers)
       const _safeTimers = new Set();
       function safeTimeout(cb, ms) {
         const rec = { cb, remaining: ms, startedAt: performance.now(), id: 0, cancelled: false };
@@ -4754,46 +5204,28 @@
       $("pm-resume").addEventListener("click", resumeGame);
       $("pm-restart").addEventListener("click", () => {
         if (game.isTutorialPhase) {
-          if (!confirm("Restart tutorial?")) return;
+          if (!confirm("Restart tutorial slides?")) return;
           PAUSE_MENU.classList.remove("show");
-          corridorResults.classList.remove("show", "cr-after-block1", "cr-final");
-          hideActualGameReady();
-          hideKhenuCoach();
-          releasePointerLockForUI();
+          prepareExitCorridor();
           if (game.phase === "paused") resumeGame();
-          fdOut(() => game.startTutorial(), 360);
+          fdOut(() => showTutorial(false), FADE_OUT_MS);
           return;
         }
 
         if (game.isPracticePhase) {
           if (!confirm(`Restart ${game.N}-back practice (${PRACTICE_TRIALS} paintings)?`)) return;
-          logger.trials = logger.trials.filter(
-            (t) =>
-              !(
-                t.block === logger.block &&
-                (t.trialType === "practice" || t.trialType === "practice_warmup")
-              ),
-          );
-          logger.exported = false;
-          syncSessionGuard();
+          game.practiceCompleted[logger.block] = false;
+          game.resetPracticeStats(logger.block);
           PAUSE_MENU.classList.remove("show");
-          corridorResults.classList.remove("show", "cr-after-block1", "cr-final");
-          hideActualGameReady();
+          prepareExitCorridor();
           if (game.phase === "paused") resumeGame();
           const n = game.N;
-          fdOut(() => game.startPractice(n), 360);
+          fdOut(() => game.startPractice(n), FADE_OUT_MS);
           return;
         }
 
         const n = logger.getScoredTrials(logger.block).length;
-        const keepsPractice = logger.trials.some(
-          (t) =>
-            t.block === logger.block &&
-            (t.trialType === "practice" || t.trialType === "practice_warmup"),
-        );
-        const restartMsg = keepsPractice
-          ? `Restart Block ${logger.block} scored run? Drops ${n} scored/warmup rows; practice rows for this block are kept.`
-          : `Restart block ${logger.block}? Drops ${n} scored rows from this block.`;
+        const restartMsg = `Restart Block ${logger.block} scored run? Drops ${n} scored/warmup rows.`;
         if (n && !confirm(restartMsg)) return;
         logger.trials = logger.trials.filter(
           (t) =>
@@ -4805,9 +5237,9 @@
         logger.exported = false;
         syncSessionGuard();
         PAUSE_MENU.classList.remove("show");
-        corridorResults.classList.remove("show", "cr-after-block1", "cr-final");
+        prepareExitCorridor();
         if (game.phase === "paused") resumeGame();
-        fdOut(() => game.start(), 360);
+        fdOut(() => game.start(), FADE_OUT_MS);
       });
       $("pm-tutorial").addEventListener("click", () => {
         PAUSE_MENU.classList.remove("show");
@@ -4845,6 +5277,9 @@
         combo = 0;
         bestCombo = 0;
         updateComboHUD();
+        stopCorridorAmbient();
+        roundCompleteTorchBoost = false;
+        torchPulseEnd = 0;
         const pCont = $("cr-particles");
         if (pCont) pCont.innerHTML = "";
         if (worldGrp) {
@@ -4880,8 +5315,9 @@
         applyOrderKey(selectedOrderKey);
         game.N = selectedN;
         nBackLevel.textContent = `N-BACK: ${game.N}`;
-        sessionHadTutorial = false;
         hideBlockInstructionOverlay();
+        resetParticipantId();
+        fdIn(FADE_IN_MS);
       }
 
       function desktopPointerOptsHtml() {
@@ -4902,7 +5338,7 @@
 
       function blockControlsBriefHtml() {
         return (
-          '<p class="bi-how-h">How to answer on the painting</p>' + desktopPointerOptsHtml()
+          '<p class="bi-how-h">How to answer</p>' + desktopPointerOptsHtml()
         );
       }
 
@@ -4926,19 +5362,46 @@
       }
 
       function blockInstructionContent(n, opts = {}) {
-        const rules = '<p class="bi-how-h">' + n + "-back</p>" + nbackRuleParagraph(n);
+        const rules =
+          '<p class="bi-how-h" style="margin-top:0">' +
+          n +
+          "-back rules</p>" +
+          nbackRuleParagraph(n);
         if (!opts.includeControls) return rules;
         return rules + blockControlsBriefHtml();
+      }
+
+      function roundLoreName(n) {
+        if (n === 1) return "The Outer Hall";
+        if (n === 3) return "The Deep Vault";
+        return "The Memory Hall";
+      }
+
+      function roundLoreLabel(n) {
+        return `${roundLoreName(n)} \u00b7 ${n}-back`;
+      }
+
+      function sessionEncouragementHtml() {
+        const acc = combinedScoredAccuracy();
+        if (acc >= 85) return '<p class="ag-lead">A strong journey through the halls.</p>';
+        if (acc >= 70) return '<p class="ag-lead">You held the glyphs well today.</p>';
+        return '<p class="ag-lead">Well done. Thank you for completing the session.</p>';
+      }
+
+      function playRoundCompleteBeat() {
+        sounds.roundComplete();
+        roundCompleteTorchBoost = true;
+        TORCH_LIGHTS.forEach((l) => {
+          if (!l.userData.corridorTorch) return;
+          l.intensity = (l.userData.baseIntensity || 3.6) * 1.35;
+          l.color.setHex(0xffc060);
+        });
       }
 
       function scoredStatRowsForBlock(block) {
         return [
           [`${logger.accuracy(block)}%`, "ACCURACY"],
-          [`${logger.meanRT(block)}ms`, "MEAN RT"],
-          [logger.hits(block), "HITS"],
-          [logger.misses(block), "MISSES"],
-          [logger.falseAlarms(block), "FALSE ALARMS"],
-          [logger.correctRejections(block), "CORRECT REJ"],
+          [`${logger.meanRT(block)}ms`, "AVG RT"],
         ];
       }
 
@@ -4949,6 +5412,95 @@
               `<div class="cr-stat"><div class="cr-stat-val">${row[0]}</div><div class="cr-stat-lbl">${row[1]}</div></div>`,
           )
           .join("");
+      }
+
+      function blockResultsSectionHtml(blockNum, sectionTitle, opts = {}) {
+        const n = selectedOrder[blockNum - 1];
+        const title = sectionTitle || roundLoreLabel(n);
+        const sectionClass = opts.compact
+          ? "ag-section ag-stats ag-session-block"
+          : "ag-section ag-stats";
+        const statsClass = opts.compact
+          ? "cr-stats cr-stats-grid cr-stats-compact"
+          : "cr-stats cr-stats-grid";
+        const practice = opts.includePractice ? practiceResultNoteHtml(blockNum) : "";
+        return (
+          '<div class="' +
+          sectionClass +
+          '">' +
+          `<div class="ag-section-h">${title}</div>` +
+          '<div class="' +
+          statsClass +
+          '">' +
+          statGridHtml(scoredStatRowsForBlock(blockNum)) +
+          "</div>" +
+          practice +
+          "</div>"
+        );
+      }
+
+      function practiceResultNoteHtml(blockNum) {
+        const responded = game.practiceStats[blockNum]?.responded;
+        if (!responded) return "";
+        return `<p class="ag-results-note">Warm-up: <b>${game.practiceAccuracyPct(blockNum)}%</b> correct</p>`;
+      }
+
+      function bestStreakNoteHtml() {
+        if (bestCombo < 2) return "";
+        return `<p class="ag-results-note">Best streak: <b>${bestCombo}</b> correct in a row</p>`;
+      }
+
+      function sessionCompleteBodyHtml() {
+        const b1n = selectedOrder[0];
+        const b2n = selectedOrder[1];
+        const sessionRows = [
+          [`${combinedScoredAccuracy()}%`, "ACCURACY"],
+          [`${combinedScoredMeanRT()}ms`, "AVG RT"],
+        ];
+        return (
+          '<div class="ag-brief ag-session-summary">' +
+          '<div class="ag-session-blocks">' +
+          blockResultsSectionHtml(1, roundLoreLabel(b1n), { compact: true, includePractice: true }) +
+          blockResultsSectionHtml(2, roundLoreLabel(b2n), { compact: true, includePractice: true }) +
+          "</div>" +
+          '<div class="ag-section ag-stats ag-session-overall">' +
+          '<div class="ag-section-h">Overall</div>' +
+          '<div class="cr-stats cr-stats-grid cr-stats-compact">' +
+          statGridHtml(sessionRows) +
+          "</div>" +
+          bestStreakNoteHtml() +
+          "</div>" +
+          sessionEncouragementHtml() +
+          "</div>"
+        );
+      }
+
+      function showSessionCompleteGate() {
+        const b1n = selectedOrder[0];
+        const b2n = selectedOrder[1];
+        const orderLabel = `${b1n}-back \u2192 ${b2n}-back`;
+        showTransitionGate({
+          role: "SESSION COMPLETE",
+          title: `MEMORY HALLS<span class="ag-title-sub">${orderLabel}</span>`,
+          body: sessionCompleteBodyHtml(),
+          btn: "DOWNLOAD DATA",
+          secondaryBtn: "TITLE SCREEN",
+          fadeOnBegin: false,
+          sessionComplete: true,
+          onBegin: () => downloadSessionData({ message: "Data downloaded." }),
+          onSecondary: () => {
+            if (
+              logger.trials.length &&
+              !logger.exported &&
+              !confirm("Session data not downloaded yet. Download first, or OK to discard.")
+            )
+              return;
+            if (logger.trials.length) discardSessionTrials();
+            hideActualGameReady();
+            toTitle();
+          },
+        });
+        spawnResultParticles("ag-particles");
       }
 
       function combinedScoredAccuracy() {
@@ -4965,78 +5517,110 @@
         return Math.round(sum / t.length);
       }
 
-      function renderBreakBlockInstruction(nextN, nextBlockNum) {
-        const el = $("cr-block-instr");
-        if (!el) return;
-        el.innerHTML =
-          '<p class="cr-block-instr-sub">Next: <b>' +
-          nextN +
-          "-back practice</b> (" +
-          PRACTICE_TRIALS +
-          "), then <b>Block " +
-          nextBlockNum +
-          "</b> (" +
-          TOTAL_TRIALS +
-          " scored).</p>";
+      function rulesSectionHtml(n) {
+        return (
+          '<div class="ag-section ag-rules">' +
+          `<div class="ag-section-h">${n}-back rules</div>` +
+          nbackRuleParagraph(n) +
+          "</div>"
+        );
       }
 
-      function showBlock1BreakScreen(completedN) {
+      function controlsSectionHtml() {
+        return (
+          '<div class="ag-section ag-controls">' +
+          '<div class="ag-section-h">How to answer</div>' +
+          desktopPointerOptsHtml() +
+          "</div>"
+        );
+      }
+
+      function practiceInstructionHtml(n) {
+        return (
+          '<div class="ag-brief">' +
+          `<p class="ag-lead">Walk the corridor and stop at each painting. This practice run has <b>${PRACTICE_TRIALS} paintings</b> at <b>${n}-back</b>.</p>` +
+          rulesSectionHtml(n) +
+          controlsSectionHtml() +
+          "</div>"
+        );
+      }
+
+      function scoredBlockInstructionHtml(n, leadHtml) {
+        return (
+          '<div class="ag-brief">' +
+          (leadHtml ||
+            `<p class="ag-lead">Walk the corridor and stop at each painting. This round has <b>${TOTAL_TRIALS} paintings</b> at <b>${n}-back</b>.</p>`) +
+          rulesSectionHtml(n) +
+          controlsSectionHtml() +
+          "</div>"
+        );
+      }
+
+      function showBlock1BreakGate(completedN) {
         const nextN = selectedOrder[1];
-        const titleEl = $("cr-title");
-        const subEl = $("cr-sub");
-        const statsEl = $("cr-stats");
-        if (titleEl) titleEl.textContent = "BLOCK 1 COMPLETE";
-        if (subEl) {
-          subEl.textContent = `${completedN}-back · saved`;
-        }
-        if (statsEl) statsEl.innerHTML = statGridHtml(scoredStatRowsForBlock(1));
-        if (resultsBody) resultsBody.innerHTML = "";
-        renderBreakBlockInstruction(nextN, 2);
-        const again = $("cr-again");
-        if (again) again.textContent = `BEGIN ${nextN}-BACK PRACTICE (${PRACTICE_TRIALS})`;
+        const khenuLine =
+          nextN === 3
+            ? "The air grows heavier. <b>Three steps back</b> now."
+            : "The hall opens again. <b>One step</b> at a time.";
+        const body =
+          '<div class="ag-brief">' +
+          blockResultsSectionHtml(1, roundLoreLabel(completedN)) +
+          practiceResultNoteHtml(1) +
+          `<p class="ag-khenu-line"><b>Khenu:</b> ${khenuLine}</p>` +
+          `<p class="ag-lead">Nice work. Take a short break. Next is <b>${nextN}-back</b> warm-up, then the next hall.</p>` +
+          "</div>";
+        showTransitionGate({
+          role: "ROUND 1 COMPLETE",
+          title: `${roundLoreName(completedN).toUpperCase()}<span class="ag-title-sub">ROUND COMPLETE</span>`,
+          body,
+          btn: "CONTINUE",
+          onBegin: () => {
+            logger.nextBlock();
+            game.N = nextN;
+            nBackLevel.textContent = `N-BACK: ${game.N}`;
+            showPreBlockPracticeReady(2);
+            fdIn(FADE_IN_MS);
+          },
+        });
       }
 
-      function renderSessionCompleteUI() {
-        const b1n = selectedOrder[0];
-        const b2n = selectedOrder[1];
-        $("cr-title").textContent = "SESSION COMPLETE";
-        $("cr-title").style.color = "";
-        $("cr-sub").textContent =
-          (logger.pid ? `Participant ${logger.pid} · ` : "") + `Order: ${b1n}-back → ${b2n}-back`;
-
-        const sessionRows = [
-          [`${combinedScoredAccuracy()}%`, "COMBINED ACC"],
-          [`${combinedScoredMeanRT()}ms`, "COMBINED RT"],
-          [`${bestCombo}x`, "BEST STREAK"],
-        ];
-
-        let html = '<div class="cr-session-blocks">';
-        for (const bk of [1, 2]) {
-          const n = selectedOrder[bk - 1];
-          html += '<div class="cr-session-block">';
-          html += `<div class="cr-session-block-h">BLOCK ${bk} · ${n}-BACK (SCORED)</div>`;
-          html += '<div class="cr-stats cr-stats-compact">' + statGridHtml(scoredStatRowsForBlock(bk)) + "</div>";
-          const pr = logger.getRespondedTrials(bk, "practice").length;
-          if (pr) {
-            html += `<div class="cr-session-practice">Practice (${PRACTICE_TRIALS} trials): ${logger.practiceAccuracy(bk)}% accuracy</div>`;
-          }
-          html += "</div>";
-        }
-        html += '<div class="cr-session-block cr-session-total">';
-        html += '<div class="cr-session-block-h">SESSION TOTALS (SCORED)</div>';
-        html += '<div class="cr-stats cr-stats-compact">' + statGridHtml(sessionRows) + "</div>";
-        html += "</div></div>";
-
-        const statsEl = $("cr-stats");
-        if (statsEl) statsEl.innerHTML = html;
-
-        if (resultsBody) {
-          resultsBody.innerHTML = "<p>Download your session data below.</p>";
-        }
-      }
-
-      let sessionHadTutorial = false;
       let biDismissHandler = null;
+
+      const FADE_OUT_MS = 400;
+      const FADE_IN_MS = 520;
+      const CORRIDOR_ENTER_MS = 480;
+
+      function prepareExitCorridor() {
+        clearBullets();
+        gunGroup.visible = false;
+        crosshairRing.classList.remove("aim");
+        hideKhenuCoach();
+        stopCorridorAmbient();
+        releasePointerLockForUI();
+        corridorResults.classList.remove("show", "cr-after-block1", "cr-final");
+        hideActualGameReady();
+        hideBlockInstructionOverlay();
+        gamePrompt.textContent = "";
+      }
+
+      function exitGameplayToGate(showGateFn) {
+        prepareExitCorridor();
+        fdOut(() => {
+          showGateFn();
+          fdIn(FADE_IN_MS);
+        }, FADE_OUT_MS);
+      }
+
+      function enterCorridorPhase() {
+        fdIn(FADE_IN_MS);
+        setTimeout(() => {
+          game.phase = "corridor";
+          gamePrompt.textContent = "";
+          startCorridorAmbient();
+          ensurePointerLock();
+          syncPointerLockUI();
+        }, CORRIDOR_ENTER_MS);
+      }
 
       function hideBlockInstructionOverlay() {
         const bi = $("bi");
@@ -5068,8 +5652,10 @@
         const dismiss = () => {
           if (performance.now() - shownAt < 250) return;
           hideBlockInstructionOverlay();
-          requestPointerLockFromGesture();
-          onDone();
+          fdOut(() => {
+            requestPointerLockFromGesture();
+            onDone();
+          }, FADE_OUT_MS);
         };
         go.onclick = dismiss;
         biDismissHandler = (e) => {
@@ -5080,10 +5666,14 @@
       }
 
       let agBeginAction = null;
+      let agSecondaryAction = null;
+      let agFadeOnBegin = true;
 
       function showTransitionGate(opts) {
         const ag = $("ag");
         if (!ag || !opts) return;
+        ag.classList.remove("ag-session-complete");
+        if (opts.sessionComplete) ag.classList.add("ag-session-complete");
         game.isTutorialPhase = false;
         hideKhenuCoach();
         releasePointerLockForUI();
@@ -5093,86 +5683,97 @@
         if ($("ag-body")) $("ag-body").innerHTML = opts.body || "";
         const btn = $("ag-begin");
         if (btn) btn.textContent = opts.btn || "CONTINUE";
+        const sec = $("ag-secondary");
+        if (sec) {
+          if (opts.secondaryBtn) {
+            sec.textContent = opts.secondaryBtn;
+            sec.hidden = false;
+            agSecondaryAction = opts.onSecondary || null;
+          } else {
+            sec.hidden = true;
+            agSecondaryAction = null;
+          }
+        }
         agBeginAction = opts.onBegin || null;
+        agFadeOnBegin = opts.fadeOnBegin !== false;
+        const particles = $("ag-particles");
+        if (particles && !opts.keepParticles) particles.innerHTML = "";
         spawnTitleGlyphs();
         ag.classList.add("show");
       }
 
       function hideActualGameReady() {
-        $("ag")?.classList.remove("show");
+        $("ag")?.classList.remove("show", "ag-session-complete");
         agBeginAction = null;
+        agSecondaryAction = null;
+        agFadeOnBegin = true;
+        const sec = $("ag-secondary");
+        if (sec) sec.hidden = true;
+        const particles = $("ag-particles");
+        if (particles) particles.innerHTML = "";
       }
 
-      function showPreBlockPracticeReady(blockNum) {
+      function showSessionReturnGate(blockNum) {
         const n = selectedOrder[blockNum - 1];
-        const afterTutorial = blockNum === 1 && selectedSession === 1;
-        const role = afterTutorial
-          ? "GUIDED HALL COMPLETE"
-          : blockNum === 1
-            ? String(selectedSession)
-            : "BLOCK 1 COMPLETE";
-        const body = afterTutorial
-          ? `Next is a <b>20-painting ${n}-back practice block</b>. Same rules as the scored game: left click = MATCH, right click = NO MATCH.<br><br>` +
-            "Every practice trial is <b>saved</b> to your session file (trialType <b>practice</b>).<br><br>" +
-            `After that, <b>Block ${blockNum}</b> begins (${TOTAL_TRIALS} paintings, scored).`
-          : blockNum === 1
-            ? `Session <b>${selectedSession}</b>. First up: a <b>20-painting ${n}-back practice block</b>. Same rules as the scored game: left click = MATCH, right click = NO MATCH.<br><br>` +
-              "Every practice trial is <b>saved</b> to your session file (trialType <b>practice</b>).<br><br>" +
-              `After that, <b>Block ${blockNum}</b> begins (${TOTAL_TRIALS} paintings, scored).`
-            : `Next is a <b>20-painting ${n}-back practice block</b>. Same rules as the scored game: left click = MATCH, right click = NO MATCH.<br><br>` +
-              "Every practice trial is <b>saved</b> to your session file (trialType <b>practice</b>).<br><br>" +
-              `After that, <b>Block ${blockNum}</b> begins (${TOTAL_TRIALS} paintings, scored).`;
+        const returnLine =
+          selectedSession === 3
+            ? "You return to the <b>Memory Halls</b> for the final trial. The corridors remember your footsteps."
+            : "You return to the <b>Memory Halls</b>. The glyphs remember you.";
+        const leadLine =
+          selectedSession === 3
+            ? "Walk the full hall one last time. Warm up first, then begin."
+            : "Warm up, then walk the full hall when you are ready.";
         showTransitionGate({
-          role,
-          title: `${n}-BACK PRACTICE<br />20 PAINTINGS`,
-          body,
-          btn: `BEGIN ${n}-BACK PRACTICE (20)`,
-          onBegin: () => game.startPractice(n),
-        });
-      }
-
-      function showPractice1Ready() {
-        showPreBlockPracticeReady(1);
-      }
-
-      function showActualGameReady() {
-        const blockN = selectedOrder[0];
-        const acc = logger.getRespondedTrials(1, "practice").length
-          ? `${logger.practiceAccuracy(1)}%`
-          : "--%";
-        showTransitionGate({
-          role: "PRACTICE SAVED",
-          title: "READY FOR THE<br />SCORED SESSION",
+          role: `SESSION ${selectedSession}`,
+          title: `MEMORY HALLS<span class="ag-title-sub">RETURN</span>`,
           body:
-            `${blockN}-back practice complete (${PRACTICE_TRIALS} paintings). Practice accuracy: <b>${acc}</b>. All rows are in the export.<br><br>` +
-            `When you continue, <b>Block 1</b> begins (${TOTAL_TRIALS} paintings, <b>${blockN}-back scored</b>).`,
-          btn: `BEGIN BLOCK 1 (${blockN}-BACK)`,
+            '<div class="ag-brief">' +
+            `<p class="ag-khenu-line"><b>Khenu:</b> ${returnLine}</p>` +
+            `<p class="ag-lead">${leadLine}</p>` +
+            "</div>",
+          btn: "CONTINUE",
           onBegin: () => {
-            game.isPracticePhase = false;
-            game.N = blockN;
-            nBackLevel.textContent = `N-BACK: ${game.N}`;
-            game.start();
+            showPreBlockPracticeReady(blockNum);
+            fdIn(FADE_IN_MS);
           },
         });
       }
 
-      function showScoredBlock2Ready() {
-        const practiceN = selectedOrder[1];
-        const acc = logger.getRespondedTrials(2, "practice").length
-          ? `${logger.practiceAccuracy(2)}%`
-          : "--%";
+      function showPreBlockPracticeReady(blockNum) {
+        const n = selectedOrder[blockNum - 1];
+        let role = "PRACTICE ROUND";
+        if (blockNum === 1 && selectedSession === 1) role = "GETTING STARTED";
+        else if (blockNum === 1) role = `SESSION ${selectedSession}`;
+        else role = "ROUND 2";
         showTransitionGate({
-          role: "PRACTICE SAVED",
-          title: "READY FOR<br />BLOCK 2",
-          body:
-            `${practiceN}-back practice complete (${PRACTICE_TRIALS} paintings). Practice accuracy: <b>${acc}</b>.<br><br>` +
-            `When you continue, <b>Block 2</b> begins (${TOTAL_TRIALS} paintings, scored).`,
-          btn: `BEGIN BLOCK 2 (${practiceN}-BACK)`,
+          role,
+          title: `${roundLoreName(n).toUpperCase()}<span class="ag-title-sub">WARM-UP &middot; ${PRACTICE_TRIALS} PAINTINGS</span>`,
+          body: practiceInstructionHtml(n),
+          btn: `BEGIN ${n}-BACK PRACTICE`,
+          onBegin: () => game.startPractice(n),
+        });
+      }
+
+      function showScoredBlockInstructions(blockNum) {
+        const n = selectedOrder[blockNum - 1];
+        const acc = game.practiceStats[blockNum]?.responded
+          ? game.practiceAccuracyPct(blockNum)
+          : null;
+        const role = blockNum === 1 ? "MAIN ROUND" : "FINAL ROUND";
+        const lead =
+          acc != null
+            ? `<p class="ag-lead">Warm-up complete: <b>${acc}%</b> correct. When you are ready, enter the hall.</p>`
+            : null;
+        showTransitionGate({
+          role,
+          title: `${roundLoreName(n).toUpperCase()}<span class="ag-title-sub">${n}-BACK &middot; ${TOTAL_TRIALS} PAINTINGS</span>`,
+          body: scoredBlockInstructionHtml(n, lead),
+          btn: `BEGIN ROUND ${blockNum}`,
           onBegin: () => {
             game.isPracticePhase = false;
-            game.N = practiceN;
+            game.N = n;
             nBackLevel.textContent = `N-BACK: ${game.N}`;
-            game.start();
+            game.start({ skipBlockInstruction: true });
           },
         });
       }
@@ -5180,29 +5781,25 @@
       $("ag-begin")?.addEventListener("click", () => {
         if (!panelTextures) return;
         const fn = agBeginAction;
-        hideActualGameReady();
-        releasePointerLockForUI();
-        if (fn) fdOut(fn, 360);
+        if (!fn) return;
+        if (agFadeOnBegin) {
+          releasePointerLockForUI();
+          fdOut(() => {
+            hideActualGameReady();
+            fn();
+          }, FADE_OUT_MS);
+        } else {
+          fn();
+        }
+      });
+
+      $("ag-secondary")?.addEventListener("click", () => {
+        if (agSecondaryAction) agSecondaryAction();
       });
 
       $("cr-again").addEventListener("click", () => {
         corridorResults.classList.remove("show", "cr-after-block1", "cr-final");
         hideBlockInstructionOverlay();
-
-        if (logger.block === 1 && hasCompleteBlock(1)) {
-          logger.nextBlock();
-          game.N = selectedOrder[1];
-          nBackLevel.textContent = `N-BACK: ${game.N}`;
-          releasePointerLockForUI();
-          fdOut(() => game.startPractice(selectedOrder[1]), 360);
-          return;
-        }
-        if (logger.block === 2 && hasCompletePracticeBlock(2, selectedOrder[1]) && !hasCompleteBlock(2)) {
-          game.N = selectedOrder[1];
-          nBackLevel.textContent = `N-BACK: ${game.N}`;
-          releasePointerLockForUI();
-          fdOut(() => game.start(), 360);
-        }
       });
 
       $("cr-menu").addEventListener("click", () => {
@@ -5253,10 +5850,13 @@
         if (hudAccCache.block !== cacheKey || now - hudAccCache.t > 300) {
           hudAccCache.block = cacheKey;
           hudAccCache.t = now;
-          const responded = logger.getRespondedTrials(logger.block, mode).length;
-          hudAccCache.val = responded
-            ? `${mode === "practice" ? logger.practiceAccuracy(logger.block) : logger.accuracy(logger.block)}%`
-            : "--%";
+          if (mode === "practice") {
+            const responded = game.practiceStats[logger.block]?.responded || 0;
+            hudAccCache.val = responded ? `${game.practiceAccuracyPct(logger.block)}%` : "--%";
+          } else {
+            const responded = logger.getRespondedTrials(logger.block).length;
+            hudAccCache.val = responded ? `${logger.accuracy(logger.block)}%` : "--%";
+          }
         }
         return hudAccCache.val;
       }
@@ -5315,15 +5915,19 @@
         `;
       }
 
-      function fdOut(cb, ms = 540) {
+      function fdOut(cb, ms = FADE_OUT_MS) {
+        fadeOverlay.style.zIndex = "35";
         fadeOverlay.style.transition = `opacity ${ms}ms ease`;
         fadeOverlay.style.opacity = "1";
         setTimeout(cb, ms);
       }
-      function fdIn(ms = 600) {
+      function fdIn(ms = FADE_IN_MS) {
         setTimeout(() => {
           fadeOverlay.style.transition = `opacity ${ms}ms ease`;
           fadeOverlay.style.opacity = "0";
+          setTimeout(() => {
+            fadeOverlay.style.zIndex = "10";
+          }, ms + 40);
         }, 30);
       }
 
@@ -5369,6 +5973,25 @@
         sequenceSeed: "",
         isTutorialPhase: false,
         isPracticePhase: false,
+        practiceCompleted: { 1: false, 2: false },
+        practiceStats: {
+          1: { correct: 0, responded: 0 },
+          2: { correct: 0, responded: 0 },
+        },
+
+        resetPracticeStats(block) {
+          this.practiceStats[block] = { correct: 0, responded: 0 };
+        },
+
+        practiceAccuracyPct(block) {
+          const s = this.practiceStats[block];
+          if (!s || !s.responded) return 0;
+          return Math.round((s.correct / s.responded) * 1000) / 10;
+        },
+
+        markPracticeComplete(block) {
+          this.practiceCompleted[block] = true;
+        },
 
         /**
          * Guided hall: TUTORIAL_PAINTINGS (7) paintings; N-back matches first block order.
@@ -5451,11 +6074,13 @@
         },
 
         /**
-         * 20-trial practice block (logged as trialType practice).
+         * 20-trial practice block.
          */
         startPractice(n) {
           this.isTutorialPhase = false;
           this.isPracticePhase = true;
+          this.practiceCompleted[logger.block] = false;
+          this.resetPracticeStats(logger.block);
           this.phase = "busy";
           this.nextIdx = 0;
           this.awaitingResponse = false;
@@ -5471,6 +6096,8 @@
           combo = 0;
           bestCombo = 0;
           updateComboHUD();
+          roundCompleteTorchBoost = false;
+          torchPulseEnd = 0;
           clearBullets();
 
           for (let i = FX_PARTICLES.length - 1; i >= 0; i--) {
@@ -5509,25 +6136,10 @@
           hudUpdate();
 
           const enterCorridor = () => {
-            fdIn(580);
-            setTimeout(() => {
-              this.phase = "corridor";
-              gamePrompt.textContent = "";
-              ensurePointerLock();
-              syncPointerLockUI();
-            }, 660);
+            enterCorridorPhase();
           };
 
-          showBlockInstructionOverlay(n, logger.block, enterCorridor, {
-            title: `PRACTICE \u00b7 ${n}-BACK \u00b7 ${PRACTICE_TRIALS} PAINTINGS`,
-            bodyHtml:
-              "<p class=\"bi-how-h\">Practice block (data saved)</p>" +
-              `<p>This is a <b>${PRACTICE_TRIALS}-painting practice run</b> at <b>${n}-back</b>. Rules are the same as the scored blocks.</p>` +
-              "<p>Every trial is logged to the export file with trialType <b>practice</b> (same columns as scored trials).</p>" +
-              blockInstructionContent(n, { includeControls: true }),
-            goLabel: `BEGIN ${n}-BACK PRACTICE`,
-            includeControls: false,
-          });
+          enterCorridor();
         },
 
         /**
@@ -5550,6 +6162,8 @@
           combo = 0;
           bestCombo = 0;
           updateComboHUD();
+          roundCompleteTorchBoost = false;
+          torchPulseEnd = 0;
           clearBullets();
           
           for (let i = FX_PARTICLES.length - 1; i >= 0; i--) {
@@ -5589,13 +6203,7 @@
           hudUpdate();
           
           const enterCorridor = () => {
-            fdIn(580);
-            setTimeout(() => {
-              this.phase = "corridor";
-              gamePrompt.textContent = "";
-              ensurePointerLock();
-              syncPointerLockUI();
-            }, 660);
+            enterCorridorPhase();
           };
           
           const blockNum = logger.block;
@@ -5634,7 +6242,8 @@
           p.rsi = this.lastEventTime > 0 ? p.revealTime - this.lastEventTime : 0;
           
           sounds.panel();
-          
+          sounds.chime();
+
           if (glowMaterials) p.mesh.material = glowMaterials[p.gi];
           if (p.glowTimer) cancelSafeTimeout(p.glowTimer);
           
@@ -5667,13 +6276,15 @@
 
           // Warmup/Observe trials: No response required
           if (p.idx < this.N) {
-            logger.recordWarmup({
-              trialIdx: p.idx,
-              n: this.N,
-              glyphIdx: this.seq[p.idx],
-              rsi: p.rsi,
-              sequenceSeed: this.sequenceSeed,
-            });
+            if (!this.isPracticePhase && !this.isTutorialPhase) {
+              logger.recordWarmup({
+                trialIdx: p.idx,
+                n: this.N,
+                glyphIdx: this.seq[p.idx],
+                rsi: p.rsi,
+                sequenceSeed: this.sequenceSeed,
+              });
+            }
             this.lastEventTime = p.revealTime;
             this.awaitingResponse = false;
             this.currentTrialIdx = -1;
@@ -5684,14 +6295,16 @@
           // Scored trials: Player must decide if it's a match
           this.awaitingResponse = true;
           this.currentTrialIdx = p.idx;
-          logger.record({
-            trialIdx: p.idx,
-            n: this.N,
-            glyphIdx: this.seq[p.idx],
-            nbackGlyphIdx: this.seq[p.idx - this.N],
-            rsi: p.rsi,
-            sequenceSeed: this.sequenceSeed,
-          });
+          if (!this.isPracticePhase && !this.isTutorialPhase) {
+            logger.record({
+              trialIdx: p.idx,
+              n: this.N,
+              glyphIdx: this.seq[p.idx],
+              nbackGlyphIdx: this.seq[p.idx - this.N],
+              rsi: p.rsi,
+              sequenceSeed: this.sequenceSeed,
+            });
+          }
           gamePrompt.textContent = "";
           hudUpdate(true);
         },
@@ -5701,13 +6314,15 @@
          */
         respond(resp) {
           if (!this.awaitingResponse || this.currentTrialIdx < this.N) return;
-          
+
           const respTime = performance.now();
           const i = this.currentTrialIdx;
           const panel = this.world && this.world.panels[i];
-          
-          if (!panel || !panel.revealed) return;
-          
+
+          if (!panel || !panel.revealed || panel.responded) return;
+
+          this.awaitingResponse = false;
+
           const rt = respTime - panel.revealTime;
           const rsi = panel.rsi || 0;
 
@@ -5729,11 +6344,12 @@
           } else {
             sounds.wrong();
           }
-          
+
           showTrialFeedback(correct, this.isTutorialPhase);
 
           if (this.isTutorialPhase) {
             if (!correct) {
+              this.awaitingResponse = true;
               panel.tutMiss = (panel.tutMiss || 0) + 1;
               const need = actualMatch ? "MATCH" : "NO MATCH";
               showKhenuTutorialStep(
@@ -5748,7 +6364,6 @@
             this.lastEventTime = respTime;
             panel.responded = true;
             panel.tutMiss = 0;
-            this.awaitingResponse = false;
             this.currentTrialIdx = -1;
             this.respondedCount++;
             this.hudPaint = i;
@@ -5772,6 +6387,8 @@
             return;
           }
 
+          panel.responded = true;
+
           if (!this.isPracticePhase) {
             if (correct) {
               combo++;
@@ -5781,24 +6398,29 @@
             }
             updateComboHUD();
             updateTorchBrightness(correct);
+          } else {
+            const stats = this.practiceStats[logger.block];
+            stats.responded++;
+            if (correct) stats.correct++;
+            invalidateHudAcc();
           }
 
-          logger.record({
-            trialIdx: i,
-            n: this.N,
-            glyphIdx: currentGlyph,
-            nbackGlyphIdx: nbackGlyph,
-            resp: resp,
-            rt: rt,
-            rsi: rsi,
-            sequenceSeed: this.sequenceSeed,
-          });
+          if (!this.isPracticePhase) {
+            logger.record({
+              trialIdx: i,
+              n: this.N,
+              glyphIdx: currentGlyph,
+              nbackGlyphIdx: nbackGlyph,
+              resp: resp,
+              rt: rt,
+              rsi: rsi,
+              sequenceSeed: this.sequenceSeed,
+            });
+          }
 
           this.lastEventTime = respTime;
 
-          panel.responded = true;
           invalidateHudAcc();
-          this.awaitingResponse = false;
           this.currentTrialIdx = -1;
           this.respondedCount++;
           this.hudPaint = i;
@@ -5816,6 +6438,7 @@
             this.nextIdx = paintTotal;
             gamePrompt.textContent = this.isPracticePhase ? "Practice complete" : "Block complete";
             hudUpdate(true);
+            playRoundCompleteBeat();
             safeTimeout(
               () => (this.isPracticePhase ? this.endPractice() : this.endBlock()),
               800,
@@ -5834,15 +6457,7 @@
           this.nextIdx = tutorialTrialCount(this.N);
           hudUpdate(true);
           this.phase = "results";
-
-          clearBullets();
-          gunGroup.visible = false;
-          crosshairRing.classList.remove("aim");
-          hideKhenuCoach();
-          releasePointerLockForUI();
-          corridorResults.classList.remove("show", "cr-after-block1", "cr-final");
-          gamePrompt.textContent = "";
-          showPractice1Ready();
+          exitGameplayToGate(() => showPreBlockPracticeReady(1));
         },
 
         /**
@@ -5851,26 +6466,12 @@
         endPractice() {
           this.blockComplete = true;
           this.nextIdx = PRACTICE_TRIALS;
+          this.markPracticeComplete(logger.block);
           hudUpdate(true);
           this.phase = "results";
-
-          clearBullets();
-          gunGroup.visible = false;
-          crosshairRing.classList.remove("aim");
-          hideKhenuCoach();
-          releasePointerLockForUI();
-          corridorResults.classList.remove("show", "cr-after-block1", "cr-final");
-          gamePrompt.textContent = "";
           invalidateHudAcc();
-
           const block = logger.block;
-          const practiceN = selectedOrder[block - 1];
-          if (!hasCompletePracticeBlock(block, practiceN)) {
-            showPreBlockPracticeReady(block);
-            return;
-          }
-          if (block === 1) showActualGameReady();
-          else showScoredBlock2Ready();
+          exitGameplayToGate(() => showScoredBlockInstructions(block));
         },
 
         /**
@@ -5881,34 +6482,13 @@
           this.nextIdx = TOTAL_TRIALS;
           hudUpdate(true);
           this.phase = "results";
-          
-          clearBullets();
-          gunGroup.visible = false;
-          crosshairRing.classList.remove("aim");
           exitPointerLockIfAny();
 
-          const b = logger.block;
-          const isFinal = b >= 2;
-          const nextWrap = $("cr-next-wrap");
-          const instrEl = $("cr-block-instr");
-          
-          if (instrEl) instrEl.innerHTML = "";
-
-          if (isFinal) {
-            corridorResults.classList.remove("cr-after-block1");
-            corridorResults.classList.add("cr-final");
-            renderSessionCompleteUI();
-            if (nextWrap) nextWrap.style.display = "none";
-            spawnResultParticles();
-          } else {
-            corridorResults.classList.remove("cr-final");
-            corridorResults.classList.add("cr-after-block1");
-            if (nextWrap) nextWrap.style.display = "";
-            showBlock1BreakScreen(this.N);
-          }
-
-          corridorResults.classList.add("show");
-          gamePrompt.textContent = "";
+          const isFinal = logger.block >= 2;
+          exitGameplayToGate(() => {
+            if (isFinal) showSessionCompleteGate();
+            else showBlock1BreakGate(this.N);
+          });
         },
       };
       syncPauseMenuHint();
@@ -5917,11 +6497,15 @@
         return (
           "<p><b>Step 1: Walk and look</b></p>" +
           '<ul class="tut-keys">' +
-          "<li><b>W A S D</b>: walk (W = forward, S = back, A = left, D = right)</li>" +
-          "<li><b>Mouse</b>: move to look around. The pointer stays centred on screen during the game.</li>" +
+          "<li><b>W A S D</b>: walk</li>" +
+          "<li><b>W</b> = forward</li>" +
+          "<li><b>S</b> = back</li>" +
+          "<li><b>A</b> = left</li>" +
+          "<li><b>D</b> = right<br><span style=\"opacity:.88\">(hold <b>Shift</b> to sprint or walk faster)</span></li>" +
+          "<li><b>Mouse</b>: move to look around.</li>" +
           "</ul>" +
           "<p><b>Step 2: Answer on the painting</b></p>" +
-          desktopPointerOptsHtml()
+          "<p><b>LEFT CLICK</b> \u2192 <b>MATCH</b><br><b>RIGHT CLICK</b> \u2192 <b>NO MATCH</b></p>"
         );
       }
 
@@ -5950,8 +6534,11 @@
       function finishTutorial() {
         hideTutorial();
         if (tutFromTitle) {
-          sessionHadTutorial = true;
-          startGameDirect();
+          if (!beginParticipantSession()) return;
+          fdOut(() => {
+            showPreBlockPracticeReady(1);
+            fdIn(FADE_IN_MS);
+          }, FADE_OUT_MS);
         } else {
           afterTutorialFromPauseIfNeeded();
         }
@@ -5983,18 +6570,28 @@
       }
 
       function tutorialQuizHtml(quiz) {
-        const ref = GLYPHS[quiz.refGi];
-        const cur = GLYPHS[quiz.currGi];
-        const refLbl = quiz.refLabel || "Previous";
+        const refTrial = quiz.refTrial;
+        const currTrial = quiz.currTrial;
+        const seqHtml = (quiz.paintings || [])
+          .map((gi, idx) => {
+            const num = idx + 1;
+            let cls = "tut-quiz-glyph";
+            if (num === refTrial) cls += " tut-quiz-ref";
+            if (num === currTrial) cls += " tut-quiz-now";
+            return (
+              `<div class="${cls}">` +
+              `<span class="tut-quiz-lbl">${num}</span>` +
+              `<span class="tut-quiz-ch">${GLYPHS[gi].ch}</span>` +
+              "</div>"
+            );
+          })
+          .join("");
         return (
-          `<p>${quiz.question}</p>` +
-          '<div class="tut-quiz-glyphs">' +
-          `<div class="tut-quiz-glyph"><span class="tut-quiz-lbl">${refLbl}</span>` +
-          `<span class="tut-quiz-ch">${ref.ch}</span></div>` +
-          '<span class="tut-quiz-vs">vs</span>' +
-          '<div class="tut-quiz-glyph"><span class="tut-quiz-lbl">Now</span>' +
-          `<span class="tut-quiz-ch">${cur.ch}</span></div>` +
+          (quiz.question ? `<p>${quiz.question}</p>` : "") +
+          '<div class="tut-quiz-seq">' +
+          seqHtml +
           "</div>" +
+          (quiz.prompt ? `<p class="tut-quiz-prompt">${quiz.prompt}</p>` : "") +
           '<div class="tut-quiz-btns">' +
           '<button type="button" class="tut-quiz-btn" data-resp="1">MATCH</button>' +
           '<button type="button" class="tut-quiz-btn" data-resp="2">NO MATCH</button>' +
@@ -6025,7 +6622,7 @@
               tutorialNext.textContent =
                 tutPage === SLIDES.length - 1
                   ? tutFromTitle
-                    ? "START PRACTICE \u2192"
+                    ? "BEGIN PRACTICE \u2192"
                     : "CLOSE"
                   : "NEXT \u2192";
             } else {
@@ -6068,7 +6665,7 @@
         const first = tutPage === 0;
         tutorialNext.textContent = last
           ? tutFromTitle
-            ? "START PRACTICE \u2192"
+            ? "BEGIN PRACTICE \u2192"
             : "CLOSE"
           : slide.quiz
             ? "ANSWER TO CONTINUE"
@@ -6367,7 +6964,7 @@
           html = "<b>Khenu:</b> Correct! Walk forward to the next painting.";
         } else if (state === "complete") {
           pose = "bow";
-          html = "<b>Khenu:</b> Practice complete. Well done! The real session is next.";
+          html = "<b>Khenu:</b> Practice complete. Well done! The main round is next.";
         }
 
         showKhenuCoach({ pose, html });
@@ -6408,6 +7005,7 @@
             }
           }
           if ((hudTick++ & 3) === 0) hudUpdate();
+          updateTorchPulse();
         }
 
         if (game.phase === "corridor") {
@@ -6440,8 +7038,8 @@
         return Math.max(mn, Math.min(mx, v));
       }
 
-      function spawnResultParticles() {
-        const container = $("cr-particles");
+      function spawnResultParticles(containerId = "cr-particles") {
+        const container = $(containerId);
         if (!container) return;
         container.innerHTML = "";
         const colors = ["#f5c040", "#ff8c22", "#2edc5a", "#f5e880"];
@@ -6468,14 +7066,33 @@
         if (combo >= 10) COMBO_EL.className = "blaze";
         else if (combo >= 5) COMBO_EL.className = "fire";
         else COMBO_EL.className = "hot";
+        if (combo === 5 || combo === 10) {
+          sounds.streakPing();
+        }
         COMBO_EL.style.transform = "scale(1.2)";
         setTimeout(() => {
           COMBO_EL.style.transform = "";
         }, 150);
       }
 
-      function updateTorchBrightness(_correct) {
-        /* Corridor torches and ambient stay at fixed levels for the block. */
+      let torchPulseEnd = 0;
+      let roundCompleteTorchBoost = false;
+
+      function updateTorchBrightness(correct) {
+        if (!correct) return;
+        torchPulseEnd = performance.now() + 400;
+      }
+
+      function updateTorchPulse() {
+        const now = performance.now();
+        const boost = roundCompleteTorchBoost ? 1.35 : now < torchPulseEnd ? 1.1 : 1.0;
+        TORCH_LIGHTS.forEach((l) => {
+          if (!l.userData.corridorTorch) return;
+          const base = l.userData.baseIntensity || 3.6;
+          l.intensity = base * boost;
+          if (roundCompleteTorchBoost) l.color.setHex(0xffc060);
+          else l.color.setHex(0xff9a38);
+        });
       }
 
       const FX_PARTICLES = [];
@@ -6600,40 +7217,104 @@
             return;
           }
           cutsceneText.innerHTML = "";
-          const tmp = document.createElement("div");
-          tmp.innerHTML = html;
-          const fullText = tmp.innerHTML;
-          cutsceneText.innerHTML = "";
-          let i = 0,
-            adding = true;
+          const source = document.createElement("div");
+          source.innerHTML = html;
+          const ops = [];
+          function walk(node) {
+            if (node.nodeType === Node.TEXT_NODE) {
+              const t = node.textContent || "";
+              for (const ch of t) ops.push({ type: "char", ch });
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+              const tag = node.tagName.toLowerCase();
+              ops.push({ type: "open", tag });
+              node.childNodes.forEach(walk);
+              ops.push({ type: "close", tag });
+            }
+          }
+          source.childNodes.forEach(walk);
+
+          const stack = [];
           const cursor = document.createElement("span");
           cursor.className = "term-cursor";
           cursor.style.background = "rgba(245,192,82,.7)";
+          let opIdx = 0;
 
-          function typeNext() {
-            if (!csActive || i >= fullText.length) {
-              cutsceneText.innerHTML = fullText;
-              cursor.remove();
-              resolve();
+          function parentEl() {
+            return stack.length ? stack[stack.length - 1] : cutsceneText;
+          }
+
+          function placeCursor() {
+            if (cursor.parentNode) cursor.remove();
+            parentEl().appendChild(cursor);
+          }
+
+          function finish() {
+            cutsceneText.innerHTML = html;
+            resolve();
+          }
+
+          function step() {
+            if (!csActive) {
+              finish();
               return;
             }
-            if (fullText[i] === "<") {
-              const close = fullText.indexOf(">", i);
-              if (close !== -1) {
-                i = close + 1;
-                cutsceneText.innerHTML = fullText.slice(0, i);
-                cutsceneText.appendChild(cursor);
-                csTimers.push(setTimeout(typeNext, 5));
-                return;
-              }
+            if (opIdx >= ops.length) {
+              finish();
+              return;
             }
-            i++;
-            cutsceneText.innerHTML = fullText.slice(0, i);
-            cutsceneText.appendChild(cursor);
-            csTimers.push(setTimeout(typeNext, 28 + Math.random() * 18));
+            const op = ops[opIdx++];
+            if (op.type === "open") {
+              const el = document.createElement(op.tag);
+              parentEl().appendChild(el);
+              stack.push(el);
+              placeCursor();
+              step();
+              return;
+            }
+            if (op.type === "close") {
+              stack.pop();
+              placeCursor();
+              step();
+              return;
+            }
+            parentEl().appendChild(document.createTextNode(op.ch));
+            placeCursor();
+            csTimers.push(setTimeout(step, 48 + Math.random() * 28));
           }
-          typeNext();
+
+          placeCursor();
+          step();
         });
+      }
+
+      function nbackCompareLabel(n) {
+        if (n === 1) return "the previous painting";
+        if (n === 3) return "three paintings back";
+        return `${n} paintings back`;
+      }
+
+      function participantLoreHtml() {
+        const label = nbackCompareLabel(selectedOrder[0]);
+        return (
+          "WALK TO EACH PAINTING.<br />" +
+          `SAME GLYPH AS <b>${label.toUpperCase()}</b>? &rarr; <b>MATCH</b><br />` +
+          "DIFFERENT? &rarr; <b>NO MATCH</b>"
+        );
+      }
+
+      function syncParticipantStartLore() {
+        const el = $("ps-lore");
+        if (!el) return;
+        el.innerHTML = '<span class="tt-lore">' + participantLoreHtml() + "</span>";
+      }
+
+      function cutsceneTaskLineHtml() {
+        const label = nbackCompareLabel(selectedOrder[0]);
+        return (
+          "<b>Walk to each painting.</b>" +
+          "<br><b>Remember each glyph.</b>" +
+          `<br><b>Same as ${label}? MATCH. If not, NO MATCH.</b>`
+        );
       }
 
       function waitForInput() {
@@ -6931,34 +7612,35 @@
           cutsceneTerminal.innerHTML = "";
           cutsceneTerminal.style.display = "flex";
           cutsceneKhenu.classList.remove("on");
-          cutsceneKhenu.style.display = "none";
+          cutsceneKhenu.style.display = "";
+          cutsceneText.innerHTML = "";
           cutsceneProgressBar.style.width = "0%";
           $("cs-continue").style.display = "none";
 
           // Boot sequence: clinical DLPFC training rig, then a quiet glitch into the temple.
           cutsceneProgressBar.style.width = "6%";
-          await typeLine("INITIALIZING DLPFC MEMORY TRAINING SYSTEM...", "sys", 18);
+          await typeLine("INITIALIZING DLPFC MEMORY TRAINING SYSTEM...", "sys", 32);
           cutsceneProgressBar.style.width = "14%";
-          await csWait(280);
-          await typeLine("SUBJECT CONNECTED", "", 18);
+          await csWait(500);
+          await typeLine("SUBJECT CONNECTED", "", 32);
           cutsceneProgressBar.style.width = "22%";
-          await csWait(280);
-          await typeLine("SYNCHRONIZING COGNITIVE RESPONSE STREAM...", "", 16);
+          await csWait(500);
+          await typeLine("SYNCHRONIZING COGNITIVE RESPONSE STREAM...", "", 30);
           cutsceneProgressBar.style.width = "32%";
-          await csWait(360);
+          await csWait(620);
           await typeLine(
             "WARNING: LONG-TERM MEMORY INTERFERENCE POSSIBLE",
             "warn",
-            18,
+            32,
           );
           cutsceneProgressBar.style.width = "40%";
-          await csWait(420);
-          await typeLine("LOADING MEMORY HALLS...", "", 16);
+          await csWait(720);
+          await typeLine("LOADING MEMORY HALLS...", "", 30);
           cutsceneProgressBar.style.width = "46%";
-          await csWait(360);
-          await typeLine("UNKNOWN ENTITY DETECTED: KHENU", "err", 20);
+          await csWait(620);
+          await typeLine("UNKNOWN ENTITY DETECTED: KHENU", "err", 34);
           cutsceneProgressBar.style.width = "52%";
-          await csWait(420);
+          await csWait(720);
 
           if (!csActive) {
             endCutscene();
@@ -6966,17 +7648,18 @@
           }
           cutsceneGlitch.classList.add("on");
           if (audioCtx) beep(80, "sawtooth", 0.4, 0.2);
-          await csWait(720);
+          await csWait(1150);
           cutsceneGlitch.classList.remove("on");
 
           cutsceneOverlay.classList.add("phase-gold");
+          cutsceneTerminal.innerHTML = "";
           cutsceneTerminal.style.display = "none";
+          cutsceneText.innerHTML = "";
           drawCsKhenu("idle", true);
-          cutsceneKhenu.style.display = "flex";
-          await csWait(200);
+          await csWait(80);
           cutsceneKhenu.classList.add("on");
           cutsceneProgressBar.style.width = "62%";
-          await csWait(900);
+          await csWait(1500);
 
           if (!csActive) {
             endCutscene();
@@ -7010,13 +7693,7 @@
 
           cutsceneProgressBar.style.width = "92%";
           drawCsKhenu("point", true);
-          await typeDialogue(
-            "<b>Walk to each painting.</b>" +
-              "<br>" +
-              "<b>Remember each glyph.</b>" +
-              "<br>" +
-              "<b>Same as N back? MATCH. If not, NO MATCH.</b>",
-          );
+          await typeDialogue(cutsceneTaskLineHtml());
           await waitForInput();
           if (!csActive) {
             endCutscene();
@@ -7024,7 +7701,7 @@
           }
 
           cutsceneProgressBar.style.width = "100%";
-          await csWait(450);
+          await csWait(750);
           endCutscene();
         });
       }
@@ -7038,7 +7715,9 @@
           csInputCleanup = null;
         }
         cutsceneTerminal.innerHTML = "";
+        cutsceneText.innerHTML = "";
         cutsceneKhenu.classList.remove("on");
+        cutsceneKhenu.style.display = "";
         cutsceneOverlay.classList.remove("show", "phase-gold");
         cutsceneProgressBar.style.width = "0%";
         $("cs-continue").style.display = "none";
@@ -7056,33 +7735,28 @@
         syncPauseMenuPid();
       }
 
-      function startGameDirect() {
-        if (!panelTextures) return;
-        if (!requireParticipantId()) return;
-        initAudio();
+      function beginParticipantSession() {
+        if (!panelTextures) return false;
+        if (!requireParticipantId()) return false;
         game.N = selectedN;
         syncLoggerFromSetupForm();
         titleScreen.classList.add("gone");
         alive = true;
         logger.begin();
-        game.startTutorial();
+        return true;
       }
 
       function startPracticeOnlySession() {
-        if (!panelTextures) return;
-        if (!requireParticipantId()) return;
-        syncLoggerFromSetupForm();
-        titleScreen.classList.add("gone");
-        alive = true;
-        logger.begin();
-        sessionHadTutorial = false;
-        showPreBlockPracticeReady(1);
+        if (!beginParticipantSession()) return;
+        if (selectedSession > 1) showSessionReturnGate(1);
+        else showPreBlockPracticeReady(1);
       }
 
       // Researcher confirms session config → hand off to the Participant Start screen.
       const participantStart = $("ps");
       function showParticipantStart() {
         syncLoggerFromSetupForm();
+        syncParticipantStartLore();
         $("ps-badge-pid").textContent = logger.pid || "-";
         $("ps-badge-sid").textContent = String(selectedSession);
         titleScreen.classList.add("gone");
@@ -7117,10 +7791,16 @@
         game.N = selectedN;
         hideParticipantStart();
         if (selectedSession === 1) {
-          await playCutscene();
-          showTutorial(true);
+          fdOut(async () => {
+            await playCutscene();
+            showTutorial(true);
+            fdIn(FADE_IN_MS);
+          }, FADE_OUT_MS);
         } else {
-          startPracticeOnlySession();
+          fdOut(() => {
+            startPracticeOnlySession();
+            fdIn(FADE_IN_MS);
+          }, FADE_OUT_MS);
         }
       });
 
@@ -7194,6 +7874,7 @@
         $("enter-btn").disabled = false;
         $("enter-btn").textContent = "READY FOR PARTICIPANT \u2192";
         spawnTitleGlyphs();
+        resetParticipantId();
         showReloadDataBannerIfNeeded();
       }
       const fontGateTimer = setTimeout(() => bootstrapStartAssets("timeout-5000ms"), 5000);
@@ -7234,6 +7915,12 @@
           } else {
             alert("No restorable snapshot found.");
           }
+        });
+      }
+      const reloadWarnDownload = $("reload-warn-download");
+      if (reloadWarnDownload) {
+        reloadWarnDownload.addEventListener("click", function () {
+          downloadLostSessionData();
         });
       }
       const reloadWarnDismiss = $("reload-warn-dismiss");
