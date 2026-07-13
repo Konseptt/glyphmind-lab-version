@@ -137,7 +137,7 @@
       #ps-role, .title-main, .subtitle-main, .cr-break-title, .cr-break-sub,
       #cr-block-instr, #ps-lore, .badge-container-lbl, .badge-container-val,
       #ps-hint, #ps-back, #ps-begin, .mode-btn, .cond-btn, .stim-btn,
-      #cs-name, #cs-text, #cs-continue, .pidinput, #pm-pid {
+      #cs-name, #cs-text, #cs-continue, .pidinput {
         text-shadow: var(--txt-legibility);
       }
       /* 
@@ -251,41 +251,6 @@
       #tfb.ok { opacity: 1; color: rgba(46, 220, 90, 1); text-shadow: 0 0 32px rgba(46, 220, 90, 0.7); }
       #tfb.no { opacity: 1; color: rgba(220, 46, 20, 1); text-shadow: 0 0 32px rgba(220, 46, 20, 0.7); }
 
-      /* Pause menu */
-      #pm {
-        position: fixed;
-        inset: 0;
-        display: none;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        overflow-y: auto;
-        padding: 40px 16px;
-        z-index: 30;
-        background: rgba(4, 2, 1, 0.94);
-      }
-      #pm.show {
-        display: flex;
-      }
-      #pm .pm-session {
-        width: 300px;
-        max-width: 88vw;
-        margin-bottom: 18px;
-        text-align: center;
-      }
-      #pm .pm-session .field-label {
-        margin-bottom: 6px;
-      }
-      #pm-pid {
-        font-family: "Cinzel Decorative", serif;
-        font-size: clamp(14px, 2vw, 20px);
-        letter-spacing: 0.12em;
-        color: rgba(245, 210, 145, 0.98);
-        padding: 10px 12px;
-        border: 1px solid rgba(160, 108, 28, 0.45);
-        background: rgba(12, 8, 2, 0.75);
-        word-break: break-word;
-      }
       .title-large {
         font-family: "Cinzel Decorative", serif;
         font-size: clamp(18px, 4.5vw, 50px);
@@ -299,13 +264,6 @@
         color: rgba(210, 168, 88, 0.92);
         letter-spacing: 0.3em;
         margin-bottom: 32px;
-      }
-      #pm-hint {
-        font-size: clamp(11px, 1.35vw, 15px);
-        letter-spacing: 0.04em;
-        line-height: 1.45;
-        max-width: 340px;
-        margin: 0 auto 28px;
       }
       .button-primary {
         background: transparent;
@@ -494,7 +452,6 @@
         flex-shrink: 0;
         gap: 8px;
       }
-      #reload-warn-restore,
       #reload-warn-download,
       #reload-warn-dismiss {
         flex-shrink: 0;
@@ -540,11 +497,6 @@
         opacity: 1;
         transform: translateX(-50%) translateY(0);
       }
-      #reload-warn-restore {
-        border-color: rgba(120, 220, 90, 0.55);
-        color: rgba(150, 240, 120, 0.95);
-      }
-
       /* Tutorial */
       #tut {
         position: fixed;
@@ -722,6 +674,26 @@
         background: rgba(18, 12, 4, 0.88);
         box-shadow: 0 0 14px rgba(245, 142, 26, 0.22);
       }
+      .tut-quiz-glyph.tut-quiz-dim {
+        opacity: 0.42;
+      }
+      .tut-quiz-block-tag {
+        font-size: clamp(9px, 1.05vw, 11px);
+        letter-spacing: 0.16em;
+        color: rgba(245, 192, 82, 0.92);
+        text-align: center;
+        margin: 0 0 10px;
+      }
+      .tut-dual-block-part--second {
+        margin-top: 18px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(245, 192, 82, 0.22);
+      }
+      .tut-quiz-tag {
+        font-size: clamp(7px, 0.85vw, 9px);
+        letter-spacing: 0.1em;
+        color: rgba(200, 160, 80, 0.9);
+      }
       .tut-quiz-prompt {
         font-size: clamp(12px, 1.35vw, 15px);
         line-height: 1.55;
@@ -738,7 +710,7 @@
         color: rgba(215, 175, 95, 0.88);
       }
       .tut-quiz-ch {
-        font-family: "Noto Sans Egyptian Hieroglyphs", serif;
+        font-family: "Noto Sans Egyptian Hieroglyphs", "Segoe UI Historic", "Noto Sans Symbols 2", serif;
         font-size: clamp(36px, 8vw, 52px);
         line-height: 1;
         color: rgba(255, 220, 120, 1);
@@ -2470,7 +2442,6 @@
       <span id="reload-warn-txt"></span>
       <div id="reload-warn-actions">
         <button type="button" class="btn-download" id="reload-warn-download" hidden>DOWNLOAD DATA</button>
-        <button type="button" id="reload-warn-restore" hidden>RESTORE DATA</button>
         <button type="button" id="reload-warn-dismiss">DISMISS</button>
       </div>
     </div>
@@ -2490,22 +2461,6 @@
 
     <!-- trial flash -->
     <div id="tfb"></div>
-
-    <div id="pm">
-      <div class="title-large">PAUSED</div>
-      <div class="subtitle-small" id="pm-hint">Take a short break. Click RESUME when you are ready.</div>
-      <div class="pm-session">
-        <div class="field-label">PARTICIPANT ID</div>
-        <div id="pm-pid">-</div>
-      </div>
-      <button class="button-primary" id="pm-resume">RESUME</button>
-      <div class="pdiv"></div>
-      <button class="button-primary" id="pm-tutorial">CONTROLS</button>
-      <button class="button-primary" id="pm-access">ACCESSIBILITY</button>
-      <div class="pdiv"></div>
-      <button class="button-primary" id="pm-restart">RESTART BLOCK</button>
-      <button class="button-primary" id="pm-title">BACK TO TITLE</button>
-    </div>
 
     <div id="acc-sub">
       <div class="title-large">ACCESSIBILITY</div>
@@ -2624,8 +2579,8 @@
         BLOCK ORDER
       </div>
       <div class="mode-row">
-        <button class="mode-btn on" id="mode-13">1-BACK &rarr; 3-BACK</button>
-        <button class="mode-btn" id="mode-31">3-BACK &rarr; 1-BACK</button>
+        <button class="mode-btn order-btn on" id="mode-13" type="button">1-BACK &rarr; 3-BACK</button>
+        <button class="mode-btn order-btn" id="mode-31" type="button">3-BACK &rarr; 1-BACK</button>
       </div>
 
       <div style="width: 100%; margin-bottom: 14px">
@@ -2669,6 +2624,10 @@
             SHAM
           </button>
         </div>
+      </div>
+
+      <div style="width: 100%; margin-bottom: 10px">
+        <button class="button-primary" id="tt-access" type="button" style="width: 100%">ACCESSIBILITY</button>
       </div>
 
       <div style="width: 100%">
@@ -2784,7 +2743,7 @@
       }
 
       function tutorialNForSession() {
-        return selectedOrder[0];
+        return firstBlockNForSession();
       }
 
       function tutorialBackPhrase(N) {
@@ -2853,8 +2812,7 @@
       const sequenceBox = $("seqbox"),
         gamePrompt = $("prompt");
       const trialFeedback = $("tfb");
-      const PAUSE_MENU = $("pm"),
-        fadeOverlay = $("fade"),
+      const fadeOverlay = $("fade"),
         resultFlash = $("rfl"),
         resultFlashText = $("rfl-txt");
       const tutorialOverlay = $("tut"),
@@ -3414,7 +3372,8 @@
       const PAINT_Z0 = 5.75,
         PAINT_SPACING = 5.5,
         CORRIDOR_TAIL = 14,
-        REVEAL_DIST = 4.8;
+        REVEAL_DIST = 2.85,
+        CORRIDOR_END_Z_PAD = 2.1;
       let worldGrp = null;
       const DM = new THREE.Object3D();
 
@@ -3564,7 +3523,7 @@
         const xM = CW / 2 - 0.36;
         const lastPanelZ = panels.length ? panels[panels.length - 1].z : cZ1;
         // Stop well before the back wall so the end frame is not mistaken for a 71st painting.
-        const zEnd = lastPanelZ - Math.min(REVEAL_DIST * 0.65, 3.2);
+        const zEnd = lastPanelZ - CORRIDOR_END_Z_PAD;
         return { panels, cBound: { x0: -xM, x1: xM, z0: zEnd, z1: cZ0 } };
       }
 
@@ -3659,12 +3618,12 @@
       function onCanvasMouseDown(e) {
         if (!alive) return;
         if (e.button === 0 && game.phase === "corridor" && game.awaitingResponse) {
-          game.respond(1);
+          game.respond(1, e.timeStamp);
           return;
         }
         if (e.button === 2 && game.phase === "corridor" && game.awaitingResponse) {
           e.preventDefault();
-          game.respond(2);
+          game.respond(2, e.timeStamp);
           return;
         }
         if (e.button === 0 && !pointerLocked && shouldKeepPointerLock()) {
@@ -3727,18 +3686,20 @@
         KEYS[e.code] = true;
         if (e.code === "Space" || e.code === "ShiftLeft" || e.code === "ShiftRight")
           e.preventDefault();
-        if (e.code === "Escape" && alive) {
+        if (e.code === "Escape" && accessibilitySubmenu.classList.contains("show")) {
           e.preventDefault();
-          if (accessibilitySubmenu.classList.contains("show")) {
-            accessibilitySubmenu.classList.remove("show");
-            return;
-          }
-          if (game.phase === "paused") {
-            resumeGame();
-            return;
-          }
-          pauseGame();
-          return;
+          accessibilitySubmenu.classList.remove("show");
+        }
+        if (
+          e.code === "KeyY" &&
+          !e.repeat &&
+          !e.ctrlKey &&
+          !e.metaKey &&
+          !e.altKey &&
+          skipSession1Cutscene()
+        ) {
+          e.preventDefault();
+          KEYS[e.code] = false;
         }
       });
       document.addEventListener("keyup", (e) => {
@@ -3946,6 +3907,12 @@
         opacity: 0.6,
       });
       const bulletTrailGeo = new THREE.CylinderGeometry(0.002, 0.001, 0.3, 4);
+      const _panelRevealDist = new THREE.Vector3();
+      function panelRevealDistance(panel) {
+        if (!panel || !panel.mesh) return Infinity;
+        return _panelRevealDist.copy(panel.mesh.position).sub(cam.position).length();
+      }
+
       const _bTmp = new THREE.Vector3(),
         _bMove = new THREE.Vector3(),
         _bTrailOff = new THREE.Vector3();
@@ -4353,6 +4320,7 @@
          */
         nextBlock() {
           this.block++;
+          syncSessionGuard();
         },
 
         /**
@@ -4600,6 +4568,13 @@
             blockSeedMeta.push(["block" + bk + "_nonMatchPaintings_logged", nonMatchLogged]);
           });
 
+          const completeSession = hasCompleteSession();
+          if (!completeSession && !opts.allowPartial) {
+            if (!opts.silent) alert("This session is incomplete. Use recovery download to save a partial record.");
+            return false;
+          }
+          const exportStatus = completeSession ? "complete" : "partial";
+
           const meta = [
             ["key", "value"],
             ["exportedAt", exportTime],
@@ -4617,6 +4592,7 @@
             ["rows_scored_answered", answeredScoredRows],
             ["rows_scored_pending", pendingScoredRows],
             ["rows_total", this.trials.length],
+            ["exportStatus", exportStatus],
             ["trialType", "warmup | scored"],
             ...blockSeedMeta,
           ];
@@ -4624,7 +4600,7 @@
           metaSheet["!cols"] = [{ wch: 28 }, { wch: 56 }];
           XLSX.utils.book_append_sheet(workbook, metaSheet, "Meta");
 
-          const fn = exportFilename(pid, sid);
+          const fn = exportFilename(pid, sid, { partial: !completeSession });
 
           XLSX.writeFile(workbook, fn);
           if (opts.markExported !== false) {
@@ -4680,7 +4656,12 @@
           applyOrderKey(snapshot.orderKey);
         }
 
-        const ok = logger.exportXLSX({ silent: true, markExported: false, persist: false });
+        const ok = logger.exportXLSX({
+          silent: true,
+          markExported: false,
+          persist: false,
+          allowPartial: true,
+        });
 
         if (backup) {
           logger.pid = backup.pid;
@@ -4708,13 +4689,11 @@
 
       function setReloadWarnRecoveryActions(hasSnapshot) {
         const downloadBtn = $("reload-warn-download");
-        const restoreBtn = $("reload-warn-restore");
         if (downloadBtn) downloadBtn.hidden = !hasSnapshot;
-        if (restoreBtn) restoreBtn.hidden = !hasSnapshot;
       }
 
       function downloadSessionData(opts = {}) {
-        const ok = logger.exportXLSX({ silent: !!opts.silent });
+        const ok = logger.exportXLSX({ silent: !!opts.silent, allowPartial: !!opts.allowPartial });
         if (ok && opts.notify !== false) {
           showExportToast(opts.message || "Data downloaded.");
         }
@@ -4734,20 +4713,45 @@
         return t.trialType !== "practice" && t.trialType !== "practice_warmup";
       }
 
-      function hasCompleteBlock(block) {
-        const blockRows = logger.trials.filter((t) => t.block === block && isSessionTrialRow(t));
+      function hasCompleteBlock(block, trials = logger.trials) {
+        const blockRows = trials.filter((t) => t.block === block && isSessionTrialRow(t));
         if (blockRows.length !== TOTAL_TRIALS) return false;
+        const n = blockRows[0]?.N;
+        if (n !== 1 && n !== 3) return false;
         const seen = new Set();
+        let warmupCount = 0;
+        let scoredCount = 0;
+        let matchCount = 0;
         for (const row of blockRows) {
-          if (seen.has(row.trial)) return false;
+          if (!Number.isInteger(row.trial) || row.trial < 1 || row.trial > TOTAL_TRIALS) return false;
+          if (seen.has(row.trial) || row.N !== n) return false;
           seen.add(row.trial);
-          if (row.trialType === "scored" && row.Resp !== 1 && row.Resp !== 2) return false;
+          if (row.trialType === "warmup") {
+            warmupCount++;
+            if (row.trial > n || row.CRESP !== "" || row.Resp !== "" || row.ACC !== "") return false;
+            continue;
+          }
+          if (row.trialType !== "scored" || row.trial <= n) return false;
+          scoredCount++;
+          if (row.Resp !== 1 && row.Resp !== 2) return false;
+          if (row.CRESP !== 1 && row.CRESP !== 2) return false;
+          if (row.ACC !== (row.Resp === row.CRESP ? 1 : 0)) return false;
+          if (row.CRESP === 1) matchCount++;
         }
-        return seen.size === TOTAL_TRIALS;
+        return (
+          seen.size === TOTAL_TRIALS &&
+          warmupCount === n &&
+          scoredCount === TOTAL_TRIALS - n &&
+          matchCount === MATCH_COUNT
+        );
       }
 
       function hasCompletePracticeBlock(block) {
         return !!game.practiceCompleted[block];
+      }
+
+      function hasCompleteSession(trials = logger.trials) {
+        return hasCompleteBlock(1, trials) && hasCompleteBlock(2, trials);
       }
 
       function clearSessionSnapshot() {
@@ -4812,42 +4816,6 @@
         }
       }
 
-      function restoreSessionSnapshot() {
-        const data = readSessionSnapshot();
-        if (!data) return false;
-        logger.pid = data.pid || "";
-        logger.sid = data.sid || "";
-        logger.condition = data.condition || logger.condition;
-        logger.block = data.block || 1;
-        logger.sessionStart = data.sessionStart || Date.now();
-        logger.exported = !!data.exported;
-        logger.trials = data.trials;
-        const pidInput = $("tt-pid");
-        if (pidInput) applyPidToInput(logger.pid);
-        const sidNum = parseInt(logger.sid, 10);
-        if ([1, 2, 3].includes(sidNum)) applySessionNum(sidNum);
-        document.querySelectorAll(".stim-btn").forEach((b) => b.classList.remove("on"));
-        const stimBtn = $("stim-" + logger.condition);
-        if (stimBtn) stimBtn.classList.add("on");
-        if (data.orderKey && BLOCK_ORDERS[data.orderKey]) {
-          applyOrderKey(data.orderKey);
-        }
-        if (data.practiceCompleted) {
-          game.practiceCompleted = { 1: !!data.practiceCompleted[1], 2: !!data.practiceCompleted[2] };
-        }
-        if (data.practiceStats) {
-          game.practiceStats = {
-            1: { correct: 0, responded: 0, ...(data.practiceStats[1] || {}) },
-            2: { correct: 0, responded: 0, ...(data.practiceStats[2] || {}) },
-          };
-        }
-        game.N = selectedOrder[Math.max(0, logger.block - 1)] || selectedOrder[0];
-        nBackLevel.textContent = `N-BACK: ${game.N}`;
-        syncPauseMenuPid();
-        $("reload-warn")?.classList.remove("show");
-        return true;
-      }
-
       function showReloadDataBannerIfNeeded() {
         if (logger.trials.length) return;
         const snapshot = readSessionSnapshot();
@@ -4856,10 +4824,10 @@
         if (snapshot) {
           txt.innerHTML =
             "<b>Saved session found in this browser.</b> Participant <b>" +
-            (snapshot.pid || "?") +
+            escapeHtml(snapshot.pid || "?") +
             "</b>, <b>" +
             snapshot.trials.length +
-            "</b> trial rows. <b>DOWNLOAD DATA</b> to save the file, or <b>RESTORE DATA</b> to continue the session.";
+            "</b> trial rows. <b>DOWNLOAD DATA</b> to save a recovery file. Recovery files are marked PARTIAL unless both blocks were complete.";
           setReloadWarnRecoveryActions(true);
           $("reload-warn")?.classList.add("show");
           return;
@@ -4881,7 +4849,7 @@
         }
         txt.innerHTML =
           "<b>Reload may have cleared unsaved data.</b> Last session: <b>" +
-          (info.pid || "?") +
+          escapeHtml(info.pid || "?") +
           "</b>, " +
           (info.rows || "?") +
           " rows (no full snapshot; finish session and download at the end).";
@@ -4908,14 +4876,25 @@
         return String(raw || "").replace(/[\r\n\t]/g, "").slice(0, 32);
       }
 
+      function escapeHtml(raw) {
+        return String(raw || "").replace(/[&<>'"]/g, (ch) => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          "'": "&#39;",
+          '"': "&quot;",
+        })[ch]);
+      }
+
       function formatPid(raw) {
         return sanitizePidInput(raw).trim();
       }
 
-      function exportFilename(pid, sid) {
+      function exportFilename(pid, sid, opts = {}) {
         const session = sid || "0";
         const participant = pidForFilename(pid);
-        return `BSVG_STANDARD_SESSION${session}_${participant}.xlsx`;
+        const partialTag = opts.partial ? "_PARTIAL" : "";
+        return `BSVG_GLYPHMIND_SESSION${session}_${participant}${partialTag}.xlsx`;
       }
 
       function pidForFilename(pid) {
@@ -4936,7 +4915,6 @@
         const input = $("tt-pid");
         if (input) input.value = "";
         logger.pid = "";
-        syncPauseMenuPid();
       }
 
       function requireParticipantId() {
@@ -4948,23 +4926,6 @@
         return true;
       }
 
-      function syncPauseMenuPid() {
-        const el = $("pm-pid");
-        if (el) el.textContent = logger.pid || "-";
-      }
-
-      function syncPauseMenuHint() {
-        const el = $("pm-hint");
-        if (!el) return;
-        
-        let status = game.isTutorialPhase
-          ? `Currently Tutorial \u00b7 ${game.N}-back`
-          : game.isPracticePhase
-            ? `Practice ${game.N}-back \u00b7 ${PRACTICE_TRIALS} paintings \u00b7 Block ${logger.block}`
-            : `Currently Block ${logger.block} \u00b7 ${game.N}-back`;
-          
-        el.innerHTML = `<b>${status}</b><br><br>Take a short break. Press <b>Esc</b> to open this menu anytime.<br><br><span style="opacity:0.88;font-size:0.92em">Left click = MATCH &nbsp;·&nbsp; Right click = NO MATCH</span><br><br>Click <b>RESUME</b> when you are ready.`;
-      }
 
       // title screen
       $("tt-pid").addEventListener("input", function () {
@@ -5009,65 +4970,43 @@
         selectedOrderKey = BLOCK_ORDERS[key] ? key : "13";
         selectedOrder = BLOCK_ORDERS[selectedOrderKey];
         selectedN = selectedOrder[0];
-        document.querySelectorAll(".mode-btn").forEach((b) => b.classList.remove("on"));
+        document.querySelectorAll(".order-btn").forEach((b) => b.classList.remove("on"));
         const modeBtn = $("mode-" + selectedOrderKey);
         if (modeBtn) modeBtn.classList.add("on");
         rebuildTutorialSlides();
         if ($("ps")?.classList.contains("show")) syncParticipantStartLore();
       }
 
-      function tutorialFourPaintingQuiz(N, variant) {
-        const refTrial = N === 1 ? 3 : 1;
-        const currTrial = 4;
-        const intro =
-          "These <b>four paintings</b> appeared in order. Remember each symbol, then answer below.";
-        if (N === 1) {
-          const paintings =
-            variant === "match" ? [0, 1, 1, 1] : [0, 1, 1, 2];
-          return {
-            paintings,
-            refTrial,
-            currTrial,
-            expect: variant === "match" ? 1 : 2,
-            question: intro,
-            prompt: `Is painting <b>4</b> the same symbol as painting <b>3</b>?`,
-          };
-        }
-        const paintings = variant === "match" ? [0, 1, 2, 0] : [0, 1, 2, 3];
-        return {
-          paintings,
-          refTrial,
-          currTrial,
-          expect: variant === "match" ? 1 : 2,
-          question: intro,
-          prompt: `Is painting <b>4</b> the same symbol as painting <b>1</b> (three steps back)?`,
-        };
+      function firstBlockNForSession() {
+        const n = Number(selectedOrder[0]);
+        return n === 3 ? 3 : 1;
       }
 
-      function buildTutorialSlides(N) {
-        const watchCount = N === 1 ? "the <b>first</b> painting" : `the <b>first ${N}</b> paintings`;
-        const orderNote =
-          selectedOrderKey === "13"
-            ? "<p>Your session runs <b>1-back</b> first, then <b>3-back</b>.</p>"
-            : "<p>Your session runs <b>3-back</b> first, then <b>1-back</b>.</p>";
+      function blockOrderNoteHtml() {
+        if (selectedOrderKey === "31") {
+          return (
+            "<p>Your session runs <b>3-back</b> first in the <b>Deep Vault</b>, " +
+            "then <b>1-back</b> in the <b>Outer Hall</b>.</p>"
+          );
+        }
+        return (
+          "<p>Your session runs <b>1-back</b> first in the <b>Outer Hall</b>, " +
+          "then <b>3-back</b> in the <b>Deep Vault</b>.</p>"
+        );
+      }
 
-        const quizMatch = tutorialFourPaintingQuiz(N, "match");
-        const quizNoMatch = tutorialFourPaintingQuiz(N, "noMatch");
+      function blockTutorialLabel(blockNum, N) {
+        const hall = roundLoreName(N);
+        return `BLOCK ${blockNum} \u00b7 ${hall.toUpperCase()} \u00b7 ${N}-BACK`;
+      }
 
+      function nbackRulesTutorialSlides() {
         return [
-          {
-            anim: "bow",
-            html:
-              "<p><b>Welcome.</b> You will walk down a hallway and stop at <b>paintings</b> on the wall.</p>" +
-              "<p>When you stand close enough, a <b>symbol</b> appears. Try to <b>remember</b> each one.</p>" +
-              `<p>First: a <b>practice</b> before each block, then the <b>main rounds</b>.</p>` +
-              orderNote,
-          },
           {
             anim: "point",
             html:
               "<p>At the start of each block, the <b>first few paintings are watch only</b>.</p>" +
-              `<p>For ${watchCount}, <b>just look</b> and remember. <b>Do not answer</b> yet.</p>` +
+              "<p>For the <b>first painting</b>, <b>just look</b> and remember. <b>Do not answer</b> yet.</p>" +
               "<p>The corner of the screen will say <b>OBSERVE</b> while you are watching only.</p>",
           },
           {
@@ -5078,31 +5017,111 @@
               "<p><b>3-back:</b> Is it the <b>same</b> as the painting <b>3 steps back</b> in this block?</p>" +
               "<p><b>Same symbol</b> \u2192 <b>MATCH</b> (left click).<br><b>Different symbol</b> \u2192 <b>NO MATCH</b> (right click).</p>",
           },
+        ];
+      }
+
+      function tutorialTwoPaintingQuiz(variant) {
+        const refTrial = 1;
+        const currTrial = 2;
+        const paintings = variant === "match" ? [0, 0] : [0, 3];
+        return {
+          paintings,
+          refTrial,
+          currTrial,
+          expect: variant === "match" ? 1 : 2,
+          question:
+            "These <b>two paintings</b> appeared in order. Remember each symbol, then answer below.",
+          prompt:
+            "In <b>1-back</b>, is painting <b>2</b> the same symbol as painting <b>1</b> (the <b>previous</b> painting)?",
+          blockTag: blockTutorialLabel(1, 1),
+        };
+      }
+
+      function tutorialFourPaintingQuiz(variant) {
+        const refTrial = 1;
+        const currTrial = 4;
+        const paintings = variant === "match" ? [0, 1, 7, 0] : [0, 1, 7, 4];
+        return {
+          paintings,
+          refTrial,
+          currTrial,
+          expect: variant === "match" ? 1 : 2,
+          question:
+            "These <b>four paintings</b> appeared in order in this block. Remember each symbol, then answer below.",
+          prompt:
+            "In <b>3-back</b>, compare painting <b>4</b> to painting <b>1</b> only (<b>3 steps back</b>). Same symbol?",
+          blockTag: blockTutorialLabel(1, 3),
+        };
+      }
+
+      function briefPracticeGateHtml(blockNum, n) {
+        const hall = roundLoreName(n);
+        return (
+          '<div class="ag-brief">' +
+          `<p class="ag-lead">Warm-up: <b>${PRACTICE_TRIALS} paintings</b> at <b>${n}-back</b> (${hall}).</p>` +
+          "<p>You will get feedback when you miss. Finish every painting to complete the warm-up.</p>" +
+          "</div>"
+        );
+      }
+
+      function buildTutorialSlides13() {
+        return [
+          {
+            anim: "bow",
+            html:
+              "<p><b>Welcome.</b> You will walk down a hallway and stop at <b>paintings</b> on the wall.</p>" +
+              "<p>When you stand close enough, a <b>symbol</b> appears. Try to <b>remember</b> each one.</p>" +
+              blockOrderNoteHtml(),
+          },
+          ...nbackRulesTutorialSlides(),
           {
             anim: "gesture",
-            quiz: quizMatch,
+            quiz: tutorialTwoPaintingQuiz("match"),
           },
           {
             anim: "point",
-            quiz: quizNoMatch,
+            quiz: tutorialTwoPaintingQuiz("noMatch"),
           },
           {
             anim: "point",
             html: "",
             controls: true,
           },
+        ];
+      }
+
+      function buildTutorialSlides31() {
+        return [
           {
             anim: "bow",
             html:
-              `<p>Next is a <b>practice block</b> (${PRACTICE_TRIALS} paintings, ${N}-back). You will answer for real.</p>` +
-              "<p>You will get feedback when you miss. Finish every painting to complete the warm-up. Practice accuracy does not gate progression.</p>" +
-              "<p>When you are ready, click <b>BEGIN PRACTICE</b>.</p>",
+              "<p><b>Welcome.</b> You will walk down a hallway and stop at <b>paintings</b> on the wall.</p>" +
+              "<p>When you stand close enough, a <b>symbol</b> appears. Try to <b>remember</b> each one.</p>" +
+              blockOrderNoteHtml(),
+          },
+          ...nbackRulesTutorialSlides(),
+          {
+            anim: "gesture",
+            quiz: tutorialFourPaintingQuiz("match"),
+          },
+          {
+            anim: "point",
+            quiz: tutorialFourPaintingQuiz("noMatch"),
+          },
+          {
+            anim: "point",
+            html: "",
+            controls: true,
           },
         ];
       }
 
+      function buildTutorialSlides() {
+        return selectedOrderKey === "31" ? buildTutorialSlides31() : buildTutorialSlides13();
+      }
+
       function rebuildTutorialSlides() {
-        SLIDES = buildTutorialSlides(tutorialNForSession());
+        SLIDES = buildTutorialSlides();
       }
 
       function selectOrder(key, btn) {
@@ -5123,149 +5142,28 @@
 
       syncMainMenuNBackUI();
 
-      // Pause menu (#pm): freezes timers skew compensation on resume so RT remains wall-clock fair.
-      /**
-       * --- GAME PAUSE SYSTEM ---
-       * Freezes timers and shows the pause menu.
-       */
-      function pauseGame() {
-        if (game.phase === "busy" || game.phase === "title" || game.phase === "results") return;
-        
-        game._pauseStart = performance.now();
-        pauseAllTimers();
-        
-        accessibilitySubmenu.classList.remove("show");
-        game._prev = game.phase;
-        game.phase = "paused";
-        
-        syncPauseMenuPid();
-        syncPauseMenuHint();
-        PAUSE_MENU.classList.add("show");
-        releasePointerLockForUI();
-      }
-
-      function resumeGame() {
-        accessibilitySubmenu.classList.remove("show");
-        
-        if (game._pauseStart) {
-          const pausedMs = performance.now() - game._pauseStart;
-          game._pauseStart = 0;
-          if (game.world && game.world.panels && game.currentTrialIdx >= 0) {
-            const p = game.world.panels[game.currentTrialIdx];
-            if (p && p.revealTime) p.revealTime += pausedMs;
-          }
-          if (game.lastEventTime > 0) game.lastEventTime += pausedMs;
-        }
-        
-        resumeAllTimers();
-        game.phase = game._prev || "corridor";
-        PAUSE_MENU.classList.remove("show");
-        
-        ensurePointerLock();
-        syncPointerLockUI();
-      }
-
-      // Pause-aware timers (safeTimeout / pauseAllTimers / resumeAllTimers)
-      const _safeTimers = new Set();
       function safeTimeout(cb, ms) {
-        const rec = { cb, remaining: ms, startedAt: performance.now(), id: 0, cancelled: false };
-        rec.id = setTimeout(function fire() {
-          _safeTimers.delete(rec);
+        const rec = { cancelled: false, id: 0 };
+        rec.id = setTimeout(() => {
           if (!rec.cancelled) cb();
         }, ms);
-        _safeTimers.add(rec);
         return rec;
       }
       function cancelSafeTimeout(rec) {
         if (!rec) return;
         rec.cancelled = true;
         clearTimeout(rec.id);
-        _safeTimers.delete(rec);
       }
-      function pauseAllTimers() {
-        const now = performance.now();
-        for (const rec of _safeTimers) {
-          const elapsed = now - rec.startedAt;
-          rec.remaining = Math.max(0, rec.remaining - elapsed);
-          clearTimeout(rec.id);
-          rec.id = 0;
-        }
-      }
-      function resumeAllTimers() {
-        const now = performance.now();
-        for (const rec of _safeTimers) {
-          rec.startedAt = now;
-          rec.id = setTimeout(function fire() {
-            _safeTimers.delete(rec);
-            if (!rec.cancelled) rec.cb();
-          }, rec.remaining);
-        }
-      }
-      $("pm-resume").addEventListener("click", resumeGame);
-      $("pm-restart").addEventListener("click", () => {
-        if (game.isTutorialPhase) {
-          if (!confirm("Restart tutorial slides?")) return;
-          PAUSE_MENU.classList.remove("show");
-          prepareExitCorridor();
-          if (game.phase === "paused") resumeGame();
-          fdOut(() => showTutorial(false), FADE_OUT_MS);
-          return;
-        }
 
-        if (game.isPracticePhase) {
-          if (!confirm(`Restart ${game.N}-back practice (${PRACTICE_TRIALS} paintings)?`)) return;
-          game.practiceCompleted[logger.block] = false;
-          game.resetPracticeStats(logger.block);
-          PAUSE_MENU.classList.remove("show");
-          prepareExitCorridor();
-          if (game.phase === "paused") resumeGame();
-          const n = game.N;
-          fdOut(() => game.startPractice(n), FADE_OUT_MS);
-          return;
-        }
-
-        const n = logger.getScoredTrials(logger.block).length;
-        const restartMsg = `Restart Block ${logger.block} scored run? Drops ${n} scored/warmup rows.`;
-        if (n && !confirm(restartMsg)) return;
-        logger.trials = logger.trials.filter(
-          (t) =>
-            !(
-              t.block === logger.block &&
-              (t.trialType === "scored" || t.trialType === "warmup")
-            ),
-        );
-        logger.exported = false;
-        syncSessionGuard();
-        PAUSE_MENU.classList.remove("show");
-        prepareExitCorridor();
-        if (game.phase === "paused") resumeGame();
-        fdOut(() => game.start(), FADE_OUT_MS);
-      });
-      $("pm-tutorial").addEventListener("click", () => {
-        PAUSE_MENU.classList.remove("show");
-        showTutorial(false);
-        tutFromPause = true;
-      });
-      $("pm-access").addEventListener("click", () => {
+      $("tt-access")?.addEventListener("click", () => {
         accessibilitySubmenu.classList.add("show");
       });
-      $("acc-back").addEventListener("click", () => {
+      $("acc-back")?.addEventListener("click", () => {
         accessibilitySubmenu.classList.remove("show");
-      });
-      $("pm-title").addEventListener("click", () => {
-        if (
-          logger.trials.length &&
-          !logger.exported &&
-          !confirm("Session data not downloaded yet. Download from the end screen first, or OK to discard.")
-        )
-          return;
-        if (logger.trials.length) discardSessionTrials();
-        toTitle();
       });
 
       function toTitle() {
         corridorResults.classList.remove("show", "cr-after-block1", "cr-final");
-        PAUSE_MENU.classList.remove("show");
         alive = false;
         game.phase = "title";
         clearBullets();
@@ -5556,23 +5454,26 @@
         );
       }
 
-      function showBlock1BreakGate(completedN) {
+      function beginScoredBlock(blockNum) {
+        const n = selectedOrder[blockNum - 1];
+        game.isPracticePhase = false;
+        game.N = n;
+        nBackLevel.textContent = `N-BACK: ${game.N}`;
+        game.start({ skipBlockInstruction: true });
+      }
+
+      function showBlock2BriefGate() {
         const nextN = selectedOrder[1];
-        const khenuLine =
-          nextN === 3
-            ? "The air grows heavier. <b>Three steps back</b> now."
-            : "The hall opens again. <b>One step</b> at a time.";
-        const body =
-          '<div class="ag-brief">' +
-          blockResultsSectionHtml(1, roundLoreLabel(completedN)) +
-          practiceResultNoteHtml(1) +
-          `<p class="ag-khenu-line"><b>Khenu:</b> ${khenuLine}</p>` +
-          `<p class="ag-lead">Nice work. Take a short break. Next is <b>${nextN}-back</b> warm-up, then the next hall.</p>` +
-          "</div>";
         showTransitionGate({
           role: "ROUND 1 COMPLETE",
-          title: `${roundLoreName(completedN).toUpperCase()}<span class="ag-title-sub">ROUND COMPLETE</span>`,
-          body,
+          title: `${roundLoreName(nextN).toUpperCase()}<span class="ag-title-sub">BLOCK 2</span>`,
+          body:
+            '<div class="ag-brief">' +
+            `<p class="ag-lead"><b>Round 1 complete.</b> Next block: <b>${nextN}-back</b> in ${roundLoreName(nextN)}.</p>` +
+            rulesSectionHtml(nextN) +
+            controlsSectionHtml() +
+            `<p>Flow: <b>practice</b> (${PRACTICE_TRIALS} paintings), then the <b>scored hall</b> (${TOTAL_TRIALS} paintings).</p>` +
+            "</div>",
           btn: "CONTINUE",
           onBegin: () => {
             logger.nextBlock();
@@ -5584,7 +5485,12 @@
         });
       }
 
+      function showBlock1BreakGate(completedN) {
+        showBlock2BriefGate();
+      }
+
       let biDismissHandler = null;
+      let blockInstructionBusy = false;
 
       const FADE_OUT_MS = 400;
       const FADE_IN_MS = 520;
@@ -5646,11 +5552,15 @@
           blockInstructionContent(n, { includeControls: opts.includeControls !== false }) +
             (opts.bodyExtra || "");
         go.textContent = opts.goLabel || `BEGIN BLOCK ${blockNum}`;
+        go.disabled = false;
+        blockInstructionBusy = false;
         hideBlockInstructionOverlay();
         bi.classList.add("show");
         const shownAt = performance.now();
         const dismiss = () => {
-          if (performance.now() - shownAt < 250) return;
+          if (blockInstructionBusy || performance.now() - shownAt < 250) return;
+          blockInstructionBusy = true;
+          go.disabled = true;
           hideBlockInstructionOverlay();
           fdOut(() => {
             requestPointerLockFromGesture();
@@ -5668,6 +5578,7 @@
       let agBeginAction = null;
       let agSecondaryAction = null;
       let agFadeOnBegin = true;
+      let transitionGateBusy = false;
 
       function showTransitionGate(opts) {
         const ag = $("ag");
@@ -5682,7 +5593,10 @@
         if (titleEl) titleEl.innerHTML = opts.title || "";
         if ($("ag-body")) $("ag-body").innerHTML = opts.body || "";
         const btn = $("ag-begin");
-        if (btn) btn.textContent = opts.btn || "CONTINUE";
+        if (btn) {
+          btn.textContent = opts.btn || "CONTINUE";
+          btn.disabled = false;
+        }
         const sec = $("ag-secondary");
         if (sec) {
           if (opts.secondaryBtn) {
@@ -5696,6 +5610,7 @@
         }
         agBeginAction = opts.onBegin || null;
         agFadeOnBegin = opts.fadeOnBegin !== false;
+        transitionGateBusy = false;
         const particles = $("ag-particles");
         if (particles && !opts.keepParticles) particles.innerHTML = "";
         spawnTitleGlyphs();
@@ -5741,14 +5656,20 @@
 
       function showPreBlockPracticeReady(blockNum) {
         const n = selectedOrder[blockNum - 1];
-        let role = "PRACTICE ROUND";
-        if (blockNum === 1 && selectedSession === 1) role = "GETTING STARTED";
+        let role = "PRACTICE";
+        if (blockNum === 1 && selectedSession === 1) role = "PRACTICE ROUND";
         else if (blockNum === 1) role = `SESSION ${selectedSession}`;
-        else role = "ROUND 2";
+        else role = "PRACTICE ROUND";
+        const tutCoversBlock1 = selectedSession === 1 && blockNum === 1;
+        const block2BriefDone = blockNum === 2;
+        const body =
+          tutCoversBlock1 || block2BriefDone
+            ? briefPracticeGateHtml(blockNum, n)
+            : practiceInstructionHtml(n);
         showTransitionGate({
           role,
           title: `${roundLoreName(n).toUpperCase()}<span class="ag-title-sub">WARM-UP &middot; ${PRACTICE_TRIALS} PAINTINGS</span>`,
-          body: practiceInstructionHtml(n),
+          body,
           btn: `BEGIN ${n}-BACK PRACTICE`,
           onBegin: () => game.startPractice(n),
         });
@@ -5762,26 +5683,23 @@
         const role = blockNum === 1 ? "MAIN ROUND" : "FINAL ROUND";
         const lead =
           acc != null
-            ? `<p class="ag-lead">Warm-up complete: <b>${acc}%</b> correct. When you are ready, enter the hall.</p>`
-            : null;
+            ? `<p class="ag-lead">Practice complete: <b>${acc}%</b> correct. Review the rules, then enter the scored hall.</p>`
+            : `<p class="ag-lead">Enter the scored hall: <b>${TOTAL_TRIALS} paintings</b> at <b>${n}-back</b>.</p>`;
         showTransitionGate({
           role,
           title: `${roundLoreName(n).toUpperCase()}<span class="ag-title-sub">${n}-BACK &middot; ${TOTAL_TRIALS} PAINTINGS</span>`,
           body: scoredBlockInstructionHtml(n, lead),
           btn: `BEGIN ROUND ${blockNum}`,
-          onBegin: () => {
-            game.isPracticePhase = false;
-            game.N = n;
-            nBackLevel.textContent = `N-BACK: ${game.N}`;
-            game.start({ skipBlockInstruction: true });
-          },
+          onBegin: () => beginScoredBlock(blockNum),
         });
       }
 
       $("ag-begin")?.addEventListener("click", () => {
-        if (!panelTextures) return;
+        if (!panelTextures || transitionGateBusy) return;
         const fn = agBeginAction;
         if (!fn) return;
+        transitionGateBusy = true;
+        $("ag-begin").disabled = true;
         if (agFadeOnBegin) {
           releasePointerLockForUI();
           fdOut(() => {
@@ -5790,6 +5708,8 @@
           }, FADE_OUT_MS);
         } else {
           fn();
+          transitionGateBusy = false;
+          $("ag-begin").disabled = false;
         }
       });
 
@@ -5953,6 +5873,27 @@
       const COMBO_EL = $("combo"),
         COMBO_VAL = $("combo-val");
 
+      function interStimulusInterval(onsetMs, trialIdx, n, lastOnsetMs, lastAnswerMs) {
+        if (trialIdx <= 0) return 0;
+        if (trialIdx >= n && lastAnswerMs > 0) {
+          return Math.max(0, Math.round(onsetMs - lastAnswerMs));
+        }
+        return lastOnsetMs > 0 ? Math.max(0, Math.round(onsetMs - lastOnsetMs)) : 0;
+      }
+
+      function reactionTimeMs(onsetMs, answerMs) {
+        if (!(onsetMs > 0) || !(answerMs > 0)) return 0;
+        return Math.max(0, Math.round(answerMs - onsetMs));
+      }
+
+      function clickPerfNow(inputStamp, notBeforeMs) {
+        const now = performance.now();
+        if (!Number.isFinite(inputStamp) || inputStamp <= 0) return now;
+        if (!(notBeforeMs > 0) || inputStamp < notBeforeMs) return now;
+        if (inputStamp > now + 32) return now;
+        return inputStamp;
+      }
+
       /**
        * --- CORE GAME ENGINE ---
        * Manages the active session, state transitions, and trial recording.
@@ -5968,7 +5909,8 @@
         currentTrialIdx: -1,
         respondedCount: 0,
         blockComplete: false,
-        lastEventTime: 0,
+        lastRevealTime: 0,
+        lastResponseTime: 0,
         hudPaint: null,
         sequenceSeed: "",
         isTutorialPhase: false,
@@ -6009,7 +5951,8 @@
           this.currentTrialIdx = -1;
           this.respondedCount = 0;
           this.blockComplete = false;
-          this.lastEventTime = 0;
+          this.lastRevealTime = 0;
+          this.lastResponseTime = 0;
           this.hudPaint = null;
           this.sequenceSeed = "tutorial";
           this.N = tutN;
@@ -6087,7 +6030,8 @@
           this.currentTrialIdx = -1;
           this.respondedCount = 0;
           this.blockComplete = false;
-          this.lastEventTime = 0;
+          this.lastRevealTime = 0;
+          this.lastResponseTime = 0;
           this.hudPaint = null;
           this.N = n;
           nBackLevel.textContent = `N-BACK: ${this.N}`;
@@ -6154,7 +6098,8 @@
           this.currentTrialIdx = -1;
           this.respondedCount = 0;
           this.blockComplete = false;
-          this.lastEventTime = 0;
+          this.lastRevealTime = 0;
+          this.lastResponseTime = 0;
           this.hudPaint = null;
           this.sequenceSeed = makeSequenceSeed(this.N, logger.block);
           
@@ -6238,13 +6183,21 @@
           }
           
           p.revealed = true;
-          p.revealTime = performance.now();
-          p.rsi = this.lastEventTime > 0 ? p.revealTime - this.lastEventTime : 0;
-          
-          sounds.panel();
-          sounds.chime();
 
           if (glowMaterials) p.mesh.material = glowMaterials[p.gi];
+          const onsetMs = performance.now();
+          p.revealTime = onsetMs;
+          p.rsi = interStimulusInterval(
+            onsetMs,
+            p.idx,
+            this.N,
+            this.lastRevealTime,
+            this.lastResponseTime,
+          );
+          this.lastRevealTime = onsetMs;
+
+          sounds.panel();
+          sounds.chime();
           if (p.glowTimer) cancelSafeTimeout(p.glowTimer);
           
           const glowDur = accessibility.longglow ? 5000 : 2000;
@@ -6254,21 +6207,28 @@
             }
           }, glowDur);
 
-          this.nextIdx = p.idx + 1;
           this.hudPaint = p.idx;
 
           if (this.isTutorialPhase) {
-            this.lastEventTime = p.revealTime;
             if (p.idx < this.N) {
-              this.awaitingResponse = false;
-              this.currentTrialIdx = -1;
               showKhenuTutorialStep(p.idx, "observe");
             } else {
               p.tutMiss = 0;
-              this.awaitingResponse = true;
-              this.currentTrialIdx = p.idx;
               gamePrompt.textContent = "";
               showKhenuTutorialStep(p.idx, "answer");
+            }
+            hudUpdate(true);
+          }
+
+          this.nextIdx = p.idx + 1;
+
+          if (this.isTutorialPhase) {
+            if (p.idx < this.N) {
+              this.awaitingResponse = false;
+              this.currentTrialIdx = -1;
+            } else {
+              this.awaitingResponse = true;
+              this.currentTrialIdx = p.idx;
             }
             hudUpdate(true);
             return;
@@ -6285,7 +6245,6 @@
                 sequenceSeed: this.sequenceSeed,
               });
             }
-            this.lastEventTime = p.revealTime;
             this.awaitingResponse = false;
             this.currentTrialIdx = -1;
             hudUpdate(true);
@@ -6312,18 +6271,19 @@
         /**
          * Record player response (1 for Match, 2 for No Match).
          */
-        respond(resp) {
+        respond(resp, inputStamp) {
           if (!this.awaitingResponse || this.currentTrialIdx < this.N) return;
 
-          const respTime = performance.now();
           const i = this.currentTrialIdx;
           const panel = this.world && this.world.panels[i];
 
-          if (!panel || !panel.revealed || panel.responded) return;
+          if (!panel || !panel.revealed || panel.responded || !panel.revealTime) return;
+
+          const answerMs = clickPerfNow(inputStamp, panel.revealTime);
 
           this.awaitingResponse = false;
 
-          const rt = respTime - panel.revealTime;
+          const rt = reactionTimeMs(panel.revealTime, answerMs);
           const rsi = panel.rsi || 0;
 
           const currentGlyph = this.seq[i];
@@ -6361,7 +6321,6 @@
               return;
             }
 
-            this.lastEventTime = respTime;
             panel.responded = true;
             panel.tutMiss = 0;
             this.currentTrialIdx = -1;
@@ -6388,6 +6347,10 @@
           }
 
           panel.responded = true;
+
+          if (!this.isTutorialPhase && !this.isPracticePhase) {
+            this.lastResponseTime = answerMs;
+          }
 
           if (!this.isPracticePhase) {
             if (correct) {
@@ -6417,8 +6380,6 @@
               sequenceSeed: this.sequenceSeed,
             });
           }
-
-          this.lastEventTime = respTime;
 
           invalidateHudAcc();
           this.currentTrialIdx = -1;
@@ -6491,7 +6452,6 @@
           });
         },
       };
-      syncPauseMenuHint();
 
       function desktopControlsSlideHtml() {
         return (
@@ -6511,12 +6471,17 @@
 
       let tutPage = 0,
         tutFromTitle = false,
-        tutFromPause = false,
         tutQuizPassed = true;
+
+      /** Hidden staff shortcut (Y): skip session 1 cutscene only; tutorial still runs. */
+      function skipSession1Cutscene() {
+        if (selectedSession !== 1 || !alive || !csActive) return false;
+        endCutscene();
+        return true;
+      }
       function showTutorial(fromTitle) {
         rebuildTutorialSlides();
         tutFromTitle = fromTitle;
-        tutFromPause = false;
         tutPage = 0;
         renderSlide();
         tutorialOverlay.classList.add("show");
@@ -6526,21 +6491,13 @@
         tutorialOverlay.classList.remove("show");
         document.removeEventListener("keydown", tutKeyHandler);
       }
-      function afterTutorialFromPauseIfNeeded() {
-        if (!tutFromPause) return;
-        tutFromPause = false;
-        if (game.phase === "paused") resumeGame();
-      }
       function finishTutorial() {
         hideTutorial();
         if (tutFromTitle) {
-          if (!beginParticipantSession()) return;
           fdOut(() => {
             showPreBlockPracticeReady(1);
             fdIn(FADE_IN_MS);
           }, FADE_OUT_MS);
-        } else {
-          afterTutorialFromPauseIfNeeded();
         }
       }
       function tutorialSlideNeedsQuiz() {
@@ -6577,16 +6534,25 @@
             const num = idx + 1;
             let cls = "tut-quiz-glyph";
             if (num === refTrial) cls += " tut-quiz-ref";
-            if (num === currTrial) cls += " tut-quiz-now";
+            else if (num === currTrial) cls += " tut-quiz-now";
+            else cls += " tut-quiz-dim";
+            const tag =
+              num === refTrial
+                ? '<span class="tut-quiz-tag">COMPARE TO</span>'
+                : num === currTrial
+                  ? '<span class="tut-quiz-tag">NOW</span>'
+                  : '<span class="tut-quiz-tag">&nbsp;</span>';
             return (
               `<div class="${cls}">` +
+              tag +
               `<span class="tut-quiz-lbl">${num}</span>` +
-              `<span class="tut-quiz-ch">${GLYPHS[gi].ch}</span>` +
+              `<span class="tut-quiz-ch" title="${GLYPHS[gi].name}">${GLYPHS[gi].ch}</span>` +
               "</div>"
             );
           })
           .join("");
         return (
+          (quiz.blockTag ? `<p class="tut-quiz-block-tag">${quiz.blockTag}</p>` : "") +
           (quiz.question ? `<p>${quiz.question}</p>` : "") +
           '<div class="tut-quiz-seq">' +
           seqHtml +
@@ -6622,7 +6588,7 @@
               tutorialNext.textContent =
                 tutPage === SLIDES.length - 1
                   ? tutFromTitle
-                    ? "BEGIN PRACTICE \u2192"
+                    ? "CONTINUE TO PRACTICE \u2192"
                     : "CLOSE"
                   : "NEXT \u2192";
             } else {
@@ -6665,7 +6631,7 @@
         const first = tutPage === 0;
         tutorialNext.textContent = last
           ? tutFromTitle
-            ? "BEGIN PRACTICE \u2192"
+            ? "CONTINUE TO PRACTICE \u2192"
             : "CLOSE"
           : slide.quiz
             ? "ANSWER TO CONTINUE"
@@ -6977,21 +6943,6 @@
       function loop(t) {
         requestAnimationFrame(loop);
         const dt = Math.min((t - lastT) * 0.001, 0.05);
-        const wallNow = performance.now();
-        if (document.hidden) {
-          if (!game._hiddenAt) game._hiddenAt = wallNow;
-          lastT = t;
-          return;
-        }
-        if (game._hiddenAt) {
-          const hiddenMs = wallNow - game._hiddenAt;
-          game._hiddenAt = 0;
-          if (game.world && game.world.panels && game.currentTrialIdx >= 0) {
-            const p = game.world.panels[game.currentTrialIdx];
-            if (p && p.revealTime) p.revealTime += hiddenMs;
-          }
-          if (game.lastEventTime > 0) game.lastEventTime += hiddenMs;
-        }
         lastT = t;
 
         const inCorridor = game.phase === "corridor" && game.world;
@@ -7000,7 +6951,7 @@
           const paintTotal = trialTotalForGame();
           if (!game.awaitingResponse && !game.blockComplete && game.nextIdx < paintTotal) {
             const p = game.world.panels[game.nextIdx];
-            if (p && !p.revealed && Math.abs(cam.position.z - p.z) < REVEAL_DIST) {
+            if (p && !p.revealed && panelRevealDistance(p) < REVEAL_DIST) {
               game.revealPanel(p);
             }
           }
@@ -7294,7 +7245,8 @@
       }
 
       function participantLoreHtml() {
-        const label = nbackCompareLabel(selectedOrder[0]);
+        const n = firstBlockNForSession();
+        const label = nbackCompareLabel(n);
         return (
           "WALK TO EACH PAINTING.<br />" +
           `SAME GLYPH AS <b>${label.toUpperCase()}</b>? &rarr; <b>MATCH</b><br />` +
@@ -7309,7 +7261,7 @@
       }
 
       function cutsceneTaskLineHtml() {
-        const label = nbackCompareLabel(selectedOrder[0]);
+        const label = nbackCompareLabel(firstBlockNForSession());
         return (
           "<b>Walk to each painting.</b>" +
           "<br><b>Remember each glyph.</b>" +
@@ -7719,6 +7671,7 @@
         cutsceneKhenu.classList.remove("on");
         cutsceneKhenu.style.display = "";
         cutsceneOverlay.classList.remove("show", "phase-gold");
+        cutsceneGlitch.classList.remove("on");
         cutsceneProgressBar.style.width = "0%";
         $("cs-continue").style.display = "none";
         if (csResolve) {
@@ -7732,12 +7685,12 @@
         if (pid) applyPidToInput(pid);
         else logger.pid = "";
         logger.sid = String(selectedSession);
-        syncPauseMenuPid();
       }
 
       function beginParticipantSession() {
         if (!panelTextures) return false;
         if (!requireParticipantId()) return false;
+        rebuildTutorialSlides();
         game.N = selectedN;
         syncLoggerFromSetupForm();
         titleScreen.classList.add("gone");
@@ -7747,16 +7700,17 @@
       }
 
       function startPracticeOnlySession() {
-        if (!beginParticipantSession()) return;
         if (selectedSession > 1) showSessionReturnGate(1);
         else showPreBlockPracticeReady(1);
       }
 
-      // Researcher confirms session config → hand off to the Participant Start screen.
+      // Researcher confirms session config, then hand off to the Participant Start screen.
       const participantStart = $("ps");
       function showParticipantStart() {
         syncLoggerFromSetupForm();
+        rebuildTutorialSlides();
         syncParticipantStartLore();
+        $("ps-begin").disabled = false;
         $("ps-badge-pid").textContent = logger.pid || "-";
         $("ps-badge-sid").textContent = String(selectedSession);
         titleScreen.classList.add("gone");
@@ -7786,9 +7740,14 @@
       });
 
       $("ps-begin").addEventListener("click", async () => {
-        if (!panelTextures) return;
+        const beginButton = $("ps-begin");
+        if (!panelTextures || beginButton.disabled) return;
+        beginButton.disabled = true;
         initAudio();
-        game.N = selectedN;
+        if (!beginParticipantSession()) {
+          beginButton.disabled = false;
+          return;
+        }
         hideParticipantStart();
         if (selectedSession === 1) {
           fdOut(async () => {
@@ -7903,23 +7862,12 @@
         if (logger.trials.length) syncSessionGuard();
       });
 
-      const reloadWarnRestore = $("reload-warn-restore");
-      if (reloadWarnRestore) {
-        reloadWarnRestore.addEventListener("click", function () {
-          if (restoreSessionSnapshot()) {
-            alert(
-              "Session data restored (" +
-                logger.trials.length +
-                " rows). Finish the session and download from the end screen.",
-            );
-          } else {
-            alert("No restorable snapshot found.");
-          }
-        });
-      }
       const reloadWarnDownload = $("reload-warn-download");
       if (reloadWarnDownload) {
         reloadWarnDownload.addEventListener("click", function () {
+          const snapshot = readSessionSnapshot();
+          const complete = snapshot && hasCompleteSession(snapshot.trials);
+          if (!complete && !confirm("This recovery export is incomplete and will be named with _PARTIAL. Download it?")) return;
           downloadLostSessionData();
         });
       }

@@ -8,10 +8,12 @@ Open **`index.html`** with **`lib/`** (Three.js, SheetJS) and **`fonts/`** in th
 
 - Two scored blocks (70 paintings each, exported).
 - One 20-painting practice run before each scored block (on screen only, not in the export file).
-- Session 1: cutscene, then slide tutorial, then practice and scored blocks.
-- Sessions 2 and 3: skip cutscene and slides; go straight to practice.
+- **Session 1:** cutscene, then slide tutorial, then block 1 practice, block 1 scored instructions, block 1 scored, block 2 transition, block 2 practice, block 2 scored instructions, block 2 scored, then download.
+- **Sessions 2 and 3:** skip cutscene and slides; optional return gate, then same block loop.
 
 Block order is fixed for the run: **1-back then 3-back**, or **3-back then 1-back**.
+
+The task runs **continuously** once started. There is no pause menu.
 
 ## Scored block layout
 
@@ -20,7 +22,7 @@ Constants: `TOTAL_TRIALS = 70`, `PRACTICE_TRIALS = 20`, `MATCH_COUNT = 30`.
 | Part | Count | Paintings |
 |------|------:|-----------|
 | Watch-only | N | 1 through N |
-| Scored | 70 − N | N+1 through 70 |
+| Scored | 70 - N | N+1 through 70 |
 | True N-back matches (among all 70) | 30 | set at sequence generation |
 
 The export holds **140 rows** for a full session (70 per block): `warmup` rows for the watch-only paintings, then `scored` rows for the rest.
@@ -38,10 +40,10 @@ flowchart TD
 
 ## N-back rule
 
-For scored painting index **i** (where **i ≥ N**):
+For scored painting index **i** (where **i >= N**):
 
 - Current glyph: `seq[i]`
-- Compare to: `seq[i − N]`
+- Compare to: `seq[i - N]`
 - Same glyph: **MATCH** (left click). Different: **NO MATCH** (right click).
 
 `CRESP` stores the correct code (1 = match, 2 = no match). `ACC` is 1 when `Resp === CRESP`.
@@ -61,18 +63,41 @@ Practice uses the same generator with 20 trials. Those trials are not exported.
 
 ## Timing fields
 
-- **RT:** milliseconds from glyph reveal to the participant's click. Pause time during an unanswered painting is excluded.
-- **RSI:** milliseconds from the prior event to this painting's reveal (walking time between paintings counts).
-- Scored rows are created at reveal with empty `Resp`, then updated when the participant answers.
-- The participant must answer every scored painting before the block ends. Only one click per painting is logged.
+Timing helpers live in `index.html` and `scripts/glyphmind-core.mjs` (`reactionTimeMs`, `interStimulusInterval`, `clickPerfNow`).
+
+### Glyph reveal (onset)
+
+A painting reveals when the camera is within **2.85 m** (3D distance) of the panel mesh. The glyph glows, `revealTime` is stamped, and scored trials accept clicks in the same turn (no deferred arming).
+
+### RT (reaction time)
+
+**Definition:** time from painting revealed to button clicked.
+
+**Code:** `RT = clickTime - revealTime`
+
+- `revealTime` = when the glyph appears (after the frame is painted).
+- `clickTime` = mouse click timestamp.
+
+### RSI (response-stimulus interval)
+
+**Definition:** time from button clicked to next painting shown.
+
+**Code:** `RSI = nextRevealTime - lastClickTime`
+
+| Situation | What RSI measures |
+|-----------|-------------------|
+| Scored trial (after you have clicked at least once in the block) | last click to this painting shown |
+| Watch-only trials / first scored trial (no prior click yet) | previous painting shown to this painting shown (walk time only) |
+| First painting in block | `0` |
 
 ## Researcher setup (title screen)
 
 1. Enter **Participant ID** (required).
 2. Pick **Session** `1`, `2`, or `3` (stored as `"1"`, `"2"`, `"3"` in the export).
 3. Pick **Stimulation:** anodal, cathodal, or sham. Confirm the correct button is lit before the participant starts (default is anodal).
-4. Pick **Block order:** 1-BACK → 3-BACK or 3-BACK → 1-BACK.
-5. Click **READY FOR PARTICIPANT**.
+4. Pick **Block order:** 1-BACK then 3-BACK or 3-BACK then 1-BACK.
+5. Optional: **ACCESSIBILITY** (contrast, HUD labels, crosshair size, mouse sensitivity, mute, longer glyph glow).
+6. Click **READY FOR PARTICIPANT**.
 
 Returning to the title screen clears the participant ID field.
 
@@ -84,15 +109,20 @@ flowchart TD
   ready --> begin[Participant BEGIN]
 
   begin --> s1{Session 1?}
-  s1 -->|yes| intro[Cutscene and tutorial slides]
-  s1 -->|no| ret[Optional return gate]
-  intro --> p1
-  ret --> p1
+  s1 -->|yes| cut[Cutscene]
+  cut --> tut[Slide tutorial 6 slides]
+  s1 -->|no| ret[Session return gate]
+  tut --> p1g[Block 1 practice gate]
+  ret --> p1g
 
-  p1[Block 1 practice 20 paintings] --> b1[Block 1 scored 70 paintings]
-  b1 --> br[Break: ROUND 1 COMPLETE]
-  br --> p2[Block 2 practice: ROUND 2]
-  p2 --> b2[Block 2 scored: FINAL ROUND]
+  p1g --> p1[Block 1 practice 20 paintings]
+  p1 --> i1[Block 1 scored instructions]
+  i1 --> b1[Block 1 scored 70 paintings]
+  b1 --> br[ROUND 1 COMPLETE + block 2 rules]
+  br --> p2g[Block 2 practice gate]
+  p2g --> p2[Block 2 practice 20 paintings]
+  p2 --> i2[FINAL ROUND instructions]
+  i2 --> b2[Block 2 scored 70 paintings]
   b2 --> done[Session complete]
   done --> dl[DOWNLOAD DATA]
   dl --> title[Title screen for next participant]
@@ -100,23 +130,44 @@ flowchart TD
 
 Gate labels worth noting:
 
-- Block 1 break after scored block 1: **ROUND 1 COMPLETE**
-- Block 2 practice warm-up: **ROUND 2**
+- Block 1 practice (session 1): **PRACTICE ROUND**
+- Block 1 scored intro: **MAIN ROUND**
+- After block 1 scored: **ROUND 1 COMPLETE** (includes block 2 rules)
+- Block 2 practice: **PRACTICE ROUND** / **ROUND 2**
 - Block 2 scored intro: **FINAL ROUND**
+
+### Session 1 slide tutorial (not exported)
+
+Six slides, order-specific:
+
+| Slide | Content |
+|-------|---------|
+| 1 | Welcome, corridor walk, block order pill |
+| 2 | Watch-only paintings, OBSERVE HUD |
+| 3 | 1-back and 3-back rules, MATCH / NO MATCH |
+| 4-5 | Quizzes: 1-then-3 order uses 2-painting 1-back quiz; 3-then-1 order uses 4-painting 3-back quiz |
+| 6 | Walk / look / click controls |
+
+Final button label: **CONTINUE TO PRACTICE** (with arrow on screen).
 
 Tutorial slides and practice are never exported.
 
-## Pause menu (Esc)
+## Accessibility
 
-| Action | What it does |
-|--------|----------------|
-| Resume | Continue; pause time is excluded from RT on the active painting |
-| Controls | Re-open tutorial slides |
-| Accessibility | Contrast, HUD labels, crosshair, mouse sensitivity, mute, longer glow |
-| Restart block | Drop scored + warmup rows for the current block and replay it |
-| Back to title | Warns if data were not downloaded |
+Open from the title screen **ACCESSIBILITY** button (researcher setup). During play, press **Esc** to close the accessibility panel if it is open.
 
-There is no download button in the pause menu. Trial rows are copied to `sessionStorage` during play. If the tab reloads, a recovery banner may offer **DOWNLOAD DATA**. Do not dismiss that banner without saving.
+| Option | Effect |
+|--------|--------|
+| High contrast | Stronger UI contrast |
+| Show glyph labels on HUD | Text labels beside glyphs |
+| Larger crosshair | Bigger aim ring |
+| Mouse sensitivity (low) | Reduced look speed |
+| Mute sounds | Disables SFX and corridor ambient |
+| Longer glow (5 s) | Glyph stays highlighted longer (default 2 s) |
+
+## Data recovery
+
+Trial rows are copied to `sessionStorage` during play. If the tab reloads, a recovery banner offers **DOWNLOAD DATA** only; it does **not** resume the task. Incomplete recovery files receive a `_PARTIAL` filename suffix and `exportStatus = partial` on the Meta sheet.
 
 ## Data export
 
@@ -136,7 +187,9 @@ flowchart TD
 
 **Meta sheet:** timestamps, `blockOrder_key`, row counts, per-block seeds, QC counts.
 
-Auto filename example: `BSVG_STANDARD_SESSION2_01.xlsx`
+Auto filename example: `BSVG_GLYPHMIND_SESSION2_01.xlsx`
+
+An incomplete recovery export is named `BSVG_GLYPHMIND_SESSION2_01_PARTIAL.xlsx`.
 
 Rename in the lab if you need condition, block order, or date in the filename.
 
@@ -152,9 +205,15 @@ Rename in the lab if you need condition, block order, or date in the filename.
 | Look | Mouse (pointer lock on the canvas) |
 | MATCH | Left click |
 | NO MATCH | Right click |
-| Pause | Esc |
+| Close accessibility panel | Esc (when accessibility is open) |
 
-Space and Enter advance tutorial slides and dismiss instruction gates only.
+Space and Enter advance tutorial slides and dismiss instruction gates only. Keyboard keys do not answer trials.
+
+### Staff shortcuts (not shown to participants)
+
+| Key | When | Effect |
+|-----|------|--------|
+| **Y** | Session 1 cutscene | Skip cutscene only; slide tutorial still runs |
 
 ## Validation
 

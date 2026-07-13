@@ -1,5 +1,5 @@
 /**
- * Shared GLYPHMIND sequence + stimulus constants (mirrors index.html).
+ * Shared GLYPHMIND sequence, stimulus, and trial-timing constants (mirrors index.html).
  */
 export const TOTAL_TRIALS = 70;
 export const MATCH_COUNT = 30;
@@ -272,4 +272,32 @@ export function validateBlockSequence(N, seq) {
 
 export function expectedCresp(stimulusId, targetId) {
   return stimulusId === targetId ? 1 : 2;
+}
+
+/**
+ * RSI (ms): time from prior anchor to this painting onset.
+ * Scored (after any answer in block): prior click -> this reveal.
+ * Watch-only / before first answer: prior reveal -> this reveal.
+ */
+export function interStimulusInterval(onsetMs, trialIdx, n, lastOnsetMs, lastAnswerMs) {
+  if (trialIdx <= 0) return 0;
+  if (trialIdx >= n && lastAnswerMs > 0) {
+    return Math.max(0, Math.round(onsetMs - lastAnswerMs));
+  }
+  return lastOnsetMs > 0 ? Math.max(0, Math.round(onsetMs - lastOnsetMs)) : 0;
+}
+
+/** RT (ms): glyph onset to participant answer. */
+export function reactionTimeMs(onsetMs, answerMs) {
+  if (!(onsetMs > 0) || !(answerMs > 0)) return 0;
+  return Math.max(0, Math.round(answerMs - onsetMs));
+}
+
+/** Map a click timestamp onto the performance clock (must be after onset). */
+export function clickPerfNow(inputStamp, notBeforeMs) {
+  const now = performance.now();
+  if (!Number.isFinite(inputStamp) || inputStamp <= 0) return now;
+  if (!(notBeforeMs > 0) || inputStamp < notBeforeMs) return now;
+  if (inputStamp > now + 32) return now;
+  return inputStamp;
 }

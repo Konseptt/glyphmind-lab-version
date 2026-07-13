@@ -1,5 +1,6 @@
 /**
- * Simulates full session logging (scored blocks only; practice not exported) and audits export shape.
+ * Simulates full session logging (scored blocks only; practice not exported),
+ * validates RT/RSI timing semantics, and audits export shape.
  * Run: node scripts/verify-session-data.mjs
  */
 import {
@@ -19,6 +20,8 @@ import {
   maxConsecutiveSameGlyph,
   maxConsecutiveTrue,
   MAX_CONSECUTIVE_SAME_GLYPH,
+  interStimulusInterval,
+  reactionTimeMs,
 } from "./glyphmind-core.mjs";
 import { auditExportData } from "./audit-export.mjs";
 
@@ -197,12 +200,19 @@ function simulateCorridor(sim, N, totalTrials, seed, block) {
   logger.block = block;
   const seq =
     totalTrials === TOTAL_TRIALS ? genSeqBlock(N, seed) : genSeqBlockLen(N, seed, totalTrials);
-  let lastEventTime = 0;
+  let lastRevealTime = 0;
+  let lastResponseTime = 0;
   let respondedCount = 0;
 
   for (let idx = 0; idx < totalTrials; idx++) {
     const revealTime = 1000 + idx * 2000;
-    const rsi = lastEventTime > 0 ? revealTime - lastEventTime : 0;
+    const rsi = interStimulusInterval(
+      revealTime,
+      idx,
+      N,
+      lastRevealTime,
+      lastResponseTime,
+    );
 
     if (idx < N) {
       logger.recordWarmup({
@@ -212,7 +222,7 @@ function simulateCorridor(sim, N, totalTrials, seed, block) {
         rsi,
         sequenceSeed: seed,
       });
-      lastEventTime = revealTime;
+      lastRevealTime = revealTime;
       continue;
     }
 
@@ -228,8 +238,7 @@ function simulateCorridor(sim, N, totalTrials, seed, block) {
     const actualMatch = seq[idx] === seq[idx - N];
     const resp = actualMatch ? 1 : 2;
     const respTime = revealTime + 400;
-    const rt = respTime - revealTime;
-    const rsiResp = respTime - lastEventTime;
+    const rt = reactionTimeMs(revealTime, respTime);
 
     logger.record({
       trialIdx: idx,
@@ -238,11 +247,12 @@ function simulateCorridor(sim, N, totalTrials, seed, block) {
       nbackGlyphIdx: seq[idx - N],
       resp,
       rt,
-      rsi: rsiResp,
+      rsi,
       sequenceSeed: seed,
     });
 
-    lastEventTime = respTime;
+    lastRevealTime = revealTime;
+    lastResponseTime = respTime;
     respondedCount++;
   }
 
@@ -295,6 +305,10 @@ function ok(cond, msg) {
     failed++;
   }
 }
+
+ok(reactionTimeMs(3000, 3400) === 400, "rt is onset to answer");
+ok(interStimulusInterval(3000, 1, 1, 1000, 0) === 2000, "rsi warmup uses prior onset");
+ok(interStimulusInterval(5000, 2, 1, 3000, 3400) === 1600, "rsi scored uses prior answer");
 
 const order13 = [1, 3];
 const sim = makeGameLogger();

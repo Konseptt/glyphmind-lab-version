@@ -4,18 +4,20 @@ How research staff run the GLYPHMIND N-back task in the BSVG/tDCS study. This co
 
 ## 1. What the task is
 
-The participant walks a first-person corridor. Each painting shows one hieroglyph.
+The participant walks a first-person corridor. Paintings alternate on the left and right walls. When the participant stands close enough, a hieroglyph appears on the painting.
 
-- **1-back:** compare the current painting to the previous one.
-- **3-back:** compare the current painting to the one three steps back.
+- **1-back:** compare the current painting to the previous one in the same block.
+- **3-back:** compare the current painting to the one three steps back in the same block.
 - **MATCH:** left click (desktop).
 - **NO MATCH:** right click (desktop).
 
 Each **scored** block has **70 paintings**. The first **N** are watch-only and count toward those 70. The rest are scored. Each block is built with **30** true N-back matches among all 70 paintings.
 
-Before each scored block, the participant runs a **20-painting practice** at the same N-back level. Practice is not exported. Warm-up accuracy is shown on screen only.
+Before each scored block, the participant runs a **20-painting practice** at the same N-back level. Practice is not exported. Practice accuracy is shown on the transition screen before the scored block.
 
 In the export, a full two-block session has **140 rows** (70 per block). Use `trialType === "scored"` and answered `Resp` values for primary analysis. Watch-only rows use `trialType = warmup` and blank `Resp`.
+
+The session runs **continuously** once started. There is no pause menu and no in-task block restart.
 
 ## 2. Before the participant arrives
 
@@ -29,31 +31,43 @@ In the export, a full two-block session has **140 rows** (70 per block). Use `tr
 
    Then open `http://127.0.0.1:8765/index.html`.
 
-4. Optional smoke test: `node scripts/verify-logic.mjs` (expect `All checks passed.`).
+4. Optional smoke test:
+
+   ```bash
+   node scripts/verify-logic.mjs
+   node scripts/verify-session-data.mjs
+   ```
+
+   Expect `All checks passed.`
+
 5. Clear the download folder or confirm the last participant's file was moved.
 6. Do not type the participant's name into the game. Use the assigned ID only.
+7. Set **ACCESSIBILITY** options on the title screen if needed before **READY FOR PARTICIPANT**.
 
 ## 3. Title screen setup
 
-1. **Block order:** `1-BACK -> 3-BACK` or `3-BACK -> 1-BACK` per counterbalancing.
+1. **Block order:** `1-BACK then 3-BACK` or `3-BACK then 1-BACK` per counterbalancing.
 2. **Participant ID:** deidentified ID only.
 3. **Session:** click `1`, `2`, or `3` (stored in the export as `"1"`, `"2"`, or `"3"`).
 4. **Stimulation:** ANODAL, CATHODAL, or SHAM. Stored as `anodal`, `cathodal`, or `sham`. Confirm the lit button matches randomization (default is anodal).
-5. Click **READY FOR PARTICIPANT**. The participant screen shows ID and session only.
+5. **ACCESSIBILITY** (optional): high contrast, HUD glyph labels, larger crosshair, low mouse sensitivity, mute, longer glyph glow.
+6. Click **READY FOR PARTICIPANT**. The participant screen shows ID and session only.
 
 ## 4. What to tell the participant
 
 Read or paraphrase:
 
-"You will walk down a hallway. Each painting shows one symbol. Remember the symbols and decide whether the new symbol matches one from earlier in the same block.
+"You will walk down a hallway. Paintings are on the walls to your left and right. Walk up to each painting and stop when you are close enough for the symbol to appear.
+
+Remember the symbols and decide whether the new symbol matches one from earlier in the same block.
 
 In a 1-back block, compare to the previous painting. In a 3-back block, compare to the painting three back. Same symbol: left click for MATCH. Different symbol: right click for NO MATCH.
 
-The first painting in a 1-back block is watch-only. The first three in a 3-back block are watch-only. Just look and remember; do not click yet.
+The first painting in a 1-back block is watch-only. The first three in a 3-back block are watch-only. Just look and remember; do not click yet. The screen will say OBSERVE.
 
 Before each main block you will get a short practice run. You can miss answers in practice and still continue.
 
-Use the mouse to answer during the main blocks: left click MATCH, right click NO MATCH. Keyboard keys do not count as answers. Questions before we start?"
+Use the mouse to answer during the main blocks: left click MATCH, right click NO MATCH. Keyboard keys do not count as answers. The run is continuous once it starts. Questions before we start?"
 
 **Current build:** desktop mouse only. On-screen touch buttons are not implemented yet.
 
@@ -62,38 +76,59 @@ Use the mouse to answer during the main blocks: left click MATCH, right click NO
 ### Session 1
 
 1. Participant clicks **BEGIN**.
-2. Short cutscene (click or key to advance).
-3. Tutorial slides (walking, N-back rule, controls, practice warm-up). Final slide says practice does not require perfect accuracy.
-4. Block 1 practice (20 paintings).
-5. Block 1 scored corridor (70 paintings).
-6. Break screen: **ROUND 1 COMPLETE**. Click **CONTINUE**.
-7. Block 2 practice warm-up (gate header **ROUND 2**).
-8. Block 2 scored corridor (70 paintings).
+2. Short cutscene (click or key to advance). Staff may press **Y** to skip the cutscene only; the slide tutorial still runs.
+3. **Slide tutorial** (6 slides):
+   - Welcome and block order
+   - Watch-only / OBSERVE rules
+   - 1-back and 3-back answer rules
+   - Two practice quizzes (order-specific: 1-then-3 uses 1-back quiz; 3-then-1 uses 3-back quiz)
+   - Walk / look / click controls
+   - Final button: **CONTINUE TO PRACTICE** (with arrow on screen)
+4. Block 1 practice gate, then **BEGIN ... PRACTICE** (20 paintings).
+5. Block 1 scored instruction gate (**MAIN ROUND**), then **BEGIN ROUND 1** (70 paintings).
+6. **ROUND 1 COMPLETE** gate (block 2 rules), then **CONTINUE**.
+7. Block 2 practice gate, then practice (20 paintings).
+8. Block 2 scored instruction gate (**FINAL ROUND**), then **BEGIN ROUND 2** (70 paintings).
 9. Session complete screen. Click **DOWNLOAD DATA** before closing the browser.
 
 ### Sessions 2 and 3
 
-Same block structure. No cutscene or tutorial slides. Optional short return gate, then block 1 practice.
+Same block structure. No cutscene or slide tutorial. Short **SESSION N RETURN** gate, then block 1 practice.
 
 ### During a block
 
 - HUD shows painting number, N-back level, **OBSERVE** on watch-only trials, and running accuracy on scored trials.
-- **Esc** opens pause: Resume, Controls, Accessibility, Restart block, Back to title.
-- No export button in pause. If the tab reloads, use the recovery banner **DOWNLOAD DATA**. Do not dismiss without saving.
-- Pause between paintings when you can. Pause time is excluded from RT on the active painting.
+- Participant must answer every scored painting before the next painting can reveal.
+- Paintings reveal when the participant is within about **3 m** of the panel (3D distance). Encourage stopping at each painting.
+- **Esc** closes the accessibility panel only if it was opened from the title screen. There is no pause menu.
+- If the tab reloads, use the recovery banner **DOWNLOAD DATA**. Recovery exports do not resume the session; incomplete files are marked `_PARTIAL`.
 
-### Restart block
+## 6. Timing fields (for analysis)
 
-Drops warmup and scored rows for the **current** block only, generates a new sequence seed, and replays that block. Note restarts in session paperwork.
+### RT
 
-## 6. Export and QC
+Time from **painting revealed** to **button clicked**.
+
+`RT = clickTime - revealTime`
+
+### RSI
+
+Time from **button clicked** to **next painting shown**.
+
+`RSI = thisRevealTime - lastClickTime`
+
+On watch-only trials (and the first scored trial, before any click in the block), there is no prior click, so RSI uses **previous painting shown to this painting shown** instead.
+
+Practice and tutorial trials are not exported.
+
+## 7. Export and QC
 
 1. After block 2, click **DOWNLOAD DATA** on the session complete screen.
 2. Check the download folder. Auto filename pattern:
 
-   `BSVG_STANDARD_SESSION{1|2|3}_{participantID}.xlsx`
+   `BSVG_GLYPHMIND_SESSION{1|2|3}_{participantID}.xlsx`
 
-   Example: `BSVG_STANDARD_SESSION2_01.xlsx`
+   Example: `BSVG_GLYPHMIND_SESSION2_01.xlsx`
 
 3. Rename per lab convention if needed.
 4. Open the workbook or run:
@@ -109,13 +144,13 @@ Drops warmup and scored rows for the **current** block only, generates a new seq
    - `rows_scored_pending = 0` on Meta.
    - Both `block1_sequenceSeed` and `block2_sequenceSeed` present.
 
-6. Log irregularities: early stop, restart, reload, discomfort, partial export.
+6. Log irregularities: early stop, reload, discomfort, partial export.
 
-## 7. After the participant
+## 8. After the participant
 
 Follow IRB protocol for tDCS removal, scheduling, debrief, and filing. Move the `.xlsx` to the study data folder. Keep consent forms separate from data files.
 
-## 8. Troubleshooting
+## 9. Troubleshooting
 
 | Problem | What to try |
 |---------|-------------|
@@ -123,17 +158,21 @@ Follow IRB protocol for tDCS removal, scheduling, debrief, and filing. Move the 
 | Box glyphs | Confirm `fonts/` folder; reload |
 | Export fails | Confirm `lib/xlsx.full.min.js`; do not close browser until download finishes |
 | Reload mid-session | Use recovery banner download; do not dismiss without saving |
-| Confused participant | Pause; restate 1-back vs 3-back and left vs right click |
+| Confused participant | Restate 1-back vs 3-back, walk-to-painting, and left vs right click |
+| RTs look very long | Confirm participant is walking to each side painting (not only down the corridor center) |
 
-## 9. Shipped behavior (staff reference)
+## 10. Shipped behavior (staff reference)
 
 1. **20-trial practice** before each scored block. Not exported.
-2. **Watch-only paintings** take no click. First N in each scored block.
-3. **Mouse only** on desktop for MATCH / NO MATCH. F, Space, and J do not answer trials.
-4. **Block 1 break:** ROUND 1 COMPLETE. **Block 2 practice gate:** ROUND 2. **Block 2 scored:** FINAL ROUND.
-5. **70 paintings** logged per scored block. Observe trials are inside those 70.
-6. **Download** only at session complete. **TITLE SCREEN** starts the next participant (PID field clears).
-7. **Condition** in export: `anodal`, `cathodal`, or `sham`. Verify the button before BEGIN.
-8. **Audio:** no cutscene music. Corridor SFX unless participant mutes in Accessibility.
+2. **Instruction gate** after each practice block before the scored hall.
+3. **Watch-only paintings** take no click. First N in each scored block.
+4. **Mouse only** on desktop for MATCH / NO MATCH.
+5. **Block 1 break:** ROUND 1 COMPLETE (includes block 2 rules). **Block 2 practice gate:** PRACTICE ROUND. **Block 2 scored:** FINAL ROUND.
+6. **70 paintings** logged per scored block. Observe trials are inside those 70.
+7. **Download** only at session complete. **TITLE SCREEN** starts the next participant (PID field clears).
+8. **Condition** in export: `anodal`, `cathodal`, or `sham`. Verify the button before BEGIN.
+9. **Accessibility** on title screen only. **Esc** closes that panel if open.
+10. **Staff shortcut Y** during session 1 cutscene skips cutscene only (not shown to participants).
+11. **Audio:** corridor SFX unless participant mutes in Accessibility.
 
 tDCS electrode placement and stimulation parameters are not covered here. Use the approved stimulation protocol.
