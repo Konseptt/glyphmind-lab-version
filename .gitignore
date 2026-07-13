@@ -22,3 +22,4 @@ package-lock.json
 # Editor / agent skill folders (local only)
 .agents/
 skills-lock.json
+.serena/

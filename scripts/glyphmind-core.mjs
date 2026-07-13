@@ -287,17 +287,34 @@ export function interStimulusInterval(onsetMs, trialIdx, n, lastOnsetMs, lastAns
   return lastOnsetMs > 0 ? Math.max(0, Math.round(onsetMs - lastOnsetMs)) : 0;
 }
 
-/** RT (ms): glyph onset to participant answer. */
+/** RT (ms): glyph onset to participant answer. Floors at 1 so 0 always means invalid. */
 export function reactionTimeMs(onsetMs, answerMs) {
   if (!(onsetMs > 0) || !(answerMs > 0)) return 0;
-  return Math.max(0, Math.round(answerMs - onsetMs));
+  const d = Math.round(answerMs - onsetMs);
+  if (d < 0) return 0;
+  return Math.max(1, d);
 }
 
-/** Map a click timestamp onto the performance clock (must be after onset). */
+let timeOriginOffset = null;
+
+/**
+ * Map a click timestamp onto the performance clock. Null means the click was
+ * pressed before notBeforeMs (anticipation) and should be ignored.
+ */
 export function clickPerfNow(inputStamp, notBeforeMs) {
   const now = performance.now();
   if (!Number.isFinite(inputStamp) || inputStamp <= 0) return now;
-  if (!(notBeforeMs > 0) || inputStamp < notBeforeMs) return now;
-  if (inputStamp > now + 32) return now;
-  return inputStamp;
+
+  let mappedStamp = inputStamp - (timeOriginOffset || 0);
+
+  if (timeOriginOffset === null || mappedStamp > now + 32 || mappedStamp < notBeforeMs - 1000) {
+    const diff = inputStamp - now;
+    timeOriginOffset = Math.abs(diff) > 5000 ? diff : 0;
+    mappedStamp = inputStamp - timeOriginOffset;
+  }
+
+  if (!(notBeforeMs > 0)) return now;
+  if (mappedStamp > now + 32) return now;
+  if (mappedStamp < notBeforeMs) return null;
+  return mappedStamp;
 }

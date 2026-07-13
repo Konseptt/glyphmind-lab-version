@@ -24,6 +24,7 @@ import {
   reactionTimeMs,
 } from "./glyphmind-core.mjs";
 import { auditExportData } from "./audit-export.mjs";
+import { readFileSync } from "node:fs";
 
 const PRACTICE_TRIALS = 20;
 const TUTORIAL_TRIALS = 5;
@@ -307,8 +308,33 @@ function ok(cond, msg) {
 }
 
 ok(reactionTimeMs(3000, 3400) === 400, "rt is onset to answer");
+ok(reactionTimeMs(3000, 3000.2) === 1, "rt floors at 1ms so 0 means invalid");
+ok(reactionTimeMs(3000, 2990) === 0, "rt rejects negative interval");
 ok(interStimulusInterval(3000, 1, 1, 1000, 0) === 2000, "rsi warmup uses prior onset");
 ok(interStimulusInterval(5000, 2, 1, 3000, 3400) === 1600, "rsi scored uses prior answer");
+
+// index.html carries its own copies of the timing helpers; catch drift.
+{
+  const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+  const core = readFileSync(new URL("./glyphmind-core.mjs", import.meta.url), "utf8");
+  const extract = (src, name) => {
+    const start = src.indexOf(`function ${name}(`);
+    if (start < 0) return null;
+    let i = src.indexOf("{", start);
+    let depth = 0;
+    for (; i < src.length; i++) {
+      if (src[i] === "{") depth++;
+      else if (src[i] === "}" && --depth === 0) break;
+    }
+    return src.slice(start, i + 1).replace(/\s+/g, " ").trim();
+  };
+  for (const name of ["interStimulusInterval", "reactionTimeMs", "clickPerfNow"]) {
+    ok(
+      extract(html, name) !== null && extract(html, name) === extract(core, name),
+      `index.html ${name} matches glyphmind-core.mjs`,
+    );
+  }
+}
 
 const order13 = [1, 3];
 const sim = makeGameLogger();
