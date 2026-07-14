@@ -60,15 +60,13 @@ Helpers: `reactionTimeMs`, `interStimulusInterval`, `clickPerfNow` in `index.htm
 
 ### Glyph reveal
 
-A painting reveals when the camera is within 2.85 m (3D distance) of the panel. The glyph glows, `revealTime` is stamped, and scored trials accept clicks in that same turn.
+A painting reveals when the player reaches that painting's corridor bay on the Z axis (about 4.2 m). Walking the corridor center is enough; no need to hug the side wall. The glyph glows, `revealTime` is stamped, and scored trials accept clicks in that same turn (including from the middle of the hall).
 
 ### RT (reaction time)
 
 Time from painting revealed to button clicked.
 
 `RT = clickTime - revealTime`
-
-Time spent with the tab hidden, or with the click-to-look hint up (pointer lock lost), is subtracted from RT.
 
 ### RSI (response-stimulus interval)
 
@@ -82,11 +80,11 @@ Time from button clicked to next painting shown.
 | Watch-only or first scored trial (no prior click)  | previous reveal to this reveal |
 | First painting in block                            | 0                              |
 
-Idle time (tab hidden or look hint) between the same anchors is subtracted from RSI the same way as for RT.
+No idle/pause subtraction. Wall clock only.
 
 ## Researcher setup (title screen)
 
-1. Enter Participant ID as `PT-01` through `PT-99` (required; stored and exported as that text string).
+1. Enter Participant ID (required; any non-empty text string, stored as-is in the export).
 2. Pick Session 1, 2, or 3 (exported as `"1"`, `"2"`, or `"3"`).
 3. Pick Stimulation: anodal, cathodal, or sham. Confirm the lit button matches the study plan (default is anodal).
 4. Pick Block order: 1-BACK then 3-BACK, or 3-BACK then 1-BACK.
@@ -112,11 +110,11 @@ Sessions 2 and 3 skip cutscene and slides. Short SESSION N RETURN gate, then blo
 
 Gate labels:
 
-- Block 1 practice (session 1): PRACTICE ROUND
-- Block 1 scored intro: MAIN ROUND
-- After block 1 scored: ROUND 1 COMPLETE
-- Block 2 practice: PRACTICE ROUND / ROUND 2
-- Block 2 scored intro: FINAL ROUND
+- Block 1 practice: **PRACTICE** (same rules/controls layout as scored; 20 paintings)
+- Block 1 scored intro: **MAIN ROUND**
+- After block 1 scored: **ROUND 1 COMPLETE** (includes block 2 rules)
+- Block 2 practice: **PRACTICE**
+- Block 2 scored intro: **FINAL ROUND**
 
 ### Session 1 slide tutorial (not exported)
 
@@ -144,9 +142,9 @@ Trials columns: `PID`, `Session`, `Condition`, `block`, `nback`, `trialType`, `t
 
 Meta includes timestamps, `blockOrder_key`, row counts, per-block seeds, and QC counts.
 
-Example filename: `BSVG_GLYPHMIND_SESSION2_PT-01.xlsx`
+Example filename: `BSVG_GLYPHMIND_SESSION2_01.xlsx`
 
-Partial recovery example: `BSVG_GLYPHMIND_SESSION2_PT-01_PARTIAL.xlsx`
+Partial recovery example: `BSVG_GLYPHMIND_SESSION2_01_PARTIAL.xlsx`
 
 Rename in the lab if you need condition, block order, or date in the filename.
 

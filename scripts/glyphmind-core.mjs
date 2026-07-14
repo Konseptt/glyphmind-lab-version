@@ -318,8 +318,6 @@ export function reactionTimeMs(onsetMs, answerMs) {
   return Math.max(1, d);
 }
 
-let timeOriginOffset = null;
-
 /**
  * Map a click timestamp onto the performance clock. Null means the click was
  * pressed before notBeforeMs (anticipation) and should be ignored.
@@ -327,21 +325,9 @@ let timeOriginOffset = null;
 export function clickPerfNow(inputStamp, notBeforeMs) {
   const now = performance.now();
   if (!Number.isFinite(inputStamp) || inputStamp <= 0) return now;
-
-  let mappedStamp = inputStamp - (timeOriginOffset || 0);
-
-  if (
-    timeOriginOffset === null ||
-    mappedStamp > now + 32 ||
-    mappedStamp < notBeforeMs - 1000
-  ) {
-    const diff = inputStamp - now;
-    timeOriginOffset = Math.abs(diff) > 5000 ? diff : 0;
-    mappedStamp = inputStamp - timeOriginOffset;
-  }
-
+  const t = Math.abs(inputStamp - now) > 60000 ? now : inputStamp;
   if (!(notBeforeMs > 0)) return now;
-  if (mappedStamp > now + 32) return now;
-  if (mappedStamp < notBeforeMs) return null;
-  return mappedStamp;
+  if (t > now + 32) return now;
+  if (t < notBeforeMs) return null;
+  return t;
 }

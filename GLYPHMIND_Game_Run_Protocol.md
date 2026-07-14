@@ -46,7 +46,7 @@ There is no pause menu and no in-task block restart. The session runs straight t
 ## 3. Title screen setup
 
 1. Block order: `1-BACK then 3-BACK` or `3-BACK then 1-BACK` per counterbalancing.
-2. Participant ID: `PT-01` through `PT-99` (text string; enter `1` or `01` and it becomes `PT-01`).
+2. Participant ID: any non-empty text (deidentified lab ID). Stored as a string in the export.
 3. Session: click `1`, `2`, or `3` (stored in the export as `"1"`, `"2"`, or `"3"`).
 4. Stimulation: ANODAL, CATHODAL, or SHAM. Stored as `anodal`, `cathodal`, or `sham`. Confirm the lit button matches randomization (default is anodal).
 5. Click READY FOR PARTICIPANT. The participant screen shows ID and session only.
@@ -97,7 +97,7 @@ Same block structure. No cutscene or slide tutorial. Short SESSION N RETURN gate
 
 - HUD shows painting number, N-back level, OBSERVE on watch-only trials, and running accuracy on scored trials.
 - Participant must answer every scored painting before the next painting can reveal.
-- Paintings reveal when the participant is within about 3 m of the panel (3D distance). Encourage stopping at each painting.
+- Paintings reveal when the participant reaches that painting's bay along the hallway (about 4 m on the Z axis). Walking the center is enough. Encourage looking at each painting and answering before moving on.
 - There is no pause menu.
 - If the tab reloads, use the recovery banner DOWNLOAD DATA. Recovery exports do not resume the session; incomplete files are marked `_PARTIAL`.
 
@@ -109,15 +109,15 @@ Time from painting revealed to button clicked.
 
 `RT = clickTime - revealTime`
 
-Time with the tab hidden, or with the click-to-look hint up, is subtracted.
-
 ### RSI
 
 Time from button clicked to next painting shown.
 
 `RSI = thisRevealTime - lastClickTime`
 
-On watch-only trials (and the first scored trial, before any click in the block), there is no prior click, so RSI uses previous painting shown to this painting shown instead. The same idle subtraction applies.
+On watch-only trials (and the first scored trial, before any click in the block), there is no prior click, so RSI uses previous painting shown to this painting shown instead.
+
+No idle/pause subtraction. Wall clock only.
 
 Practice and tutorial trials are not exported.
 
@@ -126,9 +126,9 @@ Practice and tutorial trials are not exported.
 1. After block 2, click DOWNLOAD DATA on the session complete screen.
 2. Check the download folder. Auto filename pattern:
 
-   `BSVG_GLYPHMIND_SESSION{1|2|3}_{PT-NN}.xlsx`
+   `BSVG_GLYPHMIND_SESSION{1|2|3}_{participantID}.xlsx`
 
-   Example: `BSVG_GLYPHMIND_SESSION2_PT-01.xlsx`
+   Example: `BSVG_GLYPHMIND_SESSION2_01.xlsx`
 
 3. Rename per lab convention if needed.
 4. Open the workbook or run:
@@ -167,7 +167,7 @@ Follow IRB protocol for tDCS removal, scheduling, debrief, and filing. Move the 
 2. Instruction gate after each practice block before the scored hall.
 3. Watch-only paintings take no click. First N in each scored block.
 4. Mouse only on desktop for MATCH / NO MATCH.
-5. Block 1 break: ROUND 1 COMPLETE (includes block 2 rules). Block 2 practice gate: PRACTICE ROUND. Block 2 scored: FINAL ROUND.
+5. Block 1 break: ROUND 1 COMPLETE (includes block 2 rules). Block 2 practice gate: PRACTICE (same full rules screen as scored). Block 2 scored: FINAL ROUND.
 6. 70 paintings logged per scored block. Observe trials are inside those 70.
 7. Download only at session complete. TITLE SCREEN starts the next participant (PID field clears).
 8. Condition in export: `anodal`, `cathodal`, or `sham`. Verify the button before BEGIN.
