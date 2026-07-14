@@ -46,7 +46,7 @@ There is no pause menu and no in-task block restart. The session runs straight t
 ## 3. Title screen setup
 
 1. Block order: `1-BACK then 3-BACK` or `3-BACK then 1-BACK` per counterbalancing.
-2. Participant ID: deidentified ID only.
+2. Participant ID: `PT-01` through `PT-99` (text string; enter `1` or `01` and it becomes `PT-01`).
 3. Session: click `1`, `2`, or `3` (stored in the export as `"1"`, `"2"`, or `"3"`).
 4. Stimulation: ANODAL, CATHODAL, or SHAM. Stored as `anodal`, `cathodal`, or `sham`. Confirm the lit button matches randomization (default is anodal).
 5. Click READY FOR PARTICIPANT. The participant screen shows ID and session only.
@@ -126,9 +126,9 @@ Practice and tutorial trials are not exported.
 1. After block 2, click DOWNLOAD DATA on the session complete screen.
 2. Check the download folder. Auto filename pattern:
 
-   `BSVG_GLYPHMIND_SESSION{1|2|3}_{participantID}.xlsx`
+   `BSVG_GLYPHMIND_SESSION{1|2|3}_{PT-NN}.xlsx`
 
-   Example: `BSVG_GLYPHMIND_SESSION2_01.xlsx`
+   Example: `BSVG_GLYPHMIND_SESSION2_PT-01.xlsx`
 
 3. Rename per lab convention if needed.
 4. Open the workbook or run:

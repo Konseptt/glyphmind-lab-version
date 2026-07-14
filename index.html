@@ -2588,10 +2588,12 @@
             id="tt-pid"
             class="pidinput"
             type="text"
-            maxlength="32"
-            placeholder="e.g. PT-06"
+            maxlength="8"
+            placeholder="PT-01"
             autocomplete="off"
             aria-required="true"
+            inputmode="text"
+            spellcheck="false"
           />
           <div class="field-label" style="margin-top: 12px">SESSION</div>
           <div class="mode-row session-row">
@@ -4668,8 +4670,8 @@
 
           const exportDate = new Date();
           const exportTime = exportDate.toISOString();
-          const pid = this.pid || "anonymous";
-          const sid = this.sid || "";
+          const pid = String(this.pid || "anonymous");
+          const sid = String(this.sid || "");
           const sessionStartISO = this.sessionStart
             ? new Date(this.sessionStart).toISOString()
             : "";
@@ -5101,8 +5103,9 @@
 
       function sanitizePidInput(raw) {
         return String(raw || "")
-          .replace(/[\r\n\t]/g, "")
-          .slice(0, 32);
+          .toUpperCase()
+          .replace(/[^A-Z0-9-]/g, "")
+          .slice(0, 8);
       }
 
       function escapeHtml(raw) {
@@ -5119,8 +5122,19 @@
         );
       }
 
+      // Stored and exported as a string, e.g. "PT-01" (never a bare number).
       function formatPid(raw) {
-        return sanitizePidInput(raw).trim();
+        const s = sanitizePidInput(raw).trim();
+        if (!s) return "";
+        const m = s.match(/^PT-?0*(\d+)$/) || s.match(/^0*(\d+)$/);
+        if (!m) return "";
+        const num = parseInt(m[1], 10);
+        if (!Number.isFinite(num) || num < 1 || num > 99) return "";
+        return "PT-" + String(num).padStart(2, "0");
+      }
+
+      function isValidPid(pid) {
+        return /^PT-\d{2}$/.test(String(pid || ""));
       }
 
       function exportFilename(pid, sid, opts = {}) {
@@ -5152,8 +5166,9 @@
 
       function requireParticipantId() {
         const pid = applyPidToInput($("tt-pid")?.value);
-        if (!pid) {
-          alert("Enter a participant ID on the title screen.");
+        if (!isValidPid(pid)) {
+          alert('Enter a participant ID in the form PT-01 (numbers 01 through 99).');
+          $("tt-pid")?.focus();
           return false;
         }
         return true;
@@ -5162,7 +5177,7 @@
       // title screen
       $("tt-pid").addEventListener("input", function () {
         this.value = sanitizePidInput(this.value);
-        logger.pid = this.value;
+        logger.pid = formatPid(this.value);
       });
       $("tt-pid").addEventListener("blur", function () {
         applyPidToInput(this.value);

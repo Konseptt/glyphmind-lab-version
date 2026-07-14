@@ -86,7 +86,7 @@ Idle time (tab hidden or look hint) between the same anchors is subtracted from 
 
 ## Researcher setup (title screen)
 
-1. Enter Participant ID (required).
+1. Enter Participant ID as `PT-01` through `PT-99` (required; stored and exported as that text string).
 2. Pick Session 1, 2, or 3 (exported as `"1"`, `"2"`, or `"3"`).
 3. Pick Stimulation: anodal, cathodal, or sham. Confirm the lit button matches the study plan (default is anodal).
 4. Pick Block order: 1-BACK then 3-BACK, or 3-BACK then 1-BACK.
@@ -144,9 +144,9 @@ Trials columns: `PID`, `Session`, `Condition`, `block`, `nback`, `trialType`, `t
 
 Meta includes timestamps, `blockOrder_key`, row counts, per-block seeds, and QC counts.
 
-Example filename: `BSVG_GLYPHMIND_SESSION2_01.xlsx`
+Example filename: `BSVG_GLYPHMIND_SESSION2_PT-01.xlsx`
 
-Partial recovery example: `BSVG_GLYPHMIND_SESSION2_01_PARTIAL.xlsx`
+Partial recovery example: `BSVG_GLYPHMIND_SESSION2_PT-01_PARTIAL.xlsx`
 
 Rename in the lab if you need condition, block order, or date in the filename.
 
