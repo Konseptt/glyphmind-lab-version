@@ -84,10 +84,9 @@ Current build: desktop mouse only. On-screen touch buttons are not implemented.
    - Final button: CONTINUE TO PRACTICE (arrow on screen)
 4. Block 1 practice gate, then BEGIN PRACTICE (20 paintings).
 5. Block 1 scored instruction gate (MAIN ROUND), then BEGIN ROUND 1 (70 paintings).
-6. ROUND 1 COMPLETE gate (block 2 rules), then CONTINUE.
-7. Block 2 practice gate, then practice (20 paintings).
-8. Block 2 scored instruction gate (FINAL ROUND), then BEGIN ROUND 2 (70 paintings).
-9. Session complete screen. Click DOWNLOAD DATA before closing the browser.
+6. Block 2 PRACTICE instruction screen (same full rules layout; no ROUND 1 COMPLETE gate), then practice (20 paintings).
+7. Block 2 scored instruction gate (FINAL ROUND), then BEGIN ROUND 2 (70 paintings).
+8. Session complete screen. Click DOWNLOAD DATA before closing the browser.
 
 ### Sessions 2 and 3
 
@@ -143,6 +142,7 @@ Practice and tutorial trials are not exported.
    - 30 scored rows with `isMatch = 1` per block (Meta QC)
    - `rows_scored_pending = 0` on Meta
    - Both `block1_sequenceSeed` and `block2_sequenceSeed` present
+   - Trials columns: `PID`, `Session`, `Condition`, `block`, `nback`, `trialType`, `trial`, `isMatch`, `CRESP`, `Resp`, `ACC`, `runningAccuracy`, `RT`, `RSI`, `StimulusName`, `StimulusChar`
 
 6. Log irregularities: early stop, reload, discomfort, partial export.
 
@@ -167,7 +167,7 @@ Follow IRB protocol for tDCS removal, scheduling, debrief, and filing. Move the 
 2. Instruction gate after each practice block before the scored hall.
 3. Watch-only paintings take no click. First N in each scored block.
 4. Mouse only on desktop for MATCH / NO MATCH.
-5. Block 1 break: ROUND 1 COMPLETE (includes block 2 rules). Block 2 practice gate: PRACTICE (same full rules screen as scored). Block 2 scored: FINAL ROUND.
+5. After block 1 scored: go straight to block 2 PRACTICE (no ROUND 1 COMPLETE screen). Block 2 scored: FINAL ROUND.
 6. 70 paintings logged per scored block. Observe trials are inside those 70.
 7. Download only at session complete. TITLE SCREEN starts the next participant (PID field clears).
 8. Condition in export: `anodal`, `cathodal`, or `sham`. Verify the button before BEGIN.

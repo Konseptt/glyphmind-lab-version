@@ -57,8 +57,31 @@ const REQUIRED_TRIAL_COLUMNS = [
   "RSI",
 ];
 
+const COLUMN_ALIASES = {
+  nback: ["nback", "N"],
+  trial: ["trial", "TrialNum"],
+  StimulusChar: ["StimulusChar", "Symbol"],
+  runningAccuracy: ["runningAccuracy", "RunningACC"],
+};
+
+function rowHasColumn(row, col) {
+  const aliases = COLUMN_ALIASES[col] || [col];
+  return aliases.some((name) =>
+    Object.prototype.hasOwnProperty.call(row, name),
+  );
+}
+
+function rowGet(row, col) {
+  const aliases = COLUMN_ALIASES[col] || [col];
+  for (const name of aliases) {
+    if (Object.prototype.hasOwnProperty.call(row, name)) return row[name];
+  }
+  return undefined;
+}
+
 function nbackFromRow(row) {
-  if (row.nback !== undefined && row.nback !== "") return asInt(row.nback);
+  const n = asInt(rowGet(row, "nback"));
+  if (n != null) return n;
   return asInt(row.N);
 }
 
@@ -109,13 +132,13 @@ function groupByBlock(trials) {
 }
 
 function trialNum(row) {
-  const n = asInt(row.trial);
+  const n = asInt(rowGet(row, "trial"));
   if (n != null) return n;
   return asInt(row.painting);
 }
 
 function glyphIndexFromRow(row) {
-  const ch = asStr(row.StimulusChar);
+  const ch = asStr(rowGet(row, "StimulusChar"));
   if (ch) {
     const idx = GLYPHS.findIndex((g) => g.ch === ch);
     if (idx >= 0) return idx;
@@ -441,13 +464,7 @@ export function auditExportData(trials, meta = {}, options = {}) {
   }
 
   const missingCols = REQUIRED_TRIAL_COLUMNS.filter((col) => {
-    if (col === "nback") {
-      return (
-        !Object.prototype.hasOwnProperty.call(trials[0], "nback") &&
-        !Object.prototype.hasOwnProperty.call(trials[0], "N")
-      );
-    }
-    return !Object.prototype.hasOwnProperty.call(trials[0], col);
+    return !rowHasColumn(trials[0], col);
   });
   if (missingCols.length) {
     issues.push(`Trials sheet missing columns: ${missingCols.join(", ")}`);

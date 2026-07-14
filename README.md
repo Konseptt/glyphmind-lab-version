@@ -29,7 +29,7 @@ A full export has 140 rows (70 per block): `warmup` for watch-only paintings, th
 
 Practice accuracy can appear on transition screens. It is not written to the spreadsheet.
 
-For analysis, use `trialType === "scored"` and `Resp` in {1, 2}. HUD block accuracy is correct answers divided by answered scored trials.
+For analysis, use `trialType === "scored"` and `Resp` in {1, 2}. Accuracy is `(correct / answered) * 100` and starts at **100%** before any answers (HUD and `RunningACC`).
 
 ## N-back rule
 
@@ -101,10 +101,9 @@ Session 1:
 3. Six tutorial slides
 4. Block 1 practice gate, then 20 practice paintings
 5. Block 1 scored instructions (MAIN ROUND), then 70 scored paintings
-6. ROUND 1 COMPLETE (includes block 2 rules)
-7. Block 2 practice gate, then 20 practice paintings
-8. Block 2 scored instructions (FINAL ROUND), then 70 scored paintings
-9. Session complete: DOWNLOAD DATA
+6. Block 2 practice gate (PRACTICE; no ROUND 1 COMPLETE screen), then 20 practice paintings
+7. Block 2 scored instructions (FINAL ROUND), then 70 scored paintings
+8. Session complete: DOWNLOAD DATA
 
 Sessions 2 and 3 skip cutscene and slides. Short SESSION N RETURN gate, then block 1 practice and the same loop.
 
@@ -112,8 +111,7 @@ Gate labels:
 
 - Block 1 practice: **PRACTICE** (same rules/controls layout as scored; 20 paintings)
 - Block 1 scored intro: **MAIN ROUND**
-- After block 1 scored: **ROUND 1 COMPLETE** (includes block 2 rules)
-- Block 2 practice: **PRACTICE**
+- Block 2 practice: **PRACTICE** (shown right after block 1 scored)
 - Block 2 scored intro: **FINAL ROUND**
 
 ### Session 1 slide tutorial (not exported)
@@ -139,6 +137,8 @@ Download is only on the session complete screen after both scored blocks finish.
 Practice is not written to the xlsx. Scored blocks write 140 Trials rows (warmup + scored).
 
 Trials columns: `PID`, `Session`, `Condition`, `block`, `nback`, `trialType`, `trial`, `isMatch`, `CRESP`, `Resp`, `ACC`, `runningAccuracy`, `RT`, `RSI`, `StimulusName`, `StimulusChar`.
+
+`runningAccuracy` is cumulative accuracy `(correct / answered) * 100` through that trial in the block; starts at 100% before any answers.
 
 Meta includes timestamps, `blockOrder_key`, row counts, per-block seeds, and QC counts.
 

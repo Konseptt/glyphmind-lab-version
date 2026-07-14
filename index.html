@@ -1695,68 +1695,71 @@
       #ag-body .ag-stats .cr-stats-grid {
         justify-items: stretch;
       }
-      /* Session complete: compact single-screen summary */
+      /* Session complete: readable single-screen summary */
       #ag.ag-session-complete {
-        padding: 12px 0;
+        padding: 16px 0;
       }
       #ag.ag-session-complete .front-panel {
-        width: min(520px, 94vw);
-        max-width: 520px;
-        padding: clamp(14px, 2.5vh, 22px) clamp(14px, 2.5vw, 20px)
-          clamp(16px, 2.5vh, 24px);
+        width: min(640px, 94vw);
+        max-width: 640px;
+        padding: clamp(18px, 3vh, 28px) clamp(18px, 3vw, 28px)
+          clamp(20px, 3vh, 30px);
       }
       #ag.ag-session-complete .title-main {
-        font-size: clamp(22px, 3.8vw, 34px);
-        margin-bottom: 10px;
+        font-size: clamp(26px, 4.5vw, 40px);
+        margin-bottom: 14px;
       }
       #ag.ag-session-complete #ag-body {
-        margin-bottom: 12px;
+        margin-bottom: 16px;
       }
       #ag.ag-session-complete .ag-brief.ag-session-summary {
-        gap: 8px;
+        gap: 12px;
       }
       #ag.ag-session-complete .ag-session-blocks {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 8px;
+        gap: 12px;
       }
       #ag.ag-session-complete .ag-section {
-        padding: 10px 12px;
+        padding: 14px 16px;
       }
       #ag.ag-session-complete .ag-section-h {
-        margin-bottom: 6px;
-        font-size: clamp(8px, 0.95vw, 10px);
+        margin-bottom: 10px;
+        font-size: clamp(11px, 1.3vw, 14px);
         letter-spacing: 0.12em;
       }
       #ag.ag-session-complete .cr-stats-grid {
-        gap: 6px;
+        gap: 10px;
         margin-bottom: 0;
       }
-      #ag.ag-session-complete .cr-stats-grid .cr-stat-val {
-        font-size: clamp(13px, 1.8vw, 18px);
+      #ag.ag-session-complete .cr-stats-grid .cr-stat-val,
+      #ag.ag-session-complete .cr-stats-compact .cr-stat-val {
+        font-size: clamp(20px, 3vw, 28px);
       }
-      #ag.ag-session-complete .cr-stats-grid .cr-stat-lbl {
-        font-size: clamp(6px, 0.7vw, 8px);
+      #ag.ag-session-complete .cr-stats-grid .cr-stat-lbl,
+      #ag.ag-session-complete .cr-stats-compact .cr-stat-lbl {
+        font-size: clamp(10px, 1.2vw, 13px);
+        letter-spacing: 0.1em;
       }
       #ag.ag-session-complete .ag-results-note {
-        margin: 4px 0 0;
-        font-size: clamp(8px, 0.95vw, 10px);
+        margin: 8px 0 0;
+        font-size: clamp(12px, 1.4vw, 15px);
       }
       #ag.ag-session-complete .ag-session-overall .ag-results-note {
-        margin-top: 6px;
+        margin-top: 10px;
       }
       #ag.ag-session-complete .ag-lead {
-        font-size: clamp(10px, 1.15vw, 12px);
-        line-height: 1.45;
+        font-size: clamp(14px, 1.8vw, 17px);
+        line-height: 1.5;
         margin: 0;
       }
       #ag.ag-session-complete #ag-actions {
-        gap: 8px;
+        gap: 10px;
       }
       #ag.ag-session-complete #ag-begin,
       #ag.ag-session-complete #ag-secondary {
-        padding: 10px 14px;
-        font-size: clamp(10px, 1.1vw, 12px);
+        padding: 12px 18px;
+        font-size: clamp(12px, 1.4vw, 15px);
       }
       @media (max-width: 460px) {
         #ag.ag-session-complete .ag-session-blocks {
@@ -4512,6 +4515,7 @@
             ACC: "",
             isMatch: "",
             runningAccuracy: "",
+            streak: "",
             RT: "",
             RSI: Math.round(opts.rsi || 0),
             ...getGlyphLogFields(opts.glyphIdx),
@@ -4554,6 +4558,11 @@
             ACC: hasResponse ? (expectedResp === opts.resp ? 1 : 0) : "",
             isMatch: isMatch ? 1 : 0,
             runningAccuracy: "",
+            streak: hasResponse
+              ? opts.streak != null
+                ? opts.streak
+                : ""
+              : "",
             RT: hasResponse ? Math.round(opts.rt || 0) : "",
             RSI: Math.round(opts.rsi || 0),
             ...stimulus,
@@ -4596,7 +4605,7 @@
 
         accuracy(block) {
           const t = this.getRespondedTrials(block);
-          if (!t.length) return 0;
+          if (!t.length) return 100;
           const correct = t.filter((row) => row.ACC === 1).length;
           return Math.round((correct / t.length) * 1000) / 10;
         },
@@ -4633,27 +4642,22 @@
           ).length;
         },
 
-        // cumulative % correct through each answered trial
+        // Accuracy (%) = (correct / answered) * 100. Starts at 100% before any answers.
         refreshRunningAccuracy(block) {
           const sorted = this.trials
-            .filter((t) => t.block === block && t.trialType === "scored")
+            .filter((t) => t.block === block && isSessionTrialRow(t))
             .sort((a, b) => a.trial - b.trial);
           let correct = 0;
           let answered = 0;
+          let running = 100;
           for (const t of sorted) {
-            if (t.Resp !== 1 && t.Resp !== 2) {
-              t.runningAccuracy = "";
-              continue;
+            if (t.trialType === "scored" && (t.Resp === 1 || t.Resp === 2)) {
+              answered++;
+              if (t.ACC === 1) correct++;
+              running = Math.round((correct / answered) * 1000) / 10;
             }
-            answered++;
-            if (t.ACC === 1) correct++;
-            t.runningAccuracy = Math.round((correct / answered) * 1000) / 10;
+            t.runningAccuracy = running;
           }
-          this.trials
-            .filter((t) => t.block === block && t.trialType !== "scored")
-            .forEach((t) => {
-              t.runningAccuracy = "";
-            });
         },
 
         // build + download the xlsx
@@ -5638,7 +5642,7 @@
 
       function combinedScoredAccuracy() {
         const t = logger.getRespondedTrials();
-        if (!t.length) return 0;
+        if (!t.length) return 100;
         const correct = t.filter((row) => row.ACC === 1).length;
         return Math.round((correct / t.length) * 1000) / 10;
       }
@@ -5695,31 +5699,13 @@
         game.start({ skipBlockInstruction: true });
       }
 
-      function showBlock2BriefGate() {
+      // After block 1 scored: skip ROUND 1 COMPLETE; go straight to block 2 practice menu.
+      function goToBlock2Practice() {
         const nextN = selectedOrder[1];
-        showTransitionGate({
-          role: "ROUND 1 COMPLETE",
-          title: `${roundLoreName(nextN).toUpperCase()}<span class="ag-title-sub">BLOCK 2</span>`,
-          body:
-            '<div class="ag-brief">' +
-            `<p class="ag-lead"><b>Round 1 complete.</b> Next block: <b>${nextN}-back</b> in ${roundLoreName(nextN)}.</p>` +
-            rulesSectionHtml(nextN) +
-            controlsSectionHtml() +
-            `<p>Flow: <b>practice</b> (${PRACTICE_TRIALS} paintings), then the <b>scored hall</b> (${TOTAL_TRIALS} paintings).</p>` +
-            "</div>",
-          btn: "CONTINUE",
-          onBegin: () => {
-            logger.nextBlock();
-            game.N = nextN;
-            nBackLevel.textContent = `N-BACK: ${game.N}`;
-            showPreBlockPracticeReady(2);
-            fdIn(FADE_IN_MS);
-          },
-        });
-      }
-
-      function showBlock1BreakGate(completedN) {
-        showBlock2BriefGate();
+        logger.nextBlock();
+        game.N = nextN;
+        nBackLevel.textContent = `N-BACK: ${game.N}`;
+        showPreBlockPracticeReady(2);
       }
 
       let biDismissHandler = null;
@@ -5978,7 +5964,7 @@
       }
 
       let hudSnapshot = "";
-      const hudAccCache = { block: -1, t: 0, val: "--%" };
+      const hudAccCache = { block: -1, t: 0, val: "100%" };
 
       function invalidateHudAcc() {
         hudAccCache.t = 0;
@@ -5992,15 +5978,9 @@
           hudAccCache.block = cacheKey;
           hudAccCache.t = now;
           if (mode === "practice") {
-            const responded = game.practiceStats[logger.block]?.responded || 0;
-            hudAccCache.val = responded
-              ? `${game.practiceAccuracyPct(logger.block)}%`
-              : "--%";
+            hudAccCache.val = `${game.practiceAccuracyPct(logger.block)}%`;
           } else {
-            const responded = logger.getRespondedTrials(logger.block).length;
-            hudAccCache.val = responded
-              ? `${logger.accuracy(logger.block)}%`
-              : "--%";
+            hudAccCache.val = `${logger.accuracy(logger.block)}%`;
           }
         }
         return hudAccCache.val;
@@ -6169,7 +6149,7 @@
 
         practiceAccuracyPct(block) {
           const s = this.practiceStats[block];
-          if (!s || !s.responded) return 0;
+          if (!s || !s.responded) return 100;
           return Math.round((s.correct / s.responded) * 1000) / 10;
         },
 
@@ -6568,6 +6548,7 @@
               resp: resp,
               rt: rt,
               rsi: rsi,
+              streak: combo,
               sequenceSeed: this.sequenceSeed,
             });
           }
@@ -6634,7 +6615,7 @@
           const isFinal = logger.block >= 2;
           exitGameplayToGate(() => {
             if (isFinal) showSessionCompleteGate();
-            else showBlock1BreakGate(this.N);
+            else goToBlock2Practice();
           });
         },
       };
