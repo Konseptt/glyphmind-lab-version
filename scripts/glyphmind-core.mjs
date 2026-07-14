@@ -22,7 +22,9 @@ export const GLYPHS = [
 
 export const N_GLYPHS = GLYPHS.length;
 
-export const GLYPH_ID_TO_INDEX = Object.fromEntries(GLYPHS.map((g, i) => [g.id, i]));
+export const GLYPH_ID_TO_INDEX = Object.fromEntries(
+  GLYPHS.map((g, i) => [g.id, i]),
+);
 export const GLYPH_INDEX_TO_ID = GLYPHS.map((g) => g.id);
 
 export function hashSeed(seed) {
@@ -135,7 +137,10 @@ export function buildIsMatchFlags(scoredN, rng = Math.random) {
           placed++;
         }
       }
-      if (placed === MATCH_COUNT && maxConsecutiveTrue(isMatch) <= maxConsecutive) {
+      if (
+        placed === MATCH_COUNT &&
+        maxConsecutiveTrue(isMatch) <= maxConsecutive
+      ) {
         return isMatch;
       }
     }
@@ -161,7 +166,11 @@ export function sequenceSeedUsesSpreadAlgorithm(seed) {
 export function countScoredMatches(sequence, N) {
   let matches = 0;
   for (let i = N; i < TOTAL_TRIALS; i++) {
-    if (sequence[i] !== undefined && sequence[i - N] !== undefined && sequence[i] === sequence[i - N]) {
+    if (
+      sequence[i] !== undefined &&
+      sequence[i - N] !== undefined &&
+      sequence[i] === sequence[i - N]
+    ) {
       matches++;
     }
   }
@@ -196,7 +205,9 @@ export function genSeqBlockLegacy(N, seed) {
         else seq[i] = pickNonMatchGlyph(ref, rng);
       }
     }
-    const allAssigned = seq.every((v) => Number.isInteger(v) && v >= 0 && v < N_GLYPHS);
+    const allAssigned = seq.every(
+      (v) => Number.isInteger(v) && v >= 0 && v < N_GLYPHS,
+    );
     if (countScoredMatches(seq, N) === MATCH_COUNT && allAssigned) {
       validateBlockSequence(N, seq);
       return seq;
@@ -227,7 +238,9 @@ export function genSeqBlockSpread(N, seed) {
         else seq[i] = pickNonMatchGlyph(ref, rng);
       }
     }
-    const allAssigned = seq.every((v) => Number.isInteger(v) && v >= 0 && v < N_GLYPHS);
+    const allAssigned = seq.every(
+      (v) => Number.isInteger(v) && v >= 0 && v < N_GLYPHS,
+    );
     const sameGlyphRun = maxConsecutiveSameGlyph(seq);
     if (
       countScoredMatches(seq, N) === MATCH_COUNT &&
@@ -258,10 +271,14 @@ export function indexForGlyphId(id) {
 
 export function validateBlockSequence(N, seq) {
   if (!Array.isArray(seq) || seq.length !== TOTAL_TRIALS) {
-    throw new Error(`Block sequence must have ${TOTAL_TRIALS} paintings (got ${seq ? seq.length : 0})`);
+    throw new Error(
+      `Block sequence must have ${TOTAL_TRIALS} paintings (got ${seq ? seq.length : 0})`,
+    );
   }
   if (countScoredMatches(seq, N) !== MATCH_COUNT) {
-    throw new Error(`Block sequence must have ${MATCH_COUNT} scored N-back matches (got ${countScoredMatches(seq, N)})`);
+    throw new Error(
+      `Block sequence must have ${MATCH_COUNT} scored N-back matches (got ${countScoredMatches(seq, N)})`,
+    );
   }
   if (N + scoredNonMatchCountForN(N) !== NON_MATCH_PAINTING_COUNT) {
     throw new Error(
@@ -279,7 +296,13 @@ export function expectedCresp(stimulusId, targetId) {
  * Scored (after any answer in block): prior click -> this reveal.
  * Watch-only / before first answer: prior reveal -> this reveal.
  */
-export function interStimulusInterval(onsetMs, trialIdx, n, lastOnsetMs, lastAnswerMs) {
+export function interStimulusInterval(
+  onsetMs,
+  trialIdx,
+  n,
+  lastOnsetMs,
+  lastAnswerMs,
+) {
   if (trialIdx <= 0) return 0;
   if (trialIdx >= n && lastAnswerMs > 0) {
     return Math.max(0, Math.round(onsetMs - lastAnswerMs));
@@ -307,7 +330,11 @@ export function clickPerfNow(inputStamp, notBeforeMs) {
 
   let mappedStamp = inputStamp - (timeOriginOffset || 0);
 
-  if (timeOriginOffset === null || mappedStamp > now + 32 || mappedStamp < notBeforeMs - 1000) {
+  if (
+    timeOriginOffset === null ||
+    mappedStamp > now + 32 ||
+    mappedStamp < notBeforeMs - 1000
+  ) {
     const diff = inputStamp - now;
     timeOriginOffset = Math.abs(diff) > 5000 ? diff : 0;
     mappedStamp = inputStamp - timeOriginOffset;

@@ -37,7 +37,10 @@ function matchCountForBlock(N, totalTrials = TOTAL_TRIALS) {
   const scored = scoredCountForN(N, totalTrials);
   const fullScored = scoredCountForN(N, TOTAL_TRIALS);
   if (scored <= 0 || fullScored <= 0) return 0;
-  return Math.max(1, Math.min(scored, Math.round((MATCH_COUNT * scored) / fullScored)));
+  return Math.max(
+    1,
+    Math.min(scored, Math.round((MATCH_COUNT * scored) / fullScored)),
+  );
 }
 
 function countScoredMatchesLen(sequence, N) {
@@ -70,7 +73,11 @@ function buildIsMatchFlagsLen(scoredN, rng, matchTarget) {
         if (maxConsecutiveTrue(isMatch) > maxConsecutive) isMatch[j] = false;
         else placed++;
       }
-      if (placed === matchTarget && maxConsecutiveTrue(isMatch) <= maxConsecutive) return isMatch;
+      if (
+        placed === matchTarget &&
+        maxConsecutiveTrue(isMatch) <= maxConsecutive
+      )
+        return isMatch;
     }
   }
   const isMatch = new Array(scoredN).fill(false);
@@ -108,7 +115,9 @@ function genSeqBlockLen(N, seed, totalTrials) {
         seq[pos] = isMatch[j] ? ref : pickNonMatchGlyph(ref, rng);
       }
     }
-    const allAssigned = seq.every((v) => Number.isInteger(v) && v >= 0 && v < N_GLYPHS);
+    const allAssigned = seq.every(
+      (v) => Number.isInteger(v) && v >= 0 && v < N_GLYPHS,
+    );
     if (
       countScoredMatchesLen(seq, N) === matchTarget &&
       allAssigned &&
@@ -131,7 +140,8 @@ function makeGameLogger() {
     block: 1,
     trials: [],
     trialType(kind) {
-      if (isPracticePhase) return kind === "warmup" ? "practice_warmup" : "practice";
+      if (isPracticePhase)
+        return kind === "warmup" ? "practice_warmup" : "practice";
       return kind;
     },
     recordWarmup(opts) {
@@ -182,7 +192,10 @@ function makeGameLogger() {
 
   function upsert(row) {
     const idx = logger.trials.findIndex(
-      (t) => t.block === row.block && t.trialType === row.trialType && t.trial === row.trial,
+      (t) =>
+        t.block === row.block &&
+        t.trialType === row.trialType &&
+        t.trial === row.trial,
     );
     if (idx >= 0) logger.trials[idx] = row;
     else logger.trials.push(row);
@@ -200,7 +213,9 @@ function simulateCorridor(sim, N, totalTrials, seed, block) {
   const { logger, setPractice } = sim;
   logger.block = block;
   const seq =
-    totalTrials === TOTAL_TRIALS ? genSeqBlock(N, seed) : genSeqBlockLen(N, seed, totalTrials);
+    totalTrials === TOTAL_TRIALS
+      ? genSeqBlock(N, seed)
+      : genSeqBlockLen(N, seed, totalTrials);
   let lastRevealTime = 0;
   let lastResponseTime = 0;
   let respondedCount = 0;
@@ -266,13 +281,16 @@ function isSessionTrialRow(t) {
 }
 
 function hasCompleteBlock(trials, block) {
-  const blockRows = trials.filter((t) => t.block === block && isSessionTrialRow(t));
+  const blockRows = trials.filter(
+    (t) => t.block === block && isSessionTrialRow(t),
+  );
   if (blockRows.length !== TOTAL_TRIALS) return false;
   const seen = new Set();
   for (const row of blockRows) {
     if (seen.has(row.trial)) return false;
     seen.add(row.trial);
-    if (row.trialType === "scored" && row.Resp !== 1 && row.Resp !== 2) return false;
+    if (row.trialType === "scored" && row.Resp !== 1 && row.Resp !== 2)
+      return false;
   }
   return seen.size === TOTAL_TRIALS;
 }
@@ -288,7 +306,11 @@ function validateRowLogic(trials) {
         }
       }
     }
-    if ((tt === "warmup" || tt === "practice_warmup") && row.CRESP !== "" && row.CRESP != null) {
+    if (
+      (tt === "warmup" || tt === "practice_warmup") &&
+      row.CRESP !== "" &&
+      row.CRESP != null
+    ) {
       issues.push(`t${row.trial} ${tt}: warmup should leave CRESP blank`);
     }
   }
@@ -310,13 +332,22 @@ function ok(cond, msg) {
 ok(reactionTimeMs(3000, 3400) === 400, "rt is onset to answer");
 ok(reactionTimeMs(3000, 3000.2) === 1, "rt floors at 1ms so 0 means invalid");
 ok(reactionTimeMs(3000, 2990) === 0, "rt rejects negative interval");
-ok(interStimulusInterval(3000, 1, 1, 1000, 0) === 2000, "rsi warmup uses prior onset");
-ok(interStimulusInterval(5000, 2, 1, 3000, 3400) === 1600, "rsi scored uses prior answer");
+ok(
+  interStimulusInterval(3000, 1, 1, 1000, 0) === 2000,
+  "rsi warmup uses prior onset",
+);
+ok(
+  interStimulusInterval(5000, 2, 1, 3000, 3400) === 1600,
+  "rsi scored uses prior answer",
+);
 
 // index.html carries its own copies of the timing helpers; catch drift.
 {
   const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
-  const core = readFileSync(new URL("./glyphmind-core.mjs", import.meta.url), "utf8");
+  const core = readFileSync(
+    new URL("./glyphmind-core.mjs", import.meta.url),
+    "utf8",
+  );
   const extract = (src, name) => {
     const start = src.indexOf(`function ${name}(`);
     if (start < 0) return null;
@@ -326,11 +357,19 @@ ok(interStimulusInterval(5000, 2, 1, 3000, 3400) === 1600, "rsi scored uses prio
       if (src[i] === "{") depth++;
       else if (src[i] === "}" && --depth === 0) break;
     }
-    return src.slice(start, i + 1).replace(/\s+/g, " ").trim();
+    return src
+      .slice(start, i + 1)
+      .replace(/\s+/g, " ")
+      .trim();
   };
-  for (const name of ["interStimulusInterval", "reactionTimeMs", "clickPerfNow"]) {
+  for (const name of [
+    "interStimulusInterval",
+    "reactionTimeMs",
+    "clickPerfNow",
+  ]) {
     ok(
-      extract(html, name) !== null && extract(html, name) === extract(core, name),
+      extract(html, name) !== null &&
+        extract(html, name) === extract(core, name),
       `index.html ${name} matches glyphmind-core.mjs`,
     );
   }
@@ -341,29 +380,64 @@ const sim = makeGameLogger();
 
 // Block 1: practice (not logged), scored 1-back
 sim.setPractice(true);
-const p1 = simulateCorridor(sim, order13[0], PRACTICE_TRIALS, "gm-v2-practice-b1", 1);
-ok(p1.respondedCount === scoredCountForN(1, PRACTICE_TRIALS), "block1 practice scored count");
-ok(countByType(sim.logger.trials, 1, "practice_warmup") === 0, "block1 practice not logged");
-ok(countByType(sim.logger.trials, 1, "practice") === 0, "block1 practice answered not logged");
+const p1 = simulateCorridor(
+  sim,
+  order13[0],
+  PRACTICE_TRIALS,
+  "gm-v2-practice-b1",
+  1,
+);
+ok(
+  p1.respondedCount === scoredCountForN(1, PRACTICE_TRIALS),
+  "block1 practice scored count",
+);
+ok(
+  countByType(sim.logger.trials, 1, "practice_warmup") === 0,
+  "block1 practice not logged",
+);
+ok(
+  countByType(sim.logger.trials, 1, "practice") === 0,
+  "block1 practice answered not logged",
+);
 
 sim.setPractice(false);
-const s1 = simulateCorridor(sim, order13[0], TOTAL_TRIALS, "gm-v2-scored-b1", 1);
+const s1 = simulateCorridor(
+  sim,
+  order13[0],
+  TOTAL_TRIALS,
+  "gm-v2-scored-b1",
+  1,
+);
 ok(s1.respondedCount === scoredCountForN(1), "block1 scored count");
 ok(hasCompleteBlock(sim.logger.trials, 1), "block1 session complete");
 
 // Block 2: practice 3-back, scored 3-back
 sim.logger.block = 2;
 sim.setPractice(true);
-const p2 = simulateCorridor(sim, order13[1], PRACTICE_TRIALS, "gm-v2-practice-b2", 2);
+const p2 = simulateCorridor(
+  sim,
+  order13[1],
+  PRACTICE_TRIALS,
+  "gm-v2-practice-b2",
+  2,
+);
 sim.setPractice(false);
-const s2 = simulateCorridor(sim, order13[1], TOTAL_TRIALS, "gm-v2-scored-b2", 2);
+const s2 = simulateCorridor(
+  sim,
+  order13[1],
+  TOTAL_TRIALS,
+  "gm-v2-scored-b2",
+  2,
+);
 ok(hasCompleteBlock(sim.logger.trials, 2), "block2 session complete");
 
 const trials = sim.logger.trials;
 ok(trials.length === 140, `full session row count (got ${trials.length})`);
 
 ok(
-  trials.filter((t) => t.trialType === "practice" || t.trialType === "practice_warmup").length === 0,
+  trials.filter(
+    (t) => t.trialType === "practice" || t.trialType === "practice_warmup",
+  ).length === 0,
   "no practice rows in export",
 );
 
@@ -371,32 +445,51 @@ const logicIssues = validateRowLogic(trials);
 ok(logicIssues.length === 0, `row logic: ${logicIssues.join("; ")}`);
 
 // Match counts per session block
-for (const [block, N] of [[1, 1], [2, 3]]) {
-  const sessionRows = trials.filter((t) => t.block === block && isSessionTrialRow(t));
+for (const [block, N] of [
+  [1, 1],
+  [2, 3],
+]) {
+  const sessionRows = trials.filter(
+    (t) => t.block === block && isSessionTrialRow(t),
+  );
   const matchLogged = sessionRows.filter((t) => t.CRESP === 1).length;
-  ok(matchLogged === MATCH_COUNT, `block ${block} session matches ${matchLogged}`);
+  ok(
+    matchLogged === MATCH_COUNT,
+    `block ${block} session matches ${matchLogged}`,
+  );
   const nonMatch = sessionRows.filter((t) => t.CRESP !== 1).length;
-  ok(nonMatch === NON_MATCH_PAINTING_COUNT, `block ${block} session nonmatches ${nonMatch}`);
+  ok(
+    nonMatch === NON_MATCH_PAINTING_COUNT,
+    `block ${block} session nonmatches ${nonMatch}`,
+  );
 }
 
 // Practice is not exported
 for (const block of [1, 2]) {
   const practiceRows = trials.filter(
-    (t) => t.block === block && (t.trialType === "practice" || t.trialType === "practice_warmup"),
+    (t) =>
+      t.block === block &&
+      (t.trialType === "practice" || t.trialType === "practice_warmup"),
   );
   ok(practiceRows.length === 0, `block ${block} has no practice rows`);
 }
 
-const audit = auditExportData(trials, {
-  rows_total: trials.length,
-  paintingsPerBlock: TOTAL_TRIALS,
-  block1_sequenceSeed: "gm-v2-scored-b1",
-  block2_sequenceSeed: "gm-v2-scored-b2",
-}, { strict: true });
+const audit = auditExportData(
+  trials,
+  {
+    rows_total: trials.length,
+    paintingsPerBlock: TOTAL_TRIALS,
+    block1_sequenceSeed: "gm-v2-scored-b1",
+    block2_sequenceSeed: "gm-v2-scored-b2",
+  },
+  { strict: true },
+);
 
 ok(audit.ok, `audit export: ${audit.issues.join("; ")}`);
 
-console.log(failed ? `\n${failed} check(s) failed.` : "\nAll session data checks passed.");
+console.log(
+  failed ? `\n${failed} check(s) failed.` : "\nAll session data checks passed.",
+);
 console.log(`  Rows: ${trials.length} (70 scored per block)`);
 console.log(`  Block 1: ${countByType(trials, 1, "scored")} scored`);
 console.log(`  Block 2: ${countByType(trials, 2, "scored")} scored`);

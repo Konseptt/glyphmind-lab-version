@@ -4,10 +4,16 @@
  * Usage:
  *   node scripts/replay-sequence.mjs --n 1 --seed "gm-mpvgyegf-b1-n1-1g4934c-1tkpxbo"
  */
-import { TOTAL_TRIALS, genSeqBlock, glyphIdForIndex } from "./glyphmind-core.mjs";
+import {
+  TOTAL_TRIALS,
+  genSeqBlock,
+  glyphIdForIndex,
+} from "./glyphmind-core.mjs";
 
 function usage() {
-  console.error(`Usage: node scripts/replay-sequence.mjs --n <1|3> --seed "<sequenceSeed>"`);
+  console.error(
+    `Usage: node scripts/replay-sequence.mjs --n <1|3> --seed "<sequenceSeed>"`,
+  );
   process.exit(1);
 }
 

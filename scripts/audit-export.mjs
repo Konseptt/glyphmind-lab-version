@@ -31,7 +31,10 @@ function matchCountForBlock(N, totalTrials = TOTAL_TRIALS) {
   const scored = scoredCountForTrials(N, totalTrials);
   const fullScored = scoredCountForN(N);
   if (scored <= 0 || fullScored <= 0) return 0;
-  return Math.max(1, Math.min(scored, Math.round((MATCH_COUNT * scored) / fullScored)));
+  return Math.max(
+    1,
+    Math.min(scored, Math.round((MATCH_COUNT * scored) / fullScored)),
+  );
 }
 
 function isSessionTrialType(trialType) {
@@ -155,17 +158,25 @@ function auditBlock(blockNum, rows, meta, issues, options) {
 
   const seed =
     asStr(meta[`block${blockNum}_sequenceSeed`]) || asStr(rows[0].sequenceSeed);
-  if (!seed) issues.push(`${prefix}: missing sequenceSeed (Meta block${blockNum}_sequenceSeed)`);
+  if (!seed)
+    issues.push(
+      `${prefix}: missing sequenceSeed (Meta block${blockNum}_sequenceSeed)`,
+    );
 
   const warmupRows = rows.filter((r) => asStr(r.trialType) === "warmup");
   const scoredRows = rows.filter((r) => asStr(r.trialType) === "scored");
   const otherTypes = rows.filter(
-    (r) => !["warmup", "scored", "practice", "practice_warmup"].includes(asStr(r.trialType)),
+    (r) =>
+      !["warmup", "scored", "practice", "practice_warmup"].includes(
+        asStr(r.trialType),
+      ),
   );
 
   if (otherTypes.length) issues.push(`${prefix}: invalid trialType values`);
   if (warmupRows.length !== N) {
-    issues.push(`${prefix}: expected ${N} warmup rows, got ${warmupRows.length}`);
+    issues.push(
+      `${prefix}: expected ${N} warmup rows, got ${warmupRows.length}`,
+    );
   }
   if (scoredRows.length !== scoredCountForN(N)) {
     issues.push(
@@ -176,7 +187,9 @@ function auditBlock(blockNum, rows, meta, issues, options) {
   const matchLogged = rows.filter((r) => asInt(r.CRESP) === 1).length;
   const nonMatchLogged = rows.filter((r) => asInt(r.CRESP) !== 1).length;
   if (matchLogged !== MATCH_COUNT) {
-    issues.push(`${prefix}: expected ${MATCH_COUNT} CRESP=1 rows, got ${matchLogged}`);
+    issues.push(
+      `${prefix}: expected ${MATCH_COUNT} CRESP=1 rows, got ${matchLogged}`,
+    );
   }
   if (nonMatchLogged !== NON_MATCH_PAINTING_COUNT) {
     issues.push(
@@ -186,15 +199,21 @@ function auditBlock(blockNum, rows, meta, issues, options) {
 
   const metaSeed = asStr(meta[`block${blockNum}_sequenceSeed`]);
   if (metaSeed && seed && metaSeed !== seed) {
-    issues.push(`${prefix}: Meta sequenceSeed mismatch (${metaSeed} vs ${seed})`);
+    issues.push(
+      `${prefix}: Meta sequenceSeed mismatch (${metaSeed} vs ${seed})`,
+    );
   }
   const metaMatch = asInt(meta[`block${blockNum}_matchPaintings_logged`]);
   const metaNonMatch = asInt(meta[`block${blockNum}_nonMatchPaintings_logged`]);
   if (metaMatch != null && metaMatch !== matchLogged) {
-    issues.push(`${prefix}: Meta match count mismatch (${metaMatch} vs ${matchLogged})`);
+    issues.push(
+      `${prefix}: Meta match count mismatch (${metaMatch} vs ${matchLogged})`,
+    );
   }
   if (metaNonMatch != null && metaNonMatch !== nonMatchLogged) {
-    issues.push(`${prefix}: Meta non-match count mismatch (${metaNonMatch} vs ${nonMatchLogged})`);
+    issues.push(
+      `${prefix}: Meta non-match count mismatch (${metaNonMatch} vs ${nonMatchLogged})`,
+    );
   }
 
   let pendingScored = 0;
@@ -211,11 +230,20 @@ function auditBlock(blockNum, rows, meta, issues, options) {
     }
 
     if (trialType === "warmup") {
-      if (!blank(row.CRESP) || !blank(row.Resp) || !blank(row.ACC) || !blank(row.RT)) {
-        issues.push(`${prefix} trial ${trial}: warmup must leave CRESP/Resp/ACC/RT blank`);
+      if (
+        !blank(row.CRESP) ||
+        !blank(row.Resp) ||
+        !blank(row.ACC) ||
+        !blank(row.RT)
+      ) {
+        issues.push(
+          `${prefix} trial ${trial}: warmup must leave CRESP/Resp/ACC/RT blank`,
+        );
       }
       if (!blank(row.isMatch)) {
-        issues.push(`${prefix} trial ${trial}: warmup must leave isMatch blank`);
+        issues.push(
+          `${prefix} trial ${trial}: warmup must leave isMatch blank`,
+        );
       }
       continue;
     }
@@ -231,13 +259,17 @@ function auditBlock(blockNum, rows, meta, issues, options) {
     const loggedCresp = asInt(row.CRESP);
 
     if (loggedCresp !== cresp) {
-      issues.push(`${prefix} trial ${trial}: CRESP ${loggedCresp} != expected ${cresp}`);
+      issues.push(
+        `${prefix} trial ${trial}: CRESP ${loggedCresp} != expected ${cresp}`,
+      );
     }
 
     const expectedIsMatch = cresp === 1 ? 1 : 0;
     const loggedIsMatch = asInt(row.isMatch);
     if (loggedIsMatch != null && loggedIsMatch !== expectedIsMatch) {
-      issues.push(`${prefix} trial ${trial}: isMatch ${loggedIsMatch} != expected ${expectedIsMatch}`);
+      issues.push(
+        `${prefix} trial ${trial}: isMatch ${loggedIsMatch} != expected ${expectedIsMatch}`,
+      );
     }
 
     if (trial <= N) {
@@ -258,15 +290,21 @@ function auditBlock(blockNum, rows, meta, issues, options) {
       const rt = asInt(row.RT);
 
       if (acc !== (resp === cresp ? 1 : 0)) {
-        issues.push(`${prefix} trial ${trial}: ACC ${acc} inconsistent with Resp/CRESP`);
+        issues.push(
+          `${prefix} trial ${trial}: ACC ${acc} inconsistent with Resp/CRESP`,
+        );
       }
       if (rt == null || rt <= 0) {
-        issues.push(`${prefix} trial ${trial}: answered scored row needs RT > 0`);
+        issues.push(
+          `${prefix} trial ${trial}: answered scored row needs RT > 0`,
+        );
       }
     } else {
       pendingScored++;
       if (options.strict) {
-        issues.push(`${prefix} trial ${trial}: scored row missing Resp (--strict)`);
+        issues.push(
+          `${prefix} trial ${trial}: scored row missing Resp (--strict)`,
+        );
       }
     }
   }
@@ -290,14 +328,23 @@ function auditBlock(blockNum, rows, meta, issues, options) {
     }
   }
 
-  return { N, seed, pendingScored, matchLogged, nonMatchLogged, kind: "session" };
+  return {
+    N,
+    seed,
+    pendingScored,
+    matchLogged,
+    nonMatchLogged,
+    kind: "session",
+  };
 }
 
 function auditPracticeBlock(blockNum, rows, issues, options) {
   const prefix = `block ${blockNum} practice`;
 
   if (rows.length !== PRACTICE_TRIALS) {
-    issues.push(`${prefix}: expected ${PRACTICE_TRIALS} rows, got ${rows.length}`);
+    issues.push(
+      `${prefix}: expected ${PRACTICE_TRIALS} rows, got ${rows.length}`,
+    );
     return;
   }
 
@@ -310,14 +357,18 @@ function auditPracticeBlock(blockNum, rows, issues, options) {
     issues.push(`${prefix}: inconsistent nback across rows`);
   }
 
-  const warmupRows = rows.filter((r) => asStr(r.trialType) === "practice_warmup");
+  const warmupRows = rows.filter(
+    (r) => asStr(r.trialType) === "practice_warmup",
+  );
   const scoredRows = rows.filter((r) => asStr(r.trialType) === "practice");
   const badTypes = rows.filter(
     (r) => !["practice", "practice_warmup"].includes(asStr(r.trialType)),
   );
   if (badTypes.length) issues.push(`${prefix}: invalid trialType values`);
   if (warmupRows.length !== N) {
-    issues.push(`${prefix}: expected ${N} practice_warmup rows, got ${warmupRows.length}`);
+    issues.push(
+      `${prefix}: expected ${N} practice_warmup rows, got ${warmupRows.length}`,
+    );
   }
   const expectedScored = scoredCountForTrials(N, PRACTICE_TRIALS);
   if (scoredRows.length !== expectedScored) {
@@ -328,10 +379,14 @@ function auditPracticeBlock(blockNum, rows, issues, options) {
 
   const matchTarget = matchCountForBlock(N, PRACTICE_TRIALS);
   const matchLogged = rows.filter((r) => asInt(r.isMatchPainting) === 1).length;
-  const nonMatchLogged = rows.filter((r) => asInt(r.isMatchPainting) === 0).length;
+  const nonMatchLogged = rows.filter(
+    (r) => asInt(r.isMatchPainting) === 0,
+  ).length;
   const nonMatchTarget = PRACTICE_TRIALS - matchTarget;
   if (matchLogged !== matchTarget) {
-    issues.push(`${prefix}: expected ${matchTarget} isMatchPainting=1 rows, got ${matchLogged}`);
+    issues.push(
+      `${prefix}: expected ${matchTarget} isMatchPainting=1 rows, got ${matchLogged}`,
+    );
   }
   if (nonMatchLogged !== nonMatchTarget) {
     issues.push(
@@ -345,17 +400,31 @@ function auditPracticeBlock(blockNum, rows, issues, options) {
       if (!hasResp(row.Resp)) pendingScored++;
     }
     if (pendingScored) {
-      issues.push(`${prefix}: ${pendingScored} practice scored row(s) missing Resp (--strict)`);
+      issues.push(
+        `${prefix}: ${pendingScored} practice scored row(s) missing Resp (--strict)`,
+      );
     }
   }
 
   for (const row of scoredRows) {
-    if (hasResp(row.Resp) && asInt(row.ACC) !== (asInt(row.CRESP) === asInt(row.Resp) ? 1 : 0)) {
-      issues.push(`${prefix} trial ${trialNum(row)}: ACC does not match CRESP/Resp`);
+    if (
+      hasResp(row.Resp) &&
+      asInt(row.ACC) !== (asInt(row.CRESP) === asInt(row.Resp) ? 1 : 0)
+    ) {
+      issues.push(
+        `${prefix} trial ${trialNum(row)}: ACC does not match CRESP/Resp`,
+      );
     }
   }
 
-  return { N, seed: asStr(rows[0].sequenceSeed), pendingScored, matchLogged, nonMatchLogged, kind: "practice" };
+  return {
+    N,
+    seed: asStr(rows[0].sequenceSeed),
+    pendingScored,
+    matchLogged,
+    nonMatchLogged,
+    kind: "practice",
+  };
 }
 
 /**
@@ -373,8 +442,10 @@ export function auditExportData(trials, meta = {}, options = {}) {
 
   const missingCols = REQUIRED_TRIAL_COLUMNS.filter((col) => {
     if (col === "nback") {
-      return !Object.prototype.hasOwnProperty.call(trials[0], "nback") &&
-        !Object.prototype.hasOwnProperty.call(trials[0], "N");
+      return (
+        !Object.prototype.hasOwnProperty.call(trials[0], "nback") &&
+        !Object.prototype.hasOwnProperty.call(trials[0], "N")
+      );
     }
     return !Object.prototype.hasOwnProperty.call(trials[0], col);
   });
@@ -384,23 +455,31 @@ export function auditExportData(trials, meta = {}, options = {}) {
 
   const metaRowsTotal = asInt(meta.rows_total);
   if (metaRowsTotal != null && metaRowsTotal !== trials.length) {
-    issues.push(`Meta rows_total (${metaRowsTotal}) != Trials row count (${trials.length})`);
+    issues.push(
+      `Meta rows_total (${metaRowsTotal}) != Trials row count (${trials.length})`,
+    );
   }
 
   const blockGroups = groupByBlock(trials);
   const blockSummaries = [];
 
   for (const [blockNum, rows] of blockGroups) {
-    const sessionRows = rows.filter((r) => isSessionTrialType(asStr(r.trialType)));
+    const sessionRows = rows.filter((r) =>
+      isSessionTrialType(asStr(r.trialType)),
+    );
     const practiceRows = rows.filter((r) => {
       const tt = asStr(r.trialType);
       return tt === "practice" || tt === "practice_warmup";
     });
     if (practiceRows.length) {
-      issues.push(`block ${blockNum}: unexpected practice rows in export (${practiceRows.length})`);
+      issues.push(
+        `block ${blockNum}: unexpected practice rows in export (${practiceRows.length})`,
+      );
     }
     if (sessionRows.length) {
-      blockSummaries.push(auditBlock(blockNum, sessionRows, meta, issues, options));
+      blockSummaries.push(
+        auditBlock(blockNum, sessionRows, meta, issues, options),
+      );
     }
   }
 
@@ -440,11 +519,15 @@ export function auditXlsxFile(filePath, options = {}) {
 function printReport(result) {
   const label = result.file || "in-memory export";
   console.log(`Audit: ${label}`);
-  console.log(`  Trials: ${result.trialCount ?? 0} rows across ${result.blockCount ?? 0} block(s)`);
+  console.log(
+    `  Trials: ${result.trialCount ?? 0} rows across ${result.blockCount ?? 0} block(s)`,
+  );
   if (result.blocks?.length) {
     for (const b of result.blocks) {
       if (!b) continue;
-      const pendingNote = b.pendingScored ? `, ${b.pendingScored} pending scored` : "";
+      const pendingNote = b.pendingScored
+        ? `, ${b.pendingScored} pending scored`
+        : "";
       console.log(
         `  Block: N=${b.N}, seed=${b.seed || "?"}, matches=${b.matchLogged}, nonmatches=${b.nonMatchLogged}${pendingNote}`,
       );
@@ -465,11 +548,14 @@ const fileArg = args.find((a) => !a.startsWith("--"));
 
 const isMain =
   process.argv[1] &&
-  path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url));
+  path.resolve(process.argv[1]) ===
+    path.resolve(fileURLToPath(import.meta.url));
 
 if (isMain) {
   if (!fileArg) {
-    console.error("Usage: node scripts/audit-export.mjs path/to/export.xlsx [--strict]");
+    console.error(
+      "Usage: node scripts/audit-export.mjs path/to/export.xlsx [--strict]",
+    );
     process.exit(2);
   }
   process.exit(printReport(auditXlsxFile(fileArg, { strict })));
